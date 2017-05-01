@@ -6,12 +6,14 @@ import QtQuick 2.2
 
 Item {
     id:main_form
+    GameLogic{
+        id:gameLogic
+    }
     anchors.fill: parent
-    property int gamestate: 0
-    property int nowplayer: 0
+    property alias gamestate: gameLogic.state
+    property alias nowplayer: gameLogic.now_player
     property QtObject drag_item: null
     property bool drag_need_resume: false
-    property int drag_row_index: -1
 
     signal updateAfterDrop(int src, int dst)
     MouseArea{
@@ -25,10 +27,13 @@ Item {
             }
         }
         onClicked: {
-            if(Game_Logic.get_state()==3){
-                Game_Logic.drop_dice();
+            if(gameLogic.get_state()==3){
+                gameLogic.drop_dice();
                 drop_anim.start();
                 drop_timer.start();
+            }
+            if(gameLogic.get_state()==5){
+                console.log(main_form.childAt(main_form.drag_item.x+48,main_form.drag_item.y+48))
             }
         }
     }
@@ -205,7 +210,9 @@ Item {
         id: imageCube
         width: 250
         height: 250
-        anchors.centerIn: background
+        anchors.centerIn: gameLogic.now_player==1?background:background2
+        anchors.verticalCenterOffset: -75
+        anchors.horizontalCenterOffset: 15
         visible: true
         state: "image1"
         image1: "img/cube1.png"
@@ -214,17 +221,32 @@ Item {
         image4: "img/cube4.png"
         image5: "img/cube5.png"
         image6: "img/cube6.png"
-        NumberAnimation {
-            id: drop_anim
-            target: imageCube
-            property: "scale"
-            duration: 3000
-            from: 1
-            to:0.8
-            easing.type: Easing.OutBounce
-        }
     }
-
+    NumberAnimation {
+        id: drop_anim
+        targets: [imageCube,imageCube2]
+        property: "scale"
+        duration: 3000
+        from: 1
+        to:0.8
+        easing.type: Easing.OutBounce
+    }
+    ImageCube {
+        id: imageCube2
+        width: 250
+        height: 250
+        anchors.centerIn: gameLogic.now_player==1?background:background2
+        anchors.verticalCenterOffset: 75
+        anchors.horizontalCenterOffset: -15
+        visible: true
+        state: "image1"
+        image1: "img/cube1.png"
+        image2: "img/cube2.png"
+        image3: "img/cube3.png"
+        image4: "img/cube4.png"
+        image5: "img/cube5.png"
+        image6: "img/cube6.png"
+    }
     Timer{
         id:drop_timer
         running: false
@@ -232,20 +254,19 @@ Item {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
-            imageCube.state="image"+Game_Logic.get_dice(0);
-            Game_Logic.get_dice(1);
+            imageCube.state="image"+gameLogic.get_dice(0);
+            imageCube2.state="image"+gameLogic.get_dice(1);
+
+            //gameLogic.get_dice(1);
+
             //console.log(imageCube.state);
-            main_form.gamestate=Game_Logic.state
-            main_form.nowplayer=Game_Logic.now_player
+            //main_form.gamestate=gameLogic.state
+            //main_form.nowplayer=gameLogic.now_player
         }
     }
-    Loader{
-        source: "GameLogic.qml"
-    }
-
-    Component.onCompleted: {
-        Game_Logic.init();
-    }
+//    Component.onCompleted: {
+//        gameLogic.init();
+//    }
     focus: true
 
     Keys.onPressed:{
