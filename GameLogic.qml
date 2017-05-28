@@ -12,7 +12,9 @@ Item {
     property var dice_second : [0];
     property var dice_rol:[];
     property int state:0;
-    property int drag_row_index: -1
+    property int drag_row_index: -1;
+    property int turn: 0;
+    property bool twice: false
 
     Component.onCompleted: {
         init();
@@ -61,6 +63,7 @@ Item {
         dice_rol=tmp
         if(tmp[0]+tmp[1]==0){
             now_player=!now_player
+            if(now_player==1)turn++;
             state=3;
         }
     }
@@ -68,7 +71,7 @@ Item {
     function drop_dice(){
         if(state!=3)return;
         var i=0;
-        dice_first=[Math.floor(Math.random()*6)+1];
+        dice_first=[];
         dice_second=[];
         do{
             var a=dice_first[dice_first.length-1];
@@ -93,9 +96,10 @@ Item {
         var res=false;
         if(src-dst==0)res=true;
         if(src-dst==dice_rol[0])res=true;
+
         if(src-dst==dice_rol[1])res=true;
         if(src-dst==(dice_rol[0]+dice_rol[1]))res=true;
-        console.log("can_drop_fishka:"+src+"->"+dst+" dice:"+dice_rol+" result:"+res);
+        //console.log("can_drop_fishka:"+src+"->"+dst+" dice:"+dice_rol+" result:"+res);
         return res;
     }
     function get_dice(ind){

@@ -4,25 +4,25 @@ import QtQuick 2.0
 Row{
     property int p_ind: 6+index
     layoutDirection: Qt.RightToLeft
-    height: 97
+    height: 106
     width: 1438
-    spacing: 2
+    //spacing: 2
     z:1
 
     Rectangle{
         id:rec_shift
         width: 50+(gameLogic.get_count(p_ind)-(gameLogic.drag_row_index==p_ind?1:0))*99;
-        height: 97;
+        height: 106;
         color: "transparent"
     }
     DropArea {
-        width: 141; height: 100
-        enabled: gameLogic.can_drop_fishka(gameLogic.drag_row_index,p_ind)
+        width: 141; height: 110
+        enabled:gameLogic.can_drop_fishka(gameLogic.drag_row_index,p_ind)
         visible:enabled
         Rectangle {
             radius: 50
-            anchors.topMargin: -5
-            anchors.rightMargin: -5
+            anchors.topMargin: -4
+            anchors.rightMargin: -4
             opacity: parent.containsDrag?0.5:0.2
             anchors.fill: parent
             color: "green"

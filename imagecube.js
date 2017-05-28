@@ -1,7 +1,8 @@
 Qt.include("three.js")
+//Qt.include("cannon.js")
 
 var camera, scene, renderer;
-var cube;
+var cube1,cube2;
 var pointLight;
 // Physics variables
 var collisionConfiguration;
@@ -21,35 +22,38 @@ var armMovement = 0;
 function initializeGL(canvas) {
     var aspect = canvas.width / canvas.height;
     var d = 200;
-    camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0.1, 1000 );
+    //camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0.1, 1000 );
     //camera = new THREE.OrthographicCamera( canvas.width / - 2, canvas.width / 2, canvas.height / 2, canvas.height / - 2, 1, 1000 );
-    //camera = new THREE.PerspectiveCamera(50, canvas.width / canvas.height, 1, 2000);
-    camera.position.z = 650;
-    camera.position.x = 100;
+    camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+
+
+    camera.position.z = 5;
+    camera.position.y = -1;
+    camera.position.x = 1;
 
     scene = new THREE.Scene();
     //scene = new Physijs.Scene({ fixedTimeStep: 1 / 120 });
-//    scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
-//    scene.addEventListener(
-//                'update',
-//                function() {
-//                    scene.simulate( undefined, 2 );
-//                    physics_stats.update();
-//                }
-//            );
+    //    scene.setGravity(new THREE.Vector3( 0, -30, 0 ));
+    //    scene.addEventListener(
+    //                'update',
+    //                function() {
+    //                    scene.simulate( undefined, 2 );
+    //                    physics_stats.update();
+    //                }
+    //            );
 
-//    var ground_geometry = new THREE.PlaneGeometry( 75, 75, 50, 50 );
-//    var ground = new Physijs.HeightfieldMesh(
-//        ground_geometry,
-//        new THREE.MeshPhongMaterial( { color: 0xFFFFFF } ),
-//        0, // mass
-//        50,
-//        50
-//    );
-//    ground.receiveShadow = true;
-//    scene.add( ground );
+    //    var ground_geometry = new THREE.PlaneGeometry( 75, 75, 50, 50 );
+    //    var ground = new Physijs.HeightfieldMesh(
+    //        ground_geometry,
+    //        new THREE.MeshPhongMaterial( { color: 0xFFFFFF } ),
+    //        0, // mass
+    //        50,
+    //        50
+    //    );
+    //    ground.receiveShadow = true;
+    //    scene.add( ground );
     // Load textures
-    var textureLoader = new THREE.TextureLoader();
+    /*var textureLoader = new THREE.TextureLoader();
     var textureCase1 = textureLoader.load(canvas.image1);
     var textureCase2 = textureLoader.load(canvas.image2);
     var textureCase3 = textureLoader.load(canvas.image3);
@@ -70,15 +74,17 @@ function initializeGL(canvas) {
     materials.push(new THREE.MeshLambertMaterial({ map: textureCase4 }));
     materials.push(new THREE.MeshLambertMaterial({ map: textureCase4 }));
     materials.push(new THREE.MeshLambertMaterial({ map: textureCase2 }));
-    materials.push(new THREE.MeshLambertMaterial({ map: textureCase2 }));
+    materials.push(new THREE.MeshLambertMaterial({ map: textureCase2 }));*/
 
     // Box geometry to be broken down for MeshFaceMaterial
-    var geometry = new THREE.BoxGeometry(100, 100, 100);
+    /*var geometry = new THREE.BoxGeometry(100, 100, 100);
     for (var i = 0, len = geometry.faces.length; i < len; i ++) {
         geometry.faces[ i ].materialIndex = i;
     }
     geometry.materials = materials;
-    var faceMaterial = new THREE.MeshFaceMaterial(materials);
+    var faceMaterial = new THREE.MeshFaceMaterial(materials);*/
+
+
 
     //var smooth = THREE.GeometryUtils.clone( geometry );
     //smooth.mergeVertices();
@@ -87,25 +93,53 @@ function initializeGL(canvas) {
     //    var modifier = new THREE.SubdivisionModifier(subdiv);
     //    modifier.modify( geometry );
 
-    cube = new THREE.Mesh(geometry, faceMaterial);
+    /*cube = new THREE.Mesh(geometry, faceMaterial);
     cube.receiveShadow = true;
     cube.castShadow = true;
 
-    scene.add(cube);
+    scene.add(cube);*/
+    //var gl = canvas.getContext("canvas3d", {depth:true, antialias:false, alpha:false});
+    //gl.clearColor(0.98, 0.98, 0.98, 1.0);
+    //gl.clearDepth(1.0);
+    var loader = new THREE.JSONLoader();
+    loader.useBufferGeometry = true;
 
-    camera.lookAt(cube.position);
+    loader.load( "./untitled.json", function ( geometry, materials) {
+        geometry.computeVertexNormals();
+        var bufferGeometry = new THREE.BufferGeometry();
+        bufferGeometry.fromGeometry(geometry);
+        var mater = [];
+        cube1 = new THREE.Mesh( bufferGeometry, new THREE.MeshFaceMaterial(materials));
+        cube1.scale.set(2.5, 2.5, 2.5);
+        cube1.position.set(0.35, 0, 0);
+        scene.add( cube1 );
+        cube2=cube1.clone();
+        cube2.position.set(-0.35, 0, 0);
+        scene.add( cube2 );
+    } );
+
+
+    //camera.lookAt(cube.position);
 
     // Lights
     scene.add(new THREE.AmbientLight(0x444444));
 
     var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
 
-    directionalLight.position.y = 130;
-    directionalLight.position.z = 700;
-    directionalLight.position.x = Math.tan(canvas.angleOffset) * directionalLight.position.z;
+    directionalLight.position.y = 2.5;
+    directionalLight.position.z = 7.0;
+    directionalLight.position.x = 2.5;
     directionalLight.position.normalize();
     scene.add(directionalLight);
+    /*    camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
+    camera.position.z = 1.5;
 
+
+    gl = canvas.getContext("canvas3d", {depth:true, antialias:false, alpha:false});
+
+    renderer = new THREE.Canvas3DRenderer(
+                { canvas: canvas, antialias: true, devicePixelRatio: canvas.devicePixelRatio });
+    renderer.setSize(canvas.width, canvas.height);*/
     renderer = new THREE.Canvas3DRenderer(
                 { canvas: canvas, antialias: true, devicePixelRatio: canvas.devicePixelRatio, alpha: true });
     renderer.shadowMap.enabled = true;
@@ -113,18 +147,40 @@ function initializeGL(canvas) {
     renderer.setPixelRatio(canvas.devicePixelRatio);
     renderer.setClearColor( 0x000000, 0 );
     renderer.setSize(canvas.width, canvas.height);
+
+
+    /*var world = new CANNON.World();
+    world.gravity.set(0, 0, -9.82); // m/s²
+
+    // Create a sphere
+    var radius = 1; // m
+    var sphereBody = new CANNON.Body({
+       mass: 5, // kg
+       position: new CANNON.Vec3(0, 0, 10), // m
+       shape: new CANNON.Sphere(radius)
+    });
+    world.addBody(sphereBody);
+
+    // Create a plane
+    var groundBody = new CANNON.Body({
+        mass: 0 // mass == 0 makes the body static
+    });
+    var groundShape = new CANNON.Plane();
+    groundBody.addShape(groundShape);
+    world.addBody(groundBody);
+*/
 }
 
 function initPhysics() {
-//    // Physics configuration
-//    collisionConfiguration = new Ammo.btSoftBodyRigidBodyCollisionConfiguration();
-//    dispatcher = new Ammo.btCollisionDispatcher( collisionConfiguration );
-//    broadphase = new Ammo.btDbvtBroadphase();
-//    solver = new Ammo.btSequentialImpulseConstraintSolver();
-//    softBodySolver = new Ammo.btDefaultSoftBodySolver();
-//    physicsWorld = new Ammo.btSoftRigidDynamicsWorld( dispatcher, broadphase, solver, collisionConfiguration, softBodySolver);
-//    physicsWorld.setGravity( new Ammo.btVector3( 0, -6, 0 ) );
-//    physicsWorld.getWorldInfo().set_m_gravity( new Ammo.btVector3( 0, -6, 0 ) );
+    //    // Physics configuration
+    //    collisionConfiguration = new Ammo.btSoftBodyRigidBodyCollisionConfiguration();
+    //    dispatcher = new Ammo.btCollisionDispatcher( collisionConfiguration );
+    //    broadphase = new Ammo.btDbvtBroadphase();
+    //    solver = new Ammo.btSequentialImpulseConstraintSolver();
+    //    softBodySolver = new Ammo.btDefaultSoftBodySolver();
+    //    physicsWorld = new Ammo.btSoftRigidDynamicsWorld( dispatcher, broadphase, solver, collisionConfiguration, softBodySolver);
+    //    physicsWorld.setGravity( new Ammo.btVector3( 0, -6, 0 ) );
+    //    physicsWorld.getWorldInfo().set_m_gravity( new Ammo.btVector3( 0, -6, 0 ) );
 }
 
 function resizeGL(canvas) {
@@ -138,11 +194,11 @@ function resizeGL(canvas) {
 }
 
 function paintGL(canvas) {
-    cube.rotation.x = canvas.xRotation * Math.PI / 180;
-    cube.rotation.y = canvas.yRotation * Math.PI / 180;
-    cube.rotation.z = canvas.zRotation * Math.PI / 180;
-    cube.scale.z = canvas.scale;
-    cube.scale.x = canvas.scale;
-    cube.scale.y = canvas.scale;
+    if(cube1){
+        cube1.rotation.set(canvas.xR1 * Math.PI / 180,canvas.yR1 * Math.PI / 180,canvas.zR1 * Math.PI / 180);
+    }
+    if(cube2){
+        cube2.rotation.set(canvas.xR2 * Math.PI / 180,canvas.yR2 * Math.PI / 180,canvas.zR2 * Math.PI / 180);
+    }
     renderer.render(scene, camera);
 }

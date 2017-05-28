@@ -41881,6 +41881,8 @@ THREE.glTFLoader.prototype.load = function( url, callback ) {
     };
 
     IndicesDelegate.prototype.convert = function(resource, ctx) {
+        console.log("ctx.indices.count",ctx.indices.count,resource);
+        console.trace()
         return new Uint16Array(resource, 0, ctx.indices.count);
     };
 
@@ -43484,7 +43486,7 @@ THREE.GLTFLoaderUtils = Object.create(Object, {
             function decodeDataUriText(isBase64, data) {
                 var result = decodeURIComponent(data);
                 if (isBase64) {
-                    return atob(result);
+                    return Qt.atob(result);
                 }
                 return result;
             }

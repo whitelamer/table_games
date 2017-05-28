@@ -4,14 +4,14 @@ import QtGraphicalEffects 1.0
 Row{
     property int p_ind: 6+index
     layoutDirection: Qt.RightToLeft
-    height: 97
+    height: 106
     width: 1438
     spacing: 2
     z:1
     Text{
         rotation: -90
         width: 50
-        height: 97
+        height: 106
         font.bold:true
         font.pointSize:24
         text:p_ind+1
@@ -26,8 +26,8 @@ Row{
         delegate:Item {
             property int pindex: p_ind
             id:delegateRoot
-            width: 97
-            height: 97
+            width: 106
+            height: 106
             //anchors.verticalCenter: parent.verticalCenter
             Image{
                 id:delegate_image
@@ -61,7 +61,7 @@ Row{
                         console.log("draging:"+main_form.drag_item)
                         var obj=main_form;
                         while(obj!=null){
-                            obj=obj.childAt(main_form.drag_item.x+48,main_form.drag_item.y+48);
+                            obj=obj.childAt(main_form.drag_item.x+(delegateRoot.width/2),main_form.drag_item.y+(delegateRoot.height/2));
                             console.log("child:"+obj)
                         }
                         global_area.hoverEnabled=true

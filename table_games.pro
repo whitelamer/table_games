@@ -1,9 +1,11 @@
 TEMPLATE = app
-
-QT += 3dcore 3drender 3dquick 3dlogic qml quick
+#3dcore 3drender 3dinput 3dquick
+QT += qml quick widgets
 CONFIG += c++11
+CONFIG+=qml_debug
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    window.cpp
 
 RESOURCES +=
 
@@ -33,9 +35,16 @@ DISTFILES += \
     imagecube.js \
     three.js \
     ImageCube.qml \
-    Index.qml \
     main.qml \
     calibration.sh \
     DropAreaDelegate.qml \
     DragFishkaDelegate.qml \
-    GameLogic.qml
+    GameLogic.qml \
+    main3d.qml \
+    cannon.js \
+    Index1x.qml \
+    Index2x.qml
+
+HEADERS += \
+    process.h \
+    window.h
