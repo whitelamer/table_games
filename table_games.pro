@@ -4,8 +4,7 @@ QT += qml quick widgets
 CONFIG += c++11
 CONFIG+=qml_debug
 
-SOURCES += main.cpp \
-    window.cpp
+SOURCES += main.cpp
 
 RESOURCES +=
 
@@ -40,11 +39,9 @@ DISTFILES += \
     DropAreaDelegate.qml \
     DragFishkaDelegate.qml \
     GameLogic.qml \
-    main3d.qml \
     cannon.js \
     Index1x.qml \
     Index2x.qml
 
 HEADERS += \
-    process.h \
-    window.h
+    process.h
