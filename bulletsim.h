@@ -18,6 +18,9 @@ class bulletSim : public QThread
 public:
     bulletSim();
     void run() Q_DECL_OVERRIDE;
+protected:
+    btDiscreteDynamicsWorld* dynamicsWorld;
+    btRigidBody* fallRigidBody;
 };
 
 #endif // BULLETSIM_H
