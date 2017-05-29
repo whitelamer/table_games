@@ -5,7 +5,7 @@
 #include <QQmlEngine>
 #include <QQmlComponent>
 #include "process.h"
-
+#include "bulletsim.h"
 //#include <Qt3DRender/QRenderAspect>
 //#include <Qt3DInput/QInputAspect>
 //#include <Qt3DQuick/QQmlAspectEngine>
@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+    bulletSim *b=new bulletSim();
     qmlRegisterType<Process>("Processlib", 1, 0, "Process");
     engine.load(QUrl(QStringLiteral("./main.qml")));
 

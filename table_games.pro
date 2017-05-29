@@ -1,10 +1,11 @@
 TEMPLATE = app
 #3dcore 3drender 3dinput 3dquick
 QT += qml quick widgets
-CONFIG += c++11
+CONFIG += c++11 link_pkgconfig
 CONFIG+=qml_debug
-
-SOURCES += main.cpp
+PKGCONFIG += bullet
+SOURCES += main.cpp \
+    bulletsim.cpp
 
 RESOURCES +=
 
@@ -41,7 +42,11 @@ DISTFILES += \
     GameLogic.qml \
     cannon.js \
     Index1x.qml \
-    Index2x.qml
+    Index2x.qml \
+    img/1b.png \
+    img/362.jpg \
+    CUB.json
 
 HEADERS += \
-    process.h
+    process.h \
+    bulletsim.h
