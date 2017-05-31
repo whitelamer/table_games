@@ -43,8 +43,6 @@ DISTFILES += \
     cannon.js \
     Index1x.qml \
     Index2x.qml \
-    img/1b.png \
-    img/362.jpg \
     CUB.json
 
 HEADERS += \

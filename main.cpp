@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     bulletSim *b=new bulletSim();
     qmlRegisterType<Process>("Processlib", 1, 0, "Process");
+    engine.rootContext()->setContextProperty("bullet", &b);
     engine.load(QUrl(QStringLiteral("./main.qml")));
 
     return app.exec();

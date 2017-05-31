@@ -43,17 +43,59 @@ bulletSim::bulletSim()
     dynamicsWorld->addRigidBody(fallRigidBody);
 
 
-    for (int i = 0; i < 300; i++) {
-            dynamicsWorld->stepSimulation(1 / 60.f, 10);
+//    for (int i = 0; i < 300; i++) {
+//            dynamicsWorld->stepSimulation(1 / 60.f, 10);
 
-            btTransform trans;
-            fallRigidBody->getMotionState()->getWorldTransform(trans);
+//            btTransform trans;
+//            fallRigidBody->getMotionState()->getWorldTransform(trans);
 
-            qDebug() << "sphere height: " << trans.getOrigin().getX() << trans.getOrigin().getY() << trans.getOrigin().getZ();
-    }
+//            qDebug() << "sphere height: " << trans.getOrigin().getX() << trans.getOrigin().getY() << trans.getOrigin().getZ();
+//    }
 }
 
 void bulletSim::run()
 {
+    runing = true;
+    while (true) {
+        if(runing){
+            dynamicsWorld->stepSimulation(1 / 60.f, 10);
+            btTransform trans;
+            fallRigidBody->getMotionState()->getWorldTransform(trans);
+            cube1pos = QVector3D(trans.getOrigin().getX(),trans.getOrigin().getY(),trans.getOrigin().getZ());
+            qDebug() << "sphere height: " << trans.getOrigin().getX() << trans.getOrigin().getY() << trans.getOrigin().getZ();
+            QThread::sleep(1);
+        }else{
+            QThread::sleep(300);
+        }
+    }
+}
 
+QVector3D bulletSim::getCube1pos() const
+{
+    return cube1pos;
+}
+
+QQuaternion bulletSim::getCube1quat() const
+{
+    return cube1quat;
+}
+
+QQuaternion bulletSim::getCube2quat() const
+{
+    return cube2quat;
+}
+
+QVector3D bulletSim::getCube2pos() const
+{
+    return cube2pos;
+}
+
+bool bulletSim::getRuning() const
+{
+    return runing;
+}
+
+void bulletSim::setRuning(bool value)
+{
+    runing = value;
 }
