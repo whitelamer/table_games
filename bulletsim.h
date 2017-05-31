@@ -20,11 +20,13 @@ class bulletSim : public QThread
 public:
     bulletSim();
     void run() Q_DECL_OVERRIDE;
-    QVector3D getCube1pos() const;
-    QQuaternion getCube1quat() const;
+    Q_PROPERTY(QVector3D cube1pos READ getCube1pos)
 
-    QQuaternion getCube2quat() const;
-    QVector3D getCube2pos() const;
+    Q_INVOKABLE QVector3D getCube1pos() const;
+    Q_INVOKABLE QQuaternion getCube1quat() const;
+
+    Q_INVOKABLE QQuaternion getCube2quat() const;
+    Q_INVOKABLE QVector3D getCube2pos() const;
 
     bool getRuning() const;
     void setRuning(bool value);

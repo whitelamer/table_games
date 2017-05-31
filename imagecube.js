@@ -116,6 +116,7 @@ function initializeGL(canvas) {
         cube2=cube1.clone();
         cube2.position.set(-0.35, 0, 0);
         scene.add( cube2 );
+        bullet.start();
     } );
 
 
@@ -195,6 +196,8 @@ function resizeGL(canvas) {
 
 function paintGL(canvas) {
     if(cube1){
+        var pos=bullet.getCube1pos();
+        cube1.position.set(pos.getX(),pos.getY(),pos.getZ());
         cube1.rotation.set(canvas.xR1 * Math.PI / 180,canvas.yR1 * Math.PI / 180,canvas.zR1 * Math.PI / 180);
     }
     if(cube2){
