@@ -52,7 +52,7 @@ bulletSim::bulletSim()
     btRigidBody::btRigidBodyConstructionInfo groundRigidBodyCI(0, groundMotionState, groundShape, localInertia);
 
     btRigidBody* groundRigidBody = new btRigidBody(groundRigidBodyCI);
-    groundRigidBody->setRestitution(.5);
+    groundRigidBody->setRestitution(.2);
     dynamicsWorld->addRigidBody(groundRigidBody);
 
 
@@ -80,32 +80,30 @@ bulletSim::bulletSim()
     double box_size=.35*scale;
     btBoxShape* fallShape = new btBoxShape(btVector3(box_size,box_size,box_size));
 
-    btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(.15*scale, 2.5*scale, 0)));
+    btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(.55*scale, 2.5*scale, 0)));
     btScalar mass = 50*scale;
     btVector3 fallInertia(0, 0, 0);
     fallShape->calculateLocalInertia(mass, fallInertia);
     btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
     fallRigidBody = new btRigidBody(fallRigidBodyCI);
-    fallRigidBody->setRestitution(0.5);
-    fallRigidBody->setFriction(1);
+    fallRigidBody->setRestitution(0.2);
+    fallRigidBody->setFriction(.5);
     fallRigidBody->setAngularVelocity(btVector3(0, 10, 30));
-    fallRigidBody->setLinearVelocity(btVector3(3*scale, 0, 1*scale));
-    fallRigidBody->setActivationState(DISABLE_DEACTIVATION);
+    fallRigidBody->setLinearVelocity(btVector3(-1*scale, 0, 2*scale));
     dynamicsWorld->addRigidBody(fallRigidBody);
 
 
     //btBoxShape* fallShape2 = new btBoxShape(btVector3(box_size,box_size,box_size));
 
-    btDefaultMotionState* fallMotionState2 = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(-.15*scale, 2.5*scale, 0)));
+    btDefaultMotionState* fallMotionState2 = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(-.55*scale, 2.5*scale, 0)));
     //btVector3 fallInertia2(0, 0, 0);
     //fallShape->calculateLocalInertia(mass, fallInertia2);
     btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI2(mass, fallMotionState2, fallShape, fallInertia);
     fallRigidBody2 = new btRigidBody(fallRigidBodyCI2);
-    fallRigidBody2->setRestitution(0.5);
-    fallRigidBody2->setFriction(1);
+    fallRigidBody2->setRestitution(0.2);
+    fallRigidBody2->setFriction(.5);
     fallRigidBody2->setAngularVelocity(btVector3(0, -20, 10));
-    fallRigidBody2->setLinearVelocity(btVector3(1*scale, 0, 1*scale));
-    fallRigidBody2->setActivationState(DISABLE_DEACTIVATION);
+    fallRigidBody2->setLinearVelocity(btVector3(1*scale, 0, 2*scale));
     dynamicsWorld->addRigidBody(fallRigidBody2);
 
 //    for (int i = 0; i < 300; i++) {
