@@ -33,6 +33,8 @@ Window {
 
             if(output.length==0&&p_state<2){
                 console.log("Calibration falid at state:"+p_state)
+                heigth=2160;
+                mainIndex.source="Index1x.qml"
                 return;
             }
             if(p_state==0){

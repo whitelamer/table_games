@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtCanvas3D 1.0
-
+import BulletSim 1.0
 import "imagecube.js" as GLCode
 
 Canvas3D {
@@ -19,6 +19,9 @@ Canvas3D {
     property alias xR2: dice2.xRotation
     property alias yR2: dice2.yRotation
     property alias zR2: dice2.zRotation
+    BulletSim{
+        id:bullet
+    }
     Item{
         id:dice1
         property real xRotation: 0

@@ -108,10 +108,13 @@ function initializeGL(canvas) {
         geometry.computeVertexNormals();
         var bufferGeometry = new THREE.BufferGeometry();
         bufferGeometry.fromGeometry(geometry);
+        bufferGeometry.computeBoundingBox();
+        console.log(bufferGeometry.boundingBox.min.x,bufferGeometry.boundingBox.max.x);
         var mater = [];
         cube1 = new THREE.Mesh( bufferGeometry, new THREE.MeshFaceMaterial(materials));
-        cube1.scale.set(2.5, 2.5, 2.5);
+        cube1.scale.set(1.5, 1.5, 1.5);
         cube1.position.set(0.35, 0, 0);
+
         scene.add( cube1 );
         cube2=cube1.clone();
         cube2.position.set(-0.35, 0, 0);
@@ -197,11 +200,21 @@ function resizeGL(canvas) {
 function paintGL(canvas) {
     if(cube1){
         var pos=bullet.getCube1pos();
-        cube1.position.set(pos.getX(),pos.getY(),pos.getZ());
-        cube1.rotation.set(canvas.xR1 * Math.PI / 180,canvas.yR1 * Math.PI / 180,canvas.zR1 * Math.PI / 180);
+        //var rot=bullet.getCube1quat();
+        var rot=bullet.getCube1rot();
+        console.log(pos,rot);
+        cube1.position.set(pos.x,pos.y,pos.z);
+        //cube1.quaternion.set(rot.x,rot.y,rot.z,rot.w)
+        cube1.rotation.set(rot.x,rot.y,rot.z);
     }
     if(cube2){
-        cube2.rotation.set(canvas.xR2 * Math.PI / 180,canvas.yR2 * Math.PI / 180,canvas.zR2 * Math.PI / 180);
+        var pos=bullet.getCube2pos();
+        //var rot=bullet.getCube1quat();
+        var rot=bullet.getCube2rot();
+        cube2.position.set(pos.x,pos.y,pos.z);
+        //cube1.quaternion.set(rot.x,rot.y,rot.z,rot.w)
+        cube2.rotation.set(rot.x,rot.y,rot.z);
+        //cube2.rotation.set(canvas.xR2 * Math.PI / 180,canvas.yR2 * Math.PI / 180,canvas.zR2 * Math.PI / 180);
     }
     renderer.render(scene, camera);
 }

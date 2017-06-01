@@ -16,7 +16,7 @@ Item {
         height: (1080/1920)*1080
         rotation: 90
         fillMode: Image.PreserveAspectFit
-        source:"/home/user/table_games/img/fon_1_B.png"
+        source:"./img/fon_1_B.png"
     }
 
     Image {
@@ -26,8 +26,15 @@ Item {
         width: 1080
         height: (1080/1920)*1080
         rotation: -90
-        source: "/home/user/table_games/img/fon_1_B.png"
+        source:"./img/fon_1_B.png"
         fillMode: Image.PreserveAspectFit
+    }
+    ImageCube {
+        id: imageCube
+        width: 502
+        height: 959
+        anchors.centerIn: gameLogic.now_player==1?background:background2
+        visible: true
     }
     anchors.fill: parent
     property alias gamestate: gameLogic.state

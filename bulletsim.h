@@ -31,14 +31,22 @@ public:
     bool getRuning() const;
     void setRuning(bool value);
 
+    Q_INVOKABLE QVector3D getCube1rot() const;
+
+    Q_INVOKABLE QVector3D getCube2rot() const;
+
 protected:
     bool runing;
     btDiscreteDynamicsWorld* dynamicsWorld;
     btRigidBody* fallRigidBody;
+    btRigidBody* fallRigidBody2;
     QQuaternion cube1quat;
     QVector3D cube1pos;
+    QVector3D cube1rot;
     QQuaternion cube2quat;
     QVector3D cube2pos;
+    QVector3D cube2rot;
+
     /*
 QQuaternion -> quaternion
 QVector2D, QVector3D, QVector4D ->
