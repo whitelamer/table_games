@@ -7,6 +7,8 @@
 
 #include "LinearMath/btVector3.h"
 #include "LinearMath/btAlignedObjectArray.h"
+#include "BulletSoftBody/btSoftBodyRigidBodyCollisionConfiguration.h"
+#include "BulletSoftBody/btSoftRigidDynamicsWorld.h"
 
 //#include "../CommonInterfaces/CommonRigidBodyBase.h"
 #include <QObject>
@@ -46,6 +48,7 @@ protected:
     QQuaternion cube2quat;
     QVector3D cube2pos;
     QVector3D cube2rot;
+    double scale;
 
     /*
 QQuaternion -> quaternion
