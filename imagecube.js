@@ -27,15 +27,17 @@ function initializeGL(canvas) {
             var aspect = Math.min(cw / w, ch / h);
             var scale = Math.sqrt(w * w + h * h) / 13;
     //camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0.1, 1000 );
-    //camera = new THREE.OrthographicCamera( canvas.width / - 2, canvas.width / 2, canvas.height / 2, canvas.height / - 2, 1, 1000 );
+    camera = new THREE.OrthographicCamera(  -1.8, 1.8, 3.45, -3.45, 1, 100 );
     var wh = ch / aspect / Math.tan(10 * Math.PI / 180);
-    camera = new THREE.PerspectiveCamera(75, cw / ch, 0.1, wh * 1.3);
+    //camera = new THREE.PerspectiveCamera(90, 16/9, 0.1, wh * 1.3);
 
 
     camera.position.z = 0;
     camera.position.y = 5;
     camera.position.x = 0;
+    //camera.rotation.set(Math.PI/2.0,0,0);
     camera.lookAt(new THREE.Vector3(0,0,0));
+
 
     scene = new THREE.Scene();
     //scene = new Physijs.Scene({ fixedTimeStep: 1 / 120 });
@@ -124,14 +126,15 @@ function initializeGL(canvas) {
 
         scene.add( cube1 );
         cube2=cube1.clone();
+        cube2.castShadow=true;
         cube2.position.set(-0.35, 0, 0);
         scene.add( cube2 );
         bullet.start();
     } );
 
-    var desk = new THREE.Mesh(new THREE.PlaneGeometry(2, 2, 1, 1), new THREE.MeshPhongMaterial({ color: 0xdfdfdf }));
-    desk.position.set(0, 0, 0);
-    desk.rotation.set(45,0,90);
+    var desk = new THREE.Mesh(new THREE.BoxGeometry(6.8, .1, 3.5), new THREE.MeshPhongMaterial({ color: 0xdfdfdf }));
+    desk.position.set(0, .05, 0);
+    desk.rotation.set(0,0,0);
     desk.receiveShadow = true;
     scene.add(desk);
     //camera.lookAt(cube.position);
@@ -142,9 +145,10 @@ function initializeGL(canvas) {
     var directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
 
     directionalLight.position.y = 7.0;
-    directionalLight.position.z = 2.5;
+    directionalLight.position.z = 4.5;
     directionalLight.position.x = 2.5;
     directionalLight.position.normalize();
+    directionalLight.castShadow = true;
     scene.add(directionalLight);
     /*    camera = new THREE.PerspectiveCamera(75, canvas.width / canvas.height, 0.1, 1000);
     camera.position.z = 1.5;
@@ -213,9 +217,9 @@ function paintGL(canvas) {
         var pos=bullet.getCube1pos();
         var quat=bullet.getCube1quat();
         var rot=bullet.getCube1rot();
-        //console.log(pos,quat,rot);
+        console.log(pos,quat,rot);
         cube1.position.set(pos.x,pos.y,pos.z);
-        //cube1.quaternion.set(quat.x,quat.y,quat.z,quat.w)
+        //cube1.setRotationFromQuaternion(new THREE.Quaternion(quat.x,quat.y,quat.z,quat.w));
         cube1.rotation.set(rot.x,rot.y,rot.z);
 
     }
@@ -223,7 +227,9 @@ function paintGL(canvas) {
         var pos=bullet.getCube2pos();
         var quat=bullet.getCube2quat();
         var rot=bullet.getCube2rot();
+        console.log(pos,quat,rot);
         cube2.position.set(pos.x,pos.y,pos.z);
+        //cube2.setRotationFromQuaternion(new THREE.Quaternion(quat.x,quat.y,quat.z,quat.w));
         //cube2.quaternion.set(quat.x,quat.y,quat.z,quat.w)
         cube2.rotation.set(rot.x,rot.y,rot.z);
         //cube2.rotation.set(canvas.xR2 * Math.PI / 180,canvas.yR2 * Math.PI / 180,canvas.zR2 * Math.PI / 180);

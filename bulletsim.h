@@ -40,6 +40,7 @@ public:
 protected:
     bool runing;
     btDiscreteDynamicsWorld* dynamicsWorld;
+    btRigidBody* groundRigidBody;
     btRigidBody* fallRigidBody;
     btRigidBody* fallRigidBody2;
     QQuaternion cube1quat;
