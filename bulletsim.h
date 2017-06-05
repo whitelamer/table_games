@@ -14,6 +14,7 @@
 #include <QObject>
 #include <QThread>
 #include <QVector3D>
+#include <QMatrix4x4>
 #include <QQuaternion>
 
 class bulletSim : public QThread
@@ -36,16 +37,24 @@ public:
     Q_INVOKABLE QVector3D getCube1rot() const;
 
     Q_INVOKABLE QVector3D getCube2rot() const;
+    void applyForceInDirection(btRigidBody*obj,QVector3D dir);
+
+    Q_INVOKABLE QMatrix4x4 getCube2trans() const;
+
+    Q_INVOKABLE QMatrix4x4 getCube1trans() const;
 
 protected:
+    void setupWalls();
     bool runing;
     btDiscreteDynamicsWorld* dynamicsWorld;
     btRigidBody* groundRigidBody;
     btRigidBody* fallRigidBody;
     btRigidBody* fallRigidBody2;
+    QMatrix4x4 cube1trans;
     QQuaternion cube1quat;
     QVector3D cube1pos;
     QVector3D cube1rot;
+    QMatrix4x4 cube2trans;
     QQuaternion cube2quat;
     QVector3D cube2pos;
     QVector3D cube2rot;

@@ -32,18 +32,18 @@ bulletSim::bulletSim()
     btDefaultCollisionConfiguration* collisionConfiguration = new btDefaultCollisionConfiguration();
     btCollisionDispatcher* dispatcher = new btCollisionDispatcher(collisionConfiguration);
 
-    btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
+    //btGImpactCollisionAlgorithm::registerAlgorithm(dispatcher);
 
     btSequentialImpulseConstraintSolver* solver = new btSequentialImpulseConstraintSolver;
 
     dynamicsWorld = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfiguration);
-    scale=500;
-    dynamicsWorld->setGravity(btVector3(0, -9.8*scale, 0));
+    scale=1.0;
+    dynamicsWorld->setGravity(btVector3(0, -18.8*scale, 0));
 
 
+    setupWalls();
 
-
-    btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+    /*btCollisionShape* groundShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
     //btCollisionShape* groundShape = new btBoxShape(btVector3(btScalar(2.),btScalar(3.),btScalar(50.)));
     btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
     btVector3 localInertia(0,0,0);
@@ -84,7 +84,7 @@ bulletSim::bulletSim()
     groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(-3.35*scale, 0, 0)));
     groundRigidBody = new btRigidBody(btRigidBody::btRigidBodyConstructionInfo(0, groundMotionState, borderShape, btVector3(0, 0, 0)));
     groundRigidBody->setRestitution(1);
-    dynamicsWorld->addRigidBody(groundRigidBody);
+    dynamicsWorld->addRigidBody(groundRigidBody);*/
 
 
     /*groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(1, 0, 0, -M_PI/2.0), btVector3(0, 0, -1*scale)));
@@ -103,38 +103,49 @@ bulletSim::bulletSim()
     dynamicsWorld->addRigidBody(groundRigidBody);*/
 
 
-    double box_size=.25*scale;
+    double box_size=.35*scale;
     btBoxShape* fallShape = new btBoxShape(btVector3(box_size,box_size,box_size));
 
     btDefaultMotionState* fallMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(.55*scale, 2.5*scale, 0)));
-    btScalar mass = 50*scale;
+    btScalar mass = 1*scale;
     btVector3 fallInertia(0, 0, 0);
     fallShape->calculateLocalInertia(mass, fallInertia);
     btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI(mass, fallMotionState, fallShape, fallInertia);
+    fallRigidBodyCI.m_restitution = 0.0;
+    fallRigidBodyCI.m_friction=0.5;
     fallRigidBody = new btRigidBody(fallRigidBodyCI);
-    fallRigidBody->setRestitution(.1);
-    fallRigidBody->setFriction(.5);
-    fallRigidBody->setAngularVelocity(btVector3(0, 5, 10));
-    fallRigidBody->setLinearVelocity(btVector3(10*scale, 0, 5*scale));
+    //fallRigidBody->setRestitution(.1);
+    //fallRigidBody->setFriction(.5);
+    fallRigidBody->setLinearFactor(btVector3(1,1,1));
+    fallRigidBody->setAngularFactor(btVector3(1,1,1));
+
+    fallRigidBody->setAngularVelocity(btVector3(0, 25, 10));
+    //fallRigidBody->setLinearVelocity(btVector3(10*scale, 0, 5*scale));
     dynamicsWorld->addRigidBody(fallRigidBody);
 
+    //applyForceInDirection(fallRigidBody,QVector3D(200.5,0,100));
 
     btBoxShape* fallShape2 = new btBoxShape(btVector3(box_size,box_size,box_size));
-
     btDefaultMotionState* fallMotionState2 = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(-.55*scale, 2.5*scale, 0)));
-    //btVector3 fallInertia2(0, 0, 0);
-    //fallShape->calculateLocalInertia(mass, fallInertia2);
+    btVector3 fallInertia2(0, 0, 0);
+    fallShape2->calculateLocalInertia(mass, fallInertia2);
     btRigidBody::btRigidBodyConstructionInfo fallRigidBodyCI2(mass, fallMotionState2, fallShape2, fallInertia);
+    //fallRigidBodyCI2.m_restitution = 0.0;
+    //fallRigidBodyCI2.m_friction=0.5;
     fallRigidBody2 = new btRigidBody(fallRigidBodyCI2);
-    fallRigidBody2->setRestitution(.3);
+    //fallRigidBody2->setRestitution(.3);
     //fallRigidBody2->setFriction(.5);
-    fallRigidBody2->setDamping(0.9,0.3);
+    //fallRigidBody2->setDamping(0.9,0.3);
     //diceRigidBody->setLinearFactor(btVector3(1,1,1));
+    //fallRigidBody2->setAngularFactor(btVector3(1,1,1));
+    fallRigidBody2->setLinearFactor(btVector3(1,1,1));
     fallRigidBody2->setAngularFactor(btVector3(1,1,1));
 
-    fallRigidBody2->setAngularVelocity(btVector3(0, -10, 5));
-    fallRigidBody2->setLinearVelocity(btVector3(-10*scale, 0, -5*scale));
+    fallRigidBody2->setAngularVelocity(btVector3(0, -25, 25));
+    //fallRigidBody2->setLinearVelocity(btVector3(-1*scale, 0, -5*scale));
     dynamicsWorld->addRigidBody(fallRigidBody2);
+
+    //applyForceInDirection(fallRigidBody2,QVector3D(-200.5,0,-100));
 
 //    for (int i = 0; i < 300; i++) {
 //            dynamicsWorld->stepSimulation(1 / 60.f, 10);
@@ -145,6 +156,56 @@ bulletSim::bulletSim()
 //            qDebug() << "sphere height: " << trans.getOrigin().getX() << trans.getOrigin().getY() << trans.getOrigin().getZ();
 //    }
 }
+void bulletSim::setupWalls(){
+
+        btCollisionShape* borderShape = new btStaticPlaneShape(btVector3(0, 1, 0), 1);
+        btDefaultMotionState* groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0)));
+        btRigidBody::btRigidBodyConstructionInfo wallRigidBodyCI(0, groundMotionState, borderShape, btVector3(0, 0, 0));
+        wallRigidBodyCI.m_restitution = 0.0;
+        groundRigidBody = new btRigidBody(wallRigidBodyCI);
+        dynamicsWorld->addRigidBody(groundRigidBody);
+
+
+        /*borderShape= new btStaticPlaneShape(btVector3(0, 0, -1), 1);
+        groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 1.7*scale)));
+        btRigidBody::btRigidBodyConstructionInfo wallRigidBodyCIN(0, groundMotionState, borderShape, btVector3(0, 0, 0));
+        wallRigidBodyCIN.m_restitution = 0.3;
+        groundRigidBody = new btRigidBody(wallRigidBodyCIN);
+        dynamicsWorld->addRigidBody(groundRigidBody);*/
+
+//        borderShape= new btStaticPlaneShape(btVector3(0, 0, 1), 1);
+//        groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 1.7*scale)));
+//        btRigidBody::btRigidBodyConstructionInfo wallRigidBodyCIS(0, groundMotionState, borderShape, btVector3(0, 0, 0));
+//        wallRigidBodyCIS.m_restitution = 0.0;
+//        groundRigidBody = new btRigidBody(wallRigidBodyCIS);
+//        dynamicsWorld->addRigidBody(groundRigidBody);
+
+
+        /*borderShape= new btStaticPlaneShape(btVector3(-1, 0, 0), 1);
+        groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(3.35*scale, 0, 0)));
+        btRigidBody::btRigidBodyConstructionInfo wallRigidBodyCIE(0, groundMotionState, borderShape, btVector3(0, 0, 0));
+        wallRigidBodyCIE.m_restitution = 0.3;
+        groundRigidBody = new btRigidBody(wallRigidBodyCIE);
+        dynamicsWorld->addRigidBody(groundRigidBody);*/
+
+//        borderShape= new btStaticPlaneShape(btVector3(1, 0, 0), 1);
+//        groundMotionState = new btDefaultMotionState(btTransform(btQuaternion(0, 0, 0, 1), btVector3(3.35*scale, 0, 0)));
+//        btRigidBody::btRigidBodyConstructionInfo wallRigidBodyCIW(0, groundMotionState, borderShape, btVector3(0, 0, 0));
+//        wallRigidBodyCIW.m_restitution = 0.0;
+//        groundRigidBody = new btRigidBody(wallRigidBodyCIW);
+//        dynamicsWorld->addRigidBody(groundRigidBody);
+}
+
+QMatrix4x4 bulletSim::getCube1trans() const
+{
+    return cube1trans;
+}
+
+QMatrix4x4 bulletSim::getCube2trans() const
+{
+    return cube2trans;
+}
+
 /*
  * - (void) setupPhysics {
 
@@ -220,6 +281,16 @@ bulletSim::bulletSim()
     diceRigidBody->applyTorque(t);
 
 }*/
+void bulletSim::applyForceInDirection(btRigidBody*obj,QVector3D dir)
+{
+    btVector3 v = btVector3(dir.x()/3, dir.y()/3, dir.z()/3);
+    obj->applyForce(v, btVector3(0, 0, 0));
+    btVector3 t = v.cross(btVector3(0, 0, -1));
+    t.normalized();
+    t *= .65f;
+    obj->applyTorque(t);
+}
+
 void bulletSim::run()
 {
     runing = true;
@@ -227,9 +298,13 @@ void bulletSim::run()
     int i=0;
     while (true) {
         if(runing){
-            dynamicsWorld->stepSimulation(1 / 60.f, 10);
+            dynamicsWorld->stepSimulation(1 / 60.f, 100);
             btTransform trans;
             fallRigidBody->getMotionState()->getWorldTransform(trans);
+            btScalar t[16];
+            trans.getOpenGLMatrix((btScalar*)&t);
+            cube1trans = QMatrix4x4((float*)&t);
+
             cube1pos = QVector3D(trans.getOrigin().getX(),trans.getOrigin().getY(),trans.getOrigin().getZ())/scale;
             cube1quat = QQuaternion(trans.getRotation().getW(),trans.getRotation().getX(),trans.getRotation().getY(),trans.getRotation().getZ());
             trans.getRotation().getEulerZYX((btScalar&)x,(btScalar&)y,(btScalar&)z);
@@ -237,6 +312,7 @@ void bulletSim::run()
 
 
             fallRigidBody2->getMotionState()->getWorldTransform(trans);
+
             cube2pos = QVector3D(trans.getOrigin().getX(),trans.getOrigin().getY(),trans.getOrigin().getZ())/scale;
             cube2quat = QQuaternion(trans.getRotation().getW(),trans.getRotation().getX(),trans.getRotation().getY(),trans.getRotation().getZ());
             trans.getRotation().getEulerZYX((btScalar&)x,(btScalar&)y,(btScalar&)z);
@@ -257,7 +333,7 @@ void bulletSim::run()
                 fallRigidBody2->setLinearVelocity(btVector3(3*scale, 0, 1*scale));
                 qDebug()<<"Reset state";
             }
-            QThread::msleep(330);
+            QThread::msleep(33);
         }else{
             QThread::msleep(300);
         }

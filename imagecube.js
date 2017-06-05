@@ -27,15 +27,16 @@ function initializeGL(canvas) {
             var aspect = Math.min(cw / w, ch / h);
             var scale = Math.sqrt(w * w + h * h) / 13;
     //camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 0.1, 1000 );
-    camera = new THREE.OrthographicCamera(  -1.8, 1.8, 3.45, -3.45, 1, 100 );
+    //camera = new THREE.OrthographicCamera(  -1.8, 1.8, 3.45, -3.45, 1, 100 );
+    camera = new THREE.OrthographicCamera( 3.45, -3.45, -1.8, 1.8, .1, 1000 );
     var wh = ch / aspect / Math.tan(10 * Math.PI / 180);
-    //camera = new THREE.PerspectiveCamera(90, 16/9, 0.1, wh * 1.3);
+    camera = new THREE.PerspectiveCamera(90, 16/9, 0.1, wh * 1.3);
 
 
-    camera.position.z = 0;
+    camera.position.z = 5;
     camera.position.y = 5;
     camera.position.x = 0;
-    //camera.rotation.set(Math.PI/2.0,0,0);
+    //camera.rotation.set(Math.PI/2.0,0.5,0.5);
     camera.lookAt(new THREE.Vector3(0,0,0));
 
 
@@ -123,7 +124,7 @@ function initializeGL(canvas) {
         cube1.castShadow=true;
         cube1.scale.set(2.0, 2.0, 2.0);
         cube1.position.set(0.35, 0, 0);
-
+        //cube1.matrixAutoUpdate=true;
         scene.add( cube1 );
         cube2=cube1.clone();
         cube2.castShadow=true;
@@ -165,8 +166,11 @@ function initializeGL(canvas) {
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.setPixelRatio(canvas.devicePixelRatio);
     renderer.setClearColor( 0x000000, 0 );
-    renderer.setSize(canvas.width, canvas.height);
+    //renderer.setSize(canvas.height, canvas.width);
 
+    renderer.setSize(canvas.width, canvas.height);
+    if(canvas.width>canvas.height)
+        camera.rotation.z=+.001;
 
     /*var world = new CANNON.World();
     world.gravity.set(0, 0, -9.82); // m/s²
@@ -217,22 +221,34 @@ function paintGL(canvas) {
         var pos=bullet.getCube1pos();
         var quat=bullet.getCube1quat();
         var rot=bullet.getCube1rot();
-        console.log(pos,quat,rot);
-        cube1.position.set(pos.x,pos.y,pos.z);
+        var tmat=bullet.getCube1trans();
+        var ttmat = new THREE.Matrix4();
+        console.log("cube1",tmat);
+        ttmat.set(tmat[0],tmat[1],tmat[2],tmat[3],tmat[4],tmat[5],tmat[6],tmat[7],tmat[8],tmat[9],tmat[10],tmat[11],tmat[12],tmat[13],tmat[14],tmat[15]);
+        ttmat.decompose(cube1.position, cube1.quaternion, cube1.scale);
+        //cube1.position.setFromMatrixPosition(ttmat);
+        //console.log("cube1",pos,quat,rot);
+        //cube1.position.set(pos.x,pos.y,pos.z);
         //cube1.setRotationFromQuaternion(new THREE.Quaternion(quat.x,quat.y,quat.z,quat.w));
-        cube1.rotation.set(rot.x,rot.y,rot.z);
-
+        //cube1.rotation.set(rot.x,rot.y,rot.z);
+        //cube1.updateMatrixWorld(true);
+        //cube1.modelViewMatrix.set(tmat);
+        //cube1.matrixWorld.set(tmat);
+        //cube1.updateMatrixWorld(true);
+        //cube1.applyMatrix(new THREE.Matrix4().set(tmat));
+        console.log("cube1",cube1.position.x,cube1.position.y,cube1.position.z,cube1.rotation);
     }
     if(cube2){
         var pos=bullet.getCube2pos();
         var quat=bullet.getCube2quat();
         var rot=bullet.getCube2rot();
-        console.log(pos,quat,rot);
+        //console.log("cube2",pos,quat,rot);
         cube2.position.set(pos.x,pos.y,pos.z);
         //cube2.setRotationFromQuaternion(new THREE.Quaternion(quat.x,quat.y,quat.z,quat.w));
         //cube2.quaternion.set(quat.x,quat.y,quat.z,quat.w)
         cube2.rotation.set(rot.x,rot.y,rot.z);
         //cube2.rotation.set(canvas.xR2 * Math.PI / 180,canvas.yR2 * Math.PI / 180,canvas.zR2 * Math.PI / 180);
     }
+
     renderer.render(scene, camera);
 }

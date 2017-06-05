@@ -4740,7 +4740,7 @@ THREE.Matrix4.prototype = {
 	constructor: THREE.Matrix4,
 
 	set: function ( n11, n12, n13, n14, n21, n22, n23, n24, n31, n32, n33, n34, n41, n42, n43, n44 ) {
-
+        console.log("set",n11,n12,n13)
 		var te = this.elements;
 
 		te[ 0 ] = n11; te[ 4 ] = n12; te[ 8 ] = n13; te[ 12 ] = n14;
@@ -5074,7 +5074,7 @@ THREE.Matrix4.prototype = {
 
 	multiplyMatrices: function ( a, b ) {
 
-		var ae = a.elements;
+        var ae = a.elements;
 		var be = b.elements;
 		var te = this.elements;
 
@@ -8350,8 +8350,8 @@ THREE.Object3D.prototype = {
 
 	applyMatrix: function ( matrix ) {
 
-		this.matrix.multiplyMatrices( matrix, this.matrix );
-
+        this.matrix.multiplyMatrices( matrix, this.matrix );
+        //this.matrix=matrix;
 		this.matrix.decompose( this.position, this.quaternion, this.scale );
 
 	},
