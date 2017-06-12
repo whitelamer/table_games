@@ -10,30 +10,16 @@ Item {
 
     Image {
         id: background
-        x: -236
-        y: 236
-        width: 1080
-        height: (1080/1920)*1080
-        rotation: 90
+        width: 1280
+        height: 1024
         fillMode: Image.PreserveAspectFit
-        source:"./img/fon_1_B.png"
-    }
-
-    Image {
-        id: background2
-        x: 371
-        y: 236
-        width: 1080
-        height: (1080/1920)*1080
-        rotation: -90
-        source:"./img/fon_1_B.png"
-        fillMode: Image.PreserveAspectFit
+        source:"./img/fone1280x1024.jpg"
     }
     ImageCube {
         id: imageCube
         width: 502
         height: 959
-        anchors.centerIn: gameLogic.now_player==1?background:background2
+        anchors.centerIn: background
         visible: true
     }
     anchors.fill: parent
