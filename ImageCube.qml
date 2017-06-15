@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtCanvas3D 1.0
 import BulletSim 1.0
 import "imagecube.js" as GLCode
-
+//import "cannon.js" as Cannon
 Canvas3D {
     id: cube
     state: "image1"

@@ -13,7 +13,7 @@ Item {
         width: 1280
         height: 1024
         fillMode: Image.PreserveAspectFit
-        source:"./img/fone1280x1024.jpg"
+        source:"./img/fone1280x1024.png"
     }
     ImageCube {
         id: imageCube

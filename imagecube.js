@@ -1,5 +1,6 @@
 Qt.include("three.js")
-//Qt.include("cannon.js")
+//Qt.include("ammo.js")
+Qt.include("cannon.js")
 
 var camera, scene, renderer;
 var cube1,cube2;
@@ -15,6 +16,9 @@ var rigidBodies = [];
 var margin = 0.05;
 var hinge;
 var rope;
+var world;
+var sphere;
+var body;
 //var transformAux1 = new Ammo.btTransform();
 var time = 0;
 var armMovement = 0;
@@ -192,6 +196,14 @@ function initializeGL(canvas) {
     groundBody.addShape(groundShape);
     world.addBody(groundBody);
 */
+    debug(CANNON,2);
+    console.log("dfdasdas");
+    //debug(_dereq_('../utils/EventTarget'),2);
+
+    var cworld = new CANNON.World();
+    listProperty(cworld,1);
+    cworld.gravity.set(0,-9.8,0);
+
 }
 
 function initPhysics() {
@@ -217,18 +229,18 @@ function resizeGL(canvas) {
 }
 
 function paintGL(canvas) {
+    var timeStep   = 1/180;
     if(cube1){
         var pos=bullet.getCube1pos();
         var quat=bullet.getCube1quat();
         var rot=bullet.getCube1rot();
         var tmat=bullet.getCube1trans();
         var ttmat = new THREE.Matrix4();
-        console.log("cube1",tmat);
-        ttmat.set(tmat[0],tmat[1],tmat[2],tmat[3],tmat[4],tmat[5],tmat[6],tmat[7],tmat[8],tmat[9],tmat[10],tmat[11],tmat[12],tmat[13],tmat[14],tmat[15]);
-        ttmat.decompose(cube1.position, cube1.quaternion, cube1.scale);
+        //console.log("cube1",tmat);
+        //ttmat.set(tmat[0],tmat[1],tmat[2],tmat[3],tmat[4],tmat[5],tmat[6],tmat[7],tmat[8],tmat[9],tmat[10],tmat[11],tmat[12],tmat[13],tmat[14],tmat[15]);
+        //ttmat.decompose(cube1.position, cube1.quaternion, cube1.scale);
         //cube1.position.setFromMatrixPosition(ttmat);
         //console.log("cube1",pos,quat,rot);
-        //cube1.position.set(pos.x,pos.y,pos.z);
         //cube1.setRotationFromQuaternion(new THREE.Quaternion(quat.x,quat.y,quat.z,quat.w));
         //cube1.rotation.set(rot.x,rot.y,rot.z);
         //cube1.updateMatrixWorld(true);
@@ -236,17 +248,17 @@ function paintGL(canvas) {
         //cube1.matrixWorld.set(tmat);
         //cube1.updateMatrixWorld(true);
         //cube1.applyMatrix(new THREE.Matrix4().set(tmat));
-        console.log("cube1",cube1.position.x,cube1.position.y,cube1.position.z,cube1.rotation);
+        //console.log("cube1",cube1.position.x,cube1.position.y,cube1.position.z,cube1.rotation);
     }
     if(cube2){
         var pos=bullet.getCube2pos();
         var quat=bullet.getCube2quat();
         var rot=bullet.getCube2rot();
         //console.log("cube2",pos,quat,rot);
-        cube2.position.set(pos.x,pos.y,pos.z);
+        //cube2.position.set(pos.x,pos.y,pos.z);
         //cube2.setRotationFromQuaternion(new THREE.Quaternion(quat.x,quat.y,quat.z,quat.w));
         //cube2.quaternion.set(quat.x,quat.y,quat.z,quat.w)
-        cube2.rotation.set(rot.x,rot.y,rot.z);
+        //cube2.rotation.set(rot.x,rot.y,rot.z);
         //cube2.rotation.set(canvas.xR2 * Math.PI / 180,canvas.yR2 * Math.PI / 180,canvas.zR2 * Math.PI / 180);
     }
 

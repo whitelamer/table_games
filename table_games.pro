@@ -43,7 +43,9 @@ DISTFILES += \
     cannon.js \
     Index1x.qml \
     Index2x.qml \
-    CUB.json
+    CUB.json \
+    ammo.js \
+    physics.js
 
 HEADERS += \
     process.h \
