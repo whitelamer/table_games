@@ -159,11 +159,12 @@ Canvas3D {
             if(showdrop)return;
             if(!drop_start)return;
             var vector = { x: mouseX - drop_start.x, y: mouseY - drop_start.y };
+            var vector_start = { x: drop_start.x/width, y: drop_start.y/height };
             drop_start = null;
             var dist = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
             vector.x /= dist; vector.y /= dist;
             console.log("vector",vector.x,vector.y);
-            GLCode.dropDice(vector);
+            GLCode.dropDice(vector,vector_start);
         }
     }
 

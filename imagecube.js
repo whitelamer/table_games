@@ -193,7 +193,7 @@ function initializeGL(canvas) {
 
     //////////////////////////////////////////////////////////////////WORLD
     world = new CANNON.World();
-    world.gravity.set(0,0,-9.82);
+    world.gravity.set(0,0,-18.82);
     world.broadphase = new CANNON.NaiveBroadphase();
     world.solver.iterations = 16;
 
@@ -231,12 +231,12 @@ function initializeGL(canvas) {
 
     barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
     barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -Math.PI / 2);
-    barrier.position.set(3.45, 0, 0);
+    barrier.position.set(3.42, 0, 0);
     world.addBody(barrier);
 
     barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
     barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 2);
-    barrier.position.set(-3.45, 0, 0);
+    barrier.position.set(-3.42, 0, 0);
     world.addBody(barrier);
     //    var groundBody = new CANNON.Body({
     //                                         mass: 0 // mass == 0 makes the body static
@@ -272,7 +272,7 @@ function initializeGL(canvas) {
     //body2.angularVelocity.set(1,5,10);
     body2.angularDamping = 0.5;
     world.addBody(body2);
-    dropDice();
+    //dropDice();
 }
 
 function initPhysics() {
@@ -286,14 +286,17 @@ function initPhysics() {
     //    physicsWorld.setGravity( new Ammo.btVector3( 0, -6, 0 ) );
     //    physicsWorld.getWorldInfo().set_m_gravity( new Ammo.btVector3( 0, -6, 0 ) );
 }
-function dropDice(vector){
-    body1.position= new CANNON.Vec3(0.35, 0, 2.0);
-    body2.position= new CANNON.Vec3(-0.35, 0, 2.0);
+function dropDice(vector,vector_start){
+//    body1.position= new CANNON.Vec3(0.35, 0, 2.0);
+//    body2.position= new CANNON.Vec3(-0.35, 0, 2.0);
+
+    body1.position= new CANNON.Vec3((vector_start.y*3.42)*2-3.42+0.35, vector_start.x*1.8*2-1.8, 4.0);
+    body2.position= new CANNON.Vec3((vector_start.y*3.42)*2-3.42-0.35, vector_start.x*1.8*2-1.8, 4.0);
 
     body1.velocity=new CANNON.Vec3(vector.y*5, vector.x*5, 0);
     body2.velocity=new CANNON.Vec3(vector.y*5, vector.x*5, 0);
-    body1.angularVelocity.set(Math.floor(Math.random()*20),Math.floor(Math.random()*6),Math.floor(Math.random()*15));
-    body2.angularVelocity.set(Math.floor(Math.random()*20),Math.floor(Math.random()*6),Math.floor(Math.random()*15));
+    body1.angularVelocity.set(Math.floor(Math.random()*20),Math.floor(Math.random()*10),Math.floor(Math.random()*15));
+    body2.angularVelocity.set(Math.floor(Math.random()*20),Math.floor(Math.random()*10),Math.floor(Math.random()*15));
 
 
     dice1.pos.copy(body1.position);

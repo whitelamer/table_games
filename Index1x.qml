@@ -14,7 +14,7 @@ Item {
     ImageCube {
         id: gameLogic
         width: 502
-        height: 959
+        height: 940
         anchors.centerIn: background
         anchors.horizontalCenterOffset: gameLogic.now_player==1?-320:320
 //        anchors.horizontalCenterOffset: 320
