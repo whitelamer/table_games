@@ -21321,6 +21321,59 @@ THREE.ShaderMaterial.prototype.toJSON = function ( meta ) {
 
 };
 
+
+THREE.ShadowMaterial = function () {
+
+    THREE.ShaderMaterial.call( this, {
+        uniforms: THREE.UniformsUtils.merge( [
+            THREE.UniformsLib[ "ambient" ],
+            THREE.UniformsLib[ "lights" ],
+            {
+                opacity:  { type: 'f', value: 1.0 }
+            }
+        ] ),
+        vertexShader: [
+            THREE.ShaderChunk[ "shadowmap_pars_vertex" ],
+            "void main() {",
+                THREE.ShaderChunk[ "begin_vertex" ],
+                THREE.ShaderChunk[ "project_vertex" ],
+                THREE.ShaderChunk[ "worldpos_vertex" ],
+                THREE.ShaderChunk[ "shadowmap_vertex" ],
+            "}"
+        ].join( '\n' ),
+        fragmentShader: [
+            THREE.ShaderChunk[ "common" ],
+            THREE.ShaderChunk[ "bsdfs" ],
+            THREE.ShaderChunk[ "lights_pars" ],
+            THREE.ShaderChunk[ "shadowmap_pars_fragment" ],
+            THREE.ShaderChunk[ "shadowmask_pars_fragment" ],
+            "uniform float opacity;",
+            "void main() {",
+            "	gl_FragColor = vec4( 0.0, 0.0, 0.0, opacity - getShadowMask() );",
+            "}"
+        ].join( '\n' )
+    } );
+
+    this.lights = true;
+    this.transparent = true;
+
+    Object.defineProperties( this, {
+        opacity: {
+            enumerable: true,
+            get: function () {
+                return this.uniforms.opacity.value;
+            },
+            set: function ( value ) {
+                this.uniforms.opacity.value = value;
+            }
+        }
+    } );
+
+};
+
+THREE.ShadowMaterial.prototype = Object.create( THREE.ShaderMaterial.prototype );
+THREE.ShadowMaterial.prototype.constructor = THREE.ShadowMaterial;
+THREE.ShadowMaterial.prototype.isShadowMaterial = true;
 // File:src/materials/RawShaderMaterial.js
 
 /**
@@ -23614,6 +23667,10 @@ THREE.ShaderChunk[ 'uv_vertex' ] = "#if defined( USE_MAP ) || defined( USE_BUMPM
 // File:src/renderers/shaders/ShaderChunk/worldpos_vertex.glsl
 
 THREE.ShaderChunk[ 'worldpos_vertex' ] = "#if defined( USE_ENVMAP ) || defined( PHONG ) || defined( STANDARD ) || defined( LAMBERT ) || defined ( USE_SHADOWMAP )\n	#ifdef USE_SKINNING\n		vec4 worldPosition = modelMatrix * skinned;\n	#else\n		vec4 worldPosition = modelMatrix * vec4( transformed, 1.0 );\n	#endif\n#endif\n";
+
+//THREE.ShaderChunk[ 'shadow_frag' ] = "uniform float opacity;\n#include <common>\n#include <packing>\n#include <bsdfs>\n#include <lights_pars>\n#include <shadowmap_pars_fragment>\n#include <shadowmask_pars_fragment>\nvoid main() {\n\tgl_FragColor = vec4( 0.0, 0.0, 0.0, opacity * ( 1.0 - getShadowMask() ) );\n}\n";
+
+//THREE.ShaderChunk[ 'shadow_vert' ] = "#include <shadowmap_pars_vertex>\nvoid main() {\n\t#include <begin_vertex>\n\t#include <project_vertex>\n\t#include <worldpos_vertex>\n\t#include <shadowmap_vertex>\n}\n";
 
 // File:src/renderers/shaders/UniformsUtils.js
 

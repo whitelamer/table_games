@@ -21,6 +21,9 @@ var world;
 var sphere;
 var body1;
 var body2;
+
+var dice1={pos:new THREE.Vector3(),angle:new THREE.Quaternion()};
+var dice2={pos:new THREE.Vector3(),angle:new THREE.Quaternion()};
 //var transformAux1 = new Ammo.btTransform();
 var time = 0;
 var armMovement = 0;
@@ -128,7 +131,7 @@ function initializeGL(canvas) {
         var mater = [];
         cube1 = new THREE.Mesh( bufferGeometry, new THREE.MeshFaceMaterial(materials));
         cube1.castShadow=true;
-        cube1.scale.set(2.0, 2.0, 2.0);
+        cube1.scale.set(1.5, 1.5, 1.5);
         cube1.position.set(0.35, 0, 0);
         //cube1.matrixAutoUpdate=true;
         scene.add( cube1 );
@@ -138,8 +141,8 @@ function initializeGL(canvas) {
         scene.add( cube2 );
         //bullet.start();
     } );
-    desk_mat =new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, depthWrite: false });//,transparent: true, opacity:0.1,,depthTest: false
-    //desk_mat =new THREE.ShadowMaterial();//https://github.com/mrdoob/three.js/issues/1791
+    //desk_mat =new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, depthWrite: false });//,transparent: true, opacity:0.1,,depthTest: false
+    desk_mat =new THREE.ShadowMaterial();//https://github.com/mrdoob/three.js/issues/1791
     desk_mat.opacity = 0.5;
     desk = new THREE.Mesh(new THREE.BoxGeometry(60.8, 30.5, .001), desk_mat);
     desk.position.set(0, 0, 0.0005);
@@ -246,29 +249,30 @@ function initializeGL(canvas) {
 
 
     //////////////////////////////////////////////////////////////////DICE1
-    sphere = new CANNON.Box(new CANNON.Vec3(.20,.20,.20));
+    sphere = new CANNON.Box(new CANNON.Vec3(.15,.15,.15));
     body1 = new CANNON.Body({
                                 mass: 5,
-                                position: new CANNON.Vec3(0.35, 0, 1.5), // m
-                                velocity:new CANNON.Vec3(10.25, 10, 0)
+                                //position: new CANNON.Vec3(0.35, 0, 1.5), // m
+                                //velocity:new CANNON.Vec3(10.25, 10, 0)
                             });
     body1.addShape(sphere);
-    body1.angularVelocity.set(10,2,1);
+    //body1.angularVelocity.set(10,2,1);
     body1.angularDamping = 0.5;
     world.addBody(body1);
 
 
     //////////////////////////////////////////////////////////////////DICE2
-    sphere = new CANNON.Box(new CANNON.Vec3(.20,.20,.20));
+    sphere = new CANNON.Box(new CANNON.Vec3(.15,.15,.15));
     body2 = new CANNON.Body({
                                 mass: 5,
-                                position: new CANNON.Vec3(0.25, 0, 1.9), // m
-                                velocity:new CANNON.Vec3(-10.25, -10, 0)
+                                //position: new CANNON.Vec3(-0.35, 0, 1.9), // m
+                                //velocity:new CANNON.Vec3(-10.25, -10, 0)
                             });
     body2.addShape(sphere);
-    body2.angularVelocity.set(1,5,10);
+    //body2.angularVelocity.set(1,5,10);
     body2.angularDamping = 0.5;
     world.addBody(body2);
+    dropDice();
 }
 
 function initPhysics() {
@@ -281,6 +285,46 @@ function initPhysics() {
     //    physicsWorld = new Ammo.btSoftRigidDynamicsWorld( dispatcher, broadphase, solver, collisionConfiguration, softBodySolver);
     //    physicsWorld.setGravity( new Ammo.btVector3( 0, -6, 0 ) );
     //    physicsWorld.getWorldInfo().set_m_gravity( new Ammo.btVector3( 0, -6, 0 ) );
+}
+function dropDice(vector){
+    body1.position= new CANNON.Vec3(0.35, 0, 2.0);
+    body2.position= new CANNON.Vec3(-0.35, 0, 2.0);
+
+    body1.velocity=new CANNON.Vec3(vector.y*5, vector.x*5, 0);
+    body2.velocity=new CANNON.Vec3(vector.y*5, vector.x*5, 0);
+    body1.angularVelocity.set(Math.floor(Math.random()*20),Math.floor(Math.random()*6),Math.floor(Math.random()*15));
+    body2.angularVelocity.set(Math.floor(Math.random()*20),Math.floor(Math.random()*6),Math.floor(Math.random()*15));
+
+
+    dice1.pos.copy(body1.position);
+    dice2.pos.copy(body2.position);
+    dice1.angle.copy(body1.quaternion);
+    dice2.angle.copy(body2.quaternion);
+    dice1.dice_stopped=false;
+    dice2.dice_stopped=false;
+    //,angle:new THREE.Quaternion()};
+    //var dice2={pos:new THREE.Vec3(),angle:new THREE.Quaternion()};
+    showdrop = true;
+}
+function is_throw_finished(){
+    var e=.01;
+    if(!dice1.dice_stopped){
+        var a = body1.angularVelocity, v = body1.velocity;
+        if (Math.abs(a.x) < e && Math.abs(a.y) < e && Math.abs(a.z) < e &&
+                Math.abs(v.x) < e && Math.abs(v.y) < e && Math.abs(v.z) < e) {
+            console.log("throw dice1 finished")
+            dice1.dice_stopped=true;
+        }
+    }
+    if(!dice2.dice_stopped){
+        var a = body2.angularVelocity, v = body2.velocity;
+        if (Math.abs(a.x) < e && Math.abs(a.y) < e && Math.abs(a.z) < e &&
+                Math.abs(v.x) < e && Math.abs(v.y) < e && Math.abs(v.z) < e) {
+            console.log("throw dice2 finished")
+            dice2.dice_stopped=true;
+        }
+    }
+    return dice1.dice_stopped&&dice2.dice_stopped;
 }
 
 function resizeGL(canvas) {
@@ -295,18 +339,22 @@ function resizeGL(canvas) {
 
 function paintGL(canvas) {
     //var timeStep   = 1/180;
-    world.step(1/60);
+    if(showdrop)world.step(1/60);
     // Copy coordinates from Cannon.js to Three.js
 
-    if(cube1){
+    if(cube1&&showdrop){
         cube1.position.copy(body1.position);
         cube1.quaternion.copy(body1.quaternion);
     }
-    if(cube2){
+    if(cube2&&showdrop){
         cube2.position.copy(body2.position);
         cube2.quaternion.copy(body2.quaternion);
     }
 
     renderer.render(scene, camera);
+    if(showdrop && is_throw_finished()){
+        showdrop=!is_throw_finished();
+        console.log("throw_finished")
+    }
     //desk_mat.alphaMap=directionalLight.shadow.camera.map
 }

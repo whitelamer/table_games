@@ -4,10 +4,6 @@ Item {
     id:main_form
     width: 1920
     height: 1080
-    GameLogic{
-        id:gameLogic
-    }
-
     Image {
         id: background
         width: 1280
@@ -16,12 +12,16 @@ Item {
         source:"./img/fone1280x1024.png"
     }
     ImageCube {
-        id: imageCube
+        id: gameLogic
         width: 502
         height: 959
         anchors.centerIn: background
+        anchors.horizontalCenterOffset: gameLogic.now_player==1?-320:320
+//        anchors.horizontalCenterOffset: 320
+
         visible: true
     }
+
     anchors.fill: parent
     property alias gamestate: gameLogic.state
     property alias nowplayer: gameLogic.now_player
