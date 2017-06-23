@@ -135,10 +135,10 @@ function initializeGL(canvas) {
         cube1.position.set(0.35, 0, 0);
         //cube1.matrixAutoUpdate=true;
         scene.add( cube1 );
-        cube2=cube1.clone();
-        cube2.castShadow=true;
-        cube2.position.set(-0.35, 0, 0);
-        scene.add( cube2 );
+//        cube2=cube1.clone();
+//        cube2.castShadow=true;
+//        cube2.position.set(-0.35, 0, 0);
+//        scene.add( cube2 );
         //bullet.start();
     } );
     //desk_mat =new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, depthWrite: false });//,transparent: true, opacity:0.1,,depthTest: false
@@ -307,6 +307,7 @@ function dropDice(vector,vector_start){
     dice2.dice_stopped=false;
     //,angle:new THREE.Quaternion()};
     //var dice2={pos:new THREE.Vec3(),angle:new THREE.Quaternion()};
+    console.log("Start drop:",(new Date()).toLocaleTimeString())
     showdrop = true;
 }
 function is_throw_finished(){
@@ -315,15 +316,36 @@ function is_throw_finished(){
         var a = body1.angularVelocity, v = body1.velocity;
         if (Math.abs(a.x) < e && Math.abs(a.y) < e && Math.abs(a.z) < e &&
                 Math.abs(v.x) < e && Math.abs(v.y) < e && Math.abs(v.z) < e) {
-            console.log("throw dice1 finished")
+            console.log("throw dice1 finished",(new Date()).toLocaleTimeString())
             dice1.dice_stopped=true;
+            console.log(cube1.quaternion.x,cube1.quaternion.y,cube1.quaternion.z,cube1.quaternion.w)
+            console.log(cube1.rotation.x,cube1.rotation.y,cube1.rotation.z)
+            /*
+
+qml: 0.9384128702184783 0.3455159692488641 -0.0000014579469734090158 4.5843683808116274e-7
+qml: 3.1415907856958363 -0.0000024195178411924604 -0.7055771129296992
+
+qml: -0.9044742987149188 -0.42652812681190955 0.0000014626380636884039 -5.833275484592096e-7
+qml: 3.1415903506678085 -0.0000021482258034682823 -0.8813014825481775
+
+
+qml: -3.0411137184797285e-8 -0.0000015352297887617028 0.09615933547324441 -0.9953659539079014
+qml: 3.557937873210753e-7 0.0000030503822472430342 -0.19261629084790197
+
+
+            qml: 0.6845736199163348 0.17708511910562263 -0.6845733869018092 0.17708500064031132
+            qml: > x: 1.570797071236766 [number]
+            qml: > y: -1.0645349506375534 [number]
+            qml: > z: -1.5707957554028598 [number]
+            */
+            //debug(cube1.rotation)
         }
     }
     if(!dice2.dice_stopped){
         var a = body2.angularVelocity, v = body2.velocity;
         if (Math.abs(a.x) < e && Math.abs(a.y) < e && Math.abs(a.z) < e &&
                 Math.abs(v.x) < e && Math.abs(v.y) < e && Math.abs(v.z) < e) {
-            console.log("throw dice2 finished")
+            console.log("throw dice2 finished",(new Date()).toLocaleTimeString())
             dice2.dice_stopped=true;
         }
     }
@@ -355,9 +377,9 @@ function paintGL(canvas) {
     }
 
     renderer.render(scene, camera);
-    if(showdrop && is_throw_finished()){
-        showdrop=!is_throw_finished();
-        console.log("throw_finished")
-    }
+//    if(showdrop && is_throw_finished()){
+//        showdrop=!is_throw_finished();
+//        console.log("throw_finished")
+//    }
     //desk_mat.alphaMap=directionalLight.shadow.camera.map
 }

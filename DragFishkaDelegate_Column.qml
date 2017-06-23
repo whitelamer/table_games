@@ -1,19 +1,23 @@
 import QtQuick 2.0
 import QtGraphicalEffects 1.0
 
-Row{
+Column{
     property int p_ind: 6+index
-    layoutDirection: Qt.RightToLeft
-    height: 106
-    width: 1438
-    spacing: 2
+    property string image_white: "1w.png"
+    property string image_black: "1b.png"
+    property int fiska_size: 106
+    //layoutDirection: Qt.RightToLeft
+//    height: 106
+//    width: 1438
+    //spacing: 2
     z:1
     Text{
-        rotation: -90
-        width: 50
-        height: 106
+        //rotation: -90
+        rotation: parent.rotation
+        width: fiska_size
+        height: 20
         font.bold:true
-        font.pointSize:24
+        font.pointSize:12
         text:p_ind+1
         renderType: Text.NativeRendering
         verticalAlignment: Text.AlignVCenter
@@ -26,13 +30,13 @@ Row{
         delegate:Item {
             property int pindex: p_ind
             id:delegateRoot
-            width: 106
-            height: 106
+            width: fiska_size
+            height: fiska_size
             //anchors.verticalCenter: parent.verticalCenter
             Image{
                 id:delegate_image
                 anchors.fill: parent
-                source: gameLogic.get_color(p_ind)==0?"./img/1w.png":"./img/1b.png"
+                source: gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
             }
             Drag.active: dragArea.drag.active
             Drag.hotSpot.x: 35
@@ -48,8 +52,8 @@ Row{
                 enabled: gameLogic.get_count(p_ind)-1==index//&&gameLogic.can_drag_fishka(p_ind)
                 onPressed: {
                     //console.log(parent.Drag.hotSpot.x+"x"+parent.Drag.hotSpot.y)
-//                    drag_image.x=parent.x
-//                    drag_image.y=parent.y
+                    //                    drag_image.x=parent.x
+                    //                    drag_image.y=parent.y
                     global_area.hoverEnabled=false
                     gameLogic.drag_row_index=p_ind;
                     main_form.drag_item=drag.target;
@@ -88,7 +92,7 @@ Row{
                     //ParentChange { target: delegateRoot; parent: main_form }
                     AnchorChanges { target: delegateRoot; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
                 }]
-/*            layer.enabled: true
+            /*            layer.enabled: true
             layer.effect: DropShadow {
                 anchors.fill: parent
                 horizontalOffset: 3
@@ -110,9 +114,9 @@ Row{
                   }*/
         }
         function updateModel(src, dst){
-//            if(src==p_ind||dst==p_ind){
-//                model=gameLogic.get_count(p_ind);
-//            }
+            //            if(src==p_ind||dst==p_ind){
+            //                model=gameLogic.get_count(p_ind);
+            //            }
         }
         Component.onCompleted: {
             //main_form.updateAfterDrop.connect(updateModel)

@@ -163,8 +163,25 @@ Canvas3D {
             drop_start = null;
             var dist = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
             vector.x /= dist; vector.y /= dist;
-            console.log("vector",vector.x,vector.y);
+            //console.log("vector",vector.x,vector.y);
             GLCode.dropDice(vector,vector_start);
+
+            drop_finish_chk_timer.start();
+        }
+    }
+    Timer{
+        id:drop_finish_chk_timer
+        running: false
+        repeat: true
+        interval: 1500
+        onTriggered: {
+            showdrop=running=!GLCode.is_throw_finished();
+            if(showdrop)
+                interval/=2.0
+            else
+                interval=1500;
+            if(interval<100)interval=150;
+            console.log("vector",running,interval);
         }
     }
 

@@ -38,14 +38,16 @@ DISTFILES += \
     main.qml \
     calibration.sh \
     DropAreaDelegate.qml \
-    DragFishkaDelegate.qml \
     GameLogic.qml \
     cannon.js \
     Index1x.qml \
     Index2x.qml \
     CUB.json \
     ammo.js \
-    physics.js
+    physics.js \
+    DragFishkaDelegate_Column.qml \
+    DragFishkaDelegate_Row.qml \
+    DropAreaDelegate_Column.qml
 
 HEADERS += \
     process.h \
