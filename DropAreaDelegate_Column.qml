@@ -3,7 +3,7 @@ import QtQuick 2.0
 
 Column{
     property int p_ind: 6+index
-    property int fiska_size: 106
+    //property int fiska_size: 106
 //    height: 106
 //    width: 1438
     //spacing: 2

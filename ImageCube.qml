@@ -6,126 +6,15 @@ import "imagecube.js" as GLCode
 Canvas3D {
     id: cube
     property bool showdrop: false
-/*    Item{
-        id:dice1
-        property real xRotation: 0
-        property real yRotation: 0
-        property real zRotation: 0
-        state: "image1"
-        states: [
-            State {
-                name: "image1"
-                PropertyChanges { target: dice1; xRotation: 0; }
-                PropertyChanges { target: dice1; yRotation: 180 * 1.5; }
-                PropertyChanges { target: dice1; zRotation: 0 }
-            },
-            State {
-                name: "image5"
-                PropertyChanges { target: dice1; xRotation: 0; }
-                PropertyChanges { target: dice1; yRotation: 180 * 1.0; }
-                PropertyChanges { target: dice1; zRotation: 0 }
-            },
-            State {
-                name: "image6"
-                PropertyChanges { target: dice1; xRotation: 0; }
-                PropertyChanges { target: dice1; yRotation: 180 * 0.5; }
-                PropertyChanges { target: dice1; zRotation: 0 }
-            },
-            State {
-                name: "image2"
-                PropertyChanges { target: dice1; xRotation: 0; }
-                PropertyChanges { target: dice1; yRotation: 0; }
-                PropertyChanges { target: dice1; zRotation: 0; }
-            },
-            State {
-                name: "image3"
-                PropertyChanges { target: dice1; xRotation: 180 / 2.0; }
-                PropertyChanges { target: dice1; yRotation: 0; }
-                PropertyChanges { target: dice1; zRotation: 0; }
-            },
-            State {
-                name: "image4"
-                PropertyChanges { target: dice1; xRotation: -180 / 2.0; }
-                PropertyChanges { target: dice1; yRotation: 0; }
-                PropertyChanges { target: dice1; zRotation: 0; }
-            }
-        ]
-        transitions: [
-            Transition {
-                id: turnTransition
-                from: "*"
-                to: "*"
-                RotationAnimation {
-                    properties: "xRotation,yRotation,zRotation"
-                    easing.type: Easing.Linear
-                    direction: RotationAnimation.Shortest
-                    duration: 450
-                }
-            }
-        ]
-    }
-    Item{
-        id:dice2
-        property real xRotation: 0
-        property real yRotation: 0
-        property real zRotation: 0
-        state: "image1"
-        states: [
-            State {
-                name: "image1"
-                PropertyChanges { target: dice2; xRotation: 0; }
-                PropertyChanges { target: dice2; yRotation: 180 * 1.5; }
-                PropertyChanges { target: dice2; zRotation: 0 }
-            },
-            State {
-                name: "image5"
-                PropertyChanges { target: dice2; xRotation: 0; }
-                PropertyChanges { target: dice2; yRotation: 180 * 1.0; }
-                PropertyChanges { target: dice2; zRotation: 0 }
-            },
-            State {
-                name: "image6"
-                PropertyChanges { target: dice2; xRotation: 0; }
-                PropertyChanges { target: dice2; yRotation: 180 * 0.5; }
-                PropertyChanges { target: dice2; zRotation: 0 }
-            },
-            State {
-                name: "image2"
-                PropertyChanges { target: dice2; xRotation: 0; }
-                PropertyChanges { target: dice2; yRotation: 0; }
-                PropertyChanges { target: dice2; zRotation: 0; }
-            },
-            State {
-                name: "image3"
-                PropertyChanges { target: dice2; xRotation: 180 / 2.0; }
-                PropertyChanges { target: dice2; yRotation: 0; }
-                PropertyChanges { target: dice2; zRotation: 0; }
-            },
-            State {
-                name: "image4"
-                PropertyChanges { target: dice2; xRotation: -180 / 2.0; }
-                PropertyChanges { target: dice2; yRotation: 0; }
-                PropertyChanges { target: dice2; zRotation: 0; }
-            }
-        ]
-        transitions: [
-            Transition {
-                id: turnTransition2
-                from: "*"
-                to: "*"
-                RotationAnimation {
-                    properties: "xRotation,yRotation,zRotation"
-                    easing.type: Easing.Linear
-                    direction: RotationAnimation.Shortest
-                    duration: 450
-                }
-            }
-        ]
-    }
+    property int now_player:0;
+    property var game_fild_array: [];
+    property var dice_rol:[];
+    property int logic_state:0;
+    property int drag_row_index: -1;
+    property int turn: 0;
+    property bool take_head: false
+    property bool twice: false
 
-
-
-*/
     onInitializeGL: {
         GLCode.initializeGL(cube);
     }
@@ -138,20 +27,16 @@ Canvas3D {
         GLCode.resizeGL(cube);
     }
 
-    function setState1(str){
-        dice1.state=str;
-    }
-    function setState2(str){
-        dice2.state=str;
-    }
     MouseArea{
         property var drop_start: null
         anchors.fill: parent
+        enabled: logic_state==3
         onClicked: {
             //if(!showdrop)GLCode.dropDice();
 //            showdrop=!showdrop
         }
         onPressed: {
+            console.log("Game state:",logic_state);
             if(showdrop)return;
             drop_start = {x:mouseX,y:mouseY};
         }
@@ -185,20 +70,26 @@ Canvas3D {
         }
     }
 
-    property int now_player:0;
-    property var game_fild_array: [];
-    property var dice_first : [0];
-    property var dice_second : [0];
-    property var dice_rol:[];
-    property int state:0;
-    property int drag_row_index: -1;
-    property int turn: 0;
-    property bool twice: false
-
     Component.onCompleted: {
         init();
     }
-
+    Text {
+        id: dice1_num
+        color:"white"
+        font.bold:true
+        font.pointSize:24
+        renderType: Text.NativeRendering
+        text: dice_rol[0]>0?dice_rol[0]:" "
+    }
+    Text {
+        id: dice2_num
+        color:"white"
+        anchors.left: dice1_num.right
+        font.bold:true
+        font.pointSize:24
+        renderType: Text.NativeRendering
+        text: dice_rol[1]>0?":"+dice_rol[1]:" "
+    }
     function init() {
         now_player=0;
         var tmp=[];
@@ -210,7 +101,7 @@ Canvas3D {
         tmp.push({count:15,color:0})
         console.log("game_fild_array:"+tmp);
         game_fild_array=tmp
-        state=3;
+        logic_state=2;
     }
 
     function get_count(index){
@@ -243,33 +134,43 @@ Canvas3D {
         if(tmp[0]+tmp[1]==0){
             now_player=!now_player
             if(now_player==1)turn++;
-            state=3;
+            logic_state=3;
         }
     }
 
-    function drop_dice(){
-        if(state!=3)return;
-        var i=0;
-        dice_first=[];
-        dice_second=[];
-        do{
-            var a=dice_first[dice_first.length-1];
-            dice_first.push(Math.floor(Math.random()*6)+1);
-            dice_second.push(Math.floor(Math.random()*6)+1);
-            i++;
-        }while(i<6)
-        console.log(dice_first,dice_second);
-        state=4;
-    }
+//    function drop_dice(){
+//        if(state!=3)return;
+//        var i=0;
+//        dice_first=[];
+//        dice_second=[];
+//        do{
+//            var a=dice_first[dice_first.length-1];
+//            dice_first.push(Math.floor(Math.random()*6)+1);
+//            dice_second.push(Math.floor(Math.random()*6)+1);
+//            i++;
+//        }while(i<6)
+//        console.log(dice_first,dice_second);
+//        state=4;
+//    }
     function get_state(){
-        return state;
+        return logic_state;
     }
     function can_drag_fishka(index){
-        console.log("can_drag_fishka:"+index);
-        return state==5&&game_fild_array[index].color==now_player;
+        console.log("can_drag_fishka:",index,game_fild_array[index].color,now_player,take_head);
+        console.log("Game state:",logic_state);
+        if(logic_state!=5)return false;
+
+        if(game_fild_array[index].color==now_player&&index==11&&now_player==0&&!take_head)return true;
+
+        if(game_fild_array[index].color==now_player&&index==23&&now_player==1&&!take_head)return true;
+        if(index!=23&&index!=11)
+            return game_fild_array[index].color==now_player;
+        else
+            return false;
     }
     function can_drop_fishka(src, dst){
-        if(state!=5)return false;
+        //console.log("can_drop_fishka:",src,dst);
+        if(logic_state!=5)return false;
         if(src<0)return false;
         if(get_count(dst)>0&&get_color(src)!=get_color(dst))return false;
         var res=false;
@@ -282,18 +183,36 @@ Canvas3D {
         return res;
     }
     function get_dice(ind){
-        var tmp=[]
-        if(dice_first.length==1&&dice_second.length==1&&state==4){
-            tmp.push(dice_first[0]);
-            tmp.push(dice_second[0]);
-            dice_rol=tmp;
-            state=5;
+        if(logic_state==5){
+            return dice_rol[ind]
         }
-        tmp=ind==0?dice_first:dice_second;
-        if(tmp.length==1)return tmp[0];
-        var i=Math.floor(Math.random()*tmp.length);
-        var d=tmp[i];
-        tmp.splice(i,1);
-        return d;
+        return 0;
+//        var tmp=[]
+//        if(dice_first.length==1&&dice_second.length==1&&state==4){
+//            tmp.push(dice_first[0]);
+//            tmp.push(dice_second[0]);
+//            dice_rol=tmp;
+//            state=5;
+//        }
+//        tmp=ind==0?dice_first:dice_second;
+//        if(tmp.length==1)return tmp[0];
+//        var i=Math.floor(Math.random()*tmp.length);
+//        var d=tmp[i];
+//        tmp.splice(i,1);
+//        return d;
+    }
+    function set_dice(a,b){
+        var tmp=dice_rol
+        if(a>0){
+            tmp[0]=a
+        }
+        if(b>0){
+            tmp[1]=b
+        }
+        if(tmp[0]>0&&tmp[1]>0){
+            take_head=false;
+            logic_state=5
+        }
+        dice_rol=tmp;
     }
 }

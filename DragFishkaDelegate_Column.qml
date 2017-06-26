@@ -2,10 +2,12 @@ import QtQuick 2.0
 import QtGraphicalEffects 1.0
 
 Column{
+    id:drag_fishka
     property int p_ind: 6+index
     property string image_white: "1w.png"
     property string image_black: "1b.png"
-    property int fiska_size: 106
+    property int gamestate: 0
+    //property int fiska_size: 106
     //layoutDirection: Qt.RightToLeft
 //    height: 106
 //    width: 1438
@@ -83,8 +85,11 @@ Column{
 
                 }
                 Connections{
-                    target: main_form
-                    onGamestateChanged:{ enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);}
+                    target: drag_fishka
+                    onGamestateChanged:{
+                        console.log("onGamestateChanged");
+                        enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
+                    }
                 }
             }
             states: [State {
