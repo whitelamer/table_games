@@ -4,11 +4,13 @@ Item {
     id:main_form
     property int main_spacing: 17
     property int fiska_size: 61
+    property QtObject gameLogic: gameLogic
+    property QtObject drag_item: null
     property int gamestate: gameLogic.logic_state
     property alias nowplayer: gameLogic.now_player
-    property QtObject drag_item: null
     property bool drag_need_resume: false
     signal updateAfterDrop(int src, int dst)
+    signal newgamestate(int state)
     width: 1920
     height: 1080
     Image {
@@ -213,6 +215,7 @@ Item {
             onLogic_stateChanged: {
                 console.log("onLogic_stateChanged");
                 main_form.gamestate=gameLogic.logic_state
+                newgamestate(main_form.gamestate)
             }
         }
     }

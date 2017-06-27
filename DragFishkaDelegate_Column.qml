@@ -6,7 +6,7 @@ Column{
     property int p_ind: 6+index
     property string image_white: "1w.png"
     property string image_black: "1b.png"
-    property int gamestate: 0
+    //property int gamestate: 0
     //property int fiska_size: 106
     //layoutDirection: Qt.RightToLeft
 //    height: 106
@@ -51,7 +51,7 @@ Column{
                 anchors.fill: parent
                 drag.target: parent
                 drag.smoothed:true
-                enabled: gameLogic.get_count(p_ind)-1==index//&&gameLogic.can_drag_fishka(p_ind)
+                enabled: false//gameLogic.get_count(p_ind)-1==index//&&gameLogic.can_drag_fishka(p_ind)
                 onPressed: {
                     //console.log(parent.Drag.hotSpot.x+"x"+parent.Drag.hotSpot.y)
                     //                    drag_image.x=parent.x
@@ -84,12 +84,23 @@ Column{
                     //row_repeater.updateModel();
 
                 }
-                Connections{
-                    target: drag_fishka
-                    onGamestateChanged:{
-                        console.log("onGamestateChanged");
-                        enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
+                Component.onCompleted: {
+                    console.log("Component.onCompleted",p_ind,index);
+                    this.objectName=p_ind+"x"+index
+                    enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
+                    main_form.newgamestate.connect(this.updateDrag)
+                }
+                function updateDrag(state) {
+                    console.log("onGamestateChanged",this.objectName);
+                    try {
+                         if(!(index)||null)return;
+                    } catch (e) {
+                        return
                     }
+                    //if(!(index)||null)return;
+                    console.log("onGamestateChanged",index,gameLogic.get_count(p_ind));
+                    enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
+                    //console.log("onGamestateChanged",state,index,gameLogic.get_count(p_ind),enabled);
                 }
             }
             states: [State {
@@ -97,26 +108,6 @@ Column{
                     //ParentChange { target: delegateRoot; parent: main_form }
                     AnchorChanges { target: delegateRoot; anchors.verticalCenter: undefined; anchors.horizontalCenter: undefined }
                 }]
-            /*            layer.enabled: true
-            layer.effect: DropShadow {
-                anchors.fill: parent
-                horizontalOffset: 3
-                verticalOffset: 3
-                radius: 8.0
-                samples: 17
-                color: "#80000000"
-                source: delegate_image
-            }*//*ShaderEffect {
-                      fragmentShader: "
-                          uniform lowp sampler2D source; // this item
-                          uniform lowp float qt_Opacity; // inherited opacity of this item
-                          varying highp vec2 qt_TexCoord0;
-                          void main() {
-                              lowp vec4 p = texture2D(source, qt_TexCoord0);
-                              lowp float g = dot(p.xyz, vec3(0.344, 0.5, 0.156));
-                              gl_FragColor = vec4(g, g, g, p.a) * qt_Opacity;
-                          }"
-                  }*/
         }
         function updateModel(src, dst){
             //            if(src==p_ind||dst==p_ind){
@@ -125,6 +116,9 @@ Column{
         }
         Component.onCompleted: {
             //main_form.updateAfterDrop.connect(updateModel)
+        }
+        onModelChanged: {
+            console.log("onModelChanged",p_ind);
         }
     }
 }

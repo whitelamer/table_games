@@ -129,6 +129,8 @@ function initializeGL(canvas) {
         bufferGeometry.computeBoundingBox();
         //console.log(bufferGeometry.boundingBox.min.x,bufferGeometry.boundingBox.max.x);
         var mater = [];
+        materials[0].transparent=true
+        materials[1].transparent=true
         cube1 = new THREE.Mesh( bufferGeometry, new THREE.MeshFaceMaterial(materials));
         cube1.castShadow=true;
         cube1.scale.set(1.5, 1.5, 1.5);
@@ -138,6 +140,9 @@ function initializeGL(canvas) {
         cube2=cube1.clone();
         cube2.castShadow=true;
         cube2.position.set(-0.35, 0, 0);
+        cube2.material=new THREE.MeshFaceMaterial(materials).clone()
+        //cube2.material.materials[0].opacity=0.5
+        cube2.material.materials[0].transparent=true
         scene.add( cube2 );
         logic_state=3;
         //bullet.start();
@@ -290,6 +295,10 @@ function initPhysics() {
 function dropDice(vector,vector_start){
 //    body1.position= new CANNON.Vec3(0.35, 0, 2.0);
 //    body2.position= new CANNON.Vec3(-0.35, 0, 2.0);
+    cube1.material.materials[0].opacity=op_dice1;
+    cube2.material.materials[0].opacity=op_dice2;
+    cube1.material.materials[1].opacity=op_dice1;
+    cube2.material.materials[1].opacity=op_dice2;
 
     body1.position= new CANNON.Vec3((vector_start.y*3.42)*2-3.42+0.35, vector_start.x*1.8*2-1.8, 4.0);
     body2.position= new CANNON.Vec3((vector_start.y*3.42)*2-3.42-0.35, vector_start.x*1.8*2-1.8, 4.0);
@@ -408,11 +417,20 @@ function paintGL(canvas) {
         cube2.position.copy(body2.position);
         cube2.quaternion.copy(body2.quaternion);
     }
-
+    cube1.material.materials[0].opacity=op_dice1;
+    cube2.material.materials[0].opacity=op_dice2;
+    cube1.material.materials[1].opacity=op_dice1;
+    cube2.material.materials[1].opacity=op_dice2;
     renderer.render(scene, camera);
 //    if(showdrop && is_throw_finished()){
 //        showdrop=!is_throw_finished();
 //        console.log("throw_finished")
 //    }
     //desk_mat.alphaMap=directionalLight.shadow.camera.map
+}
+function hide_dice1(){
+    cube1.position.set(999,999,999);
+}
+function hide_dice2(){
+    cube2.position.set(999,999,999);
 }

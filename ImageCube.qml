@@ -33,12 +33,14 @@ Canvas3D {
         enabled: logic_state==3
         onClicked: {
             //if(!showdrop)GLCode.dropDice();
-//            showdrop=!showdrop
+            //            showdrop=!showdrop
         }
         onPressed: {
             console.log("Game state:",logic_state);
             if(showdrop)return;
             drop_start = {x:mouseX,y:mouseY};
+            op_dice1=1;
+            op_dice2=1;
         }
         onReleased: {
             if(showdrop)return;
@@ -73,23 +75,33 @@ Canvas3D {
     Component.onCompleted: {
         init();
     }
-    Text {
-        id: dice1_num
-        color:"white"
-        font.bold:true
-        font.pointSize:24
-        renderType: Text.NativeRendering
-        text: dice_rol[0]>0?dice_rol[0]:" "
-    }
-    Text {
-        id: dice2_num
-        color:"white"
-        anchors.left: dice1_num.right
-        font.bold:true
-        font.pointSize:24
-        renderType: Text.NativeRendering
-        text: dice_rol[1]>0?":"+dice_rol[1]:" "
-    }
+//    Text {
+//        id: dice3_num
+//        color:"white"
+//        font.bold:true
+//        font.pointSize:0
+//        renderType: Text.NativeRendering
+//        text: "now_player:"+now_player+" "
+//    }
+//    Text {
+//        id: dice1_num
+//        color:"white"
+//        anchors.left: dice3_num.right
+//        font.bold:true
+//        font.pointSize:24
+//        renderType: Text.NativeRendering
+//        text: dice_rol[0]>0?dice_rol[0]:" "
+//    }
+//    Text {
+//        id: dice2_num
+//        color:"white"
+//        anchors.left: dice1_num.right
+//        font.bold:true
+//        font.pointSize:24
+//        renderType: Text.NativeRendering
+//        text: dice_rol[1]>0?":"+dice_rol[1]:" "
+//    }
+
     function init() {
         now_player=0;
         var tmp=[];
@@ -112,24 +124,51 @@ Canvas3D {
     }
 
     function make_turn(src, dst){
-        //if(state!=5)return;
+        console.log("Game make_turn logic_state:",logic_state);
+        if(logic_state!=5&&logic_state!=6)return;
+        console.log("Game make_turn:",src,dst,now_player);
         var tmp=game_fild_array
-            tmp[src].count=tmp[src].count-1
+        tmp[src].count=tmp[src].count-1
         game_fild_array=tmp
-            tmp[dst].count=tmp[dst].count+1
-            tmp[dst].color=now_player
+        tmp[dst].count=tmp[dst].count+1
+        tmp[dst].color=now_player
         game_fild_array=tmp
         drag_row_index=-1;
         tmp=dice_rol
-        if(Math.abs(src-dst)==tmp[0])
-            tmp[0]=0;
-        else
-            if(Math.abs(src-dst)==tmp[1])
-                tmp[1]=0;
-        if(Math.abs(src-dst)==(tmp[0]+tmp[1])){
-            tmp[0]=0;
-            tmp[1]=0;
+
+        if(src==23&&now_player==0&&(tmp[0]!=tmp[1]||(tmp[0]==tmp[1]&&turn!=0))&&src!=dst){
+            take_head=true;
+            console.log("Game make_turn reset white head:",src,dst,turn,tmp[0],tmp[1]);
         }
+        if(src==11&&now_player==1&&(tmp[0]!=tmp[1]||(tmp[0]==tmp[1]&&turn!=0))&&src!=dst){
+            take_head=true;
+            console.log("Game make_turn reset black head:",src,dst,turn,tmp[0],tmp[1]);
+        }
+        if(Math.abs(src-dst)==tmp[0]||((tmp[0]+dst)%24==src&&now_player==1)){
+            tmp[0]=0;
+            if(logic_state==5)
+                op_dice1_anim.start();
+            else
+                GLCode.hide_dice1();
+            logic_state=6;
+        }else
+            if(Math.abs(src-dst)==tmp[1]||((tmp[1]+dst)%24==src&&now_player==1)){
+                tmp[1]=0;
+                if(logic_state==5)
+                    op_dice2_anim.start();
+                else
+                    GLCode.hide_dice2();
+                logic_state=6;
+            }else
+                if(Math.abs(src-dst)==(tmp[0]+tmp[1])||(((tmp[0]+tmp[1])+dst)%24==src&&now_player==1)){
+                    tmp[0]=0;
+                    tmp[1]=0;
+                    op_dice1=0
+                    op_dice2=0
+                    GLCode.hide_dice1();
+                    GLCode.hide_dice2();
+                    logic_state=6;
+                }
         dice_rol=tmp
         if(tmp[0]+tmp[1]==0){
             now_player=!now_player
@@ -138,31 +177,32 @@ Canvas3D {
         }
     }
 
-//    function drop_dice(){
-//        if(state!=3)return;
-//        var i=0;
-//        dice_first=[];
-//        dice_second=[];
-//        do{
-//            var a=dice_first[dice_first.length-1];
-//            dice_first.push(Math.floor(Math.random()*6)+1);
-//            dice_second.push(Math.floor(Math.random()*6)+1);
-//            i++;
-//        }while(i<6)
-//        console.log(dice_first,dice_second);
-//        state=4;
-//    }
+    //    function drop_dice(){
+    //        if(state!=3)return;
+    //        var i=0;
+    //        dice_first=[];
+    //        dice_second=[];
+    //        do{
+    //            var a=dice_first[dice_first.length-1];
+    //            dice_first.push(Math.floor(Math.random()*6)+1);
+    //            dice_second.push(Math.floor(Math.random()*6)+1);
+    //            i++;
+    //        }while(i<6)
+    //        console.log(dice_first,dice_second);
+    //        state=4;
+    //    }
     function get_state(){
         return logic_state;
     }
     function can_drag_fishka(index){
         console.log("can_drag_fishka:",index,game_fild_array[index].color,now_player,take_head);
-        console.log("Game state:",logic_state);
-        if(logic_state!=5)return false;
+        //console.log("Game state:",logic_state);
+        if(logic_state!=5&&logic_state!=6)return false;
 
-        if(game_fild_array[index].color==now_player&&index==11&&now_player==0&&!take_head)return true;
+        if(game_fild_array[index].color==now_player&&index==11&&now_player==1&&!take_head)return true;
 
-        if(game_fild_array[index].color==now_player&&index==23&&now_player==1&&!take_head)return true;
+        if(game_fild_array[index].color==now_player&&index==23&&now_player==0&&!take_head)return true;
+
         if(index!=23&&index!=11)
             return game_fild_array[index].color==now_player;
         else
@@ -170,7 +210,7 @@ Canvas3D {
     }
     function can_drop_fishka(src, dst){
         //console.log("can_drop_fishka:",src,dst);
-        if(logic_state!=5)return false;
+        if(logic_state!=5&&logic_state!=6)return false;
         if(src<0)return false;
         if(get_count(dst)>0&&get_color(src)!=get_color(dst))return false;
         var res=false;
@@ -179,27 +219,34 @@ Canvas3D {
 
         if(src-dst==dice_rol[1])res=true;
         if(src-dst==(dice_rol[0]+dice_rol[1]))res=true;
+        if(now_player==1){
+            if(src==(dice_rol[0]+dst)%24)res=true;
+            if(src==(dice_rol[1]+dst)%24)res=true;
+            if(src==((dice_rol[0]+dice_rol[1])+dst)%24)res=true;
+        }
+
         //console.log("can_drop_fishka:"+src+"->"+dst+" dice:"+dice_rol+" result:"+res);
         return res;
     }
+
     function get_dice(ind){
-        if(logic_state==5){
+        if(logic_state==5||logic_state==6){
             return dice_rol[ind]
         }
         return 0;
-//        var tmp=[]
-//        if(dice_first.length==1&&dice_second.length==1&&state==4){
-//            tmp.push(dice_first[0]);
-//            tmp.push(dice_second[0]);
-//            dice_rol=tmp;
-//            state=5;
-//        }
-//        tmp=ind==0?dice_first:dice_second;
-//        if(tmp.length==1)return tmp[0];
-//        var i=Math.floor(Math.random()*tmp.length);
-//        var d=tmp[i];
-//        tmp.splice(i,1);
-//        return d;
+        //        var tmp=[]
+        //        if(dice_first.length==1&&dice_second.length==1&&state==4){
+        //            tmp.push(dice_first[0]);
+        //            tmp.push(dice_second[0]);
+        //            dice_rol=tmp;
+        //            state=5;
+        //        }
+        //        tmp=ind==0?dice_first:dice_second;
+        //        if(tmp.length==1)return tmp[0];
+        //        var i=Math.floor(Math.random()*tmp.length);
+        //        var d=tmp[i];
+        //        tmp.splice(i,1);
+        //        return d;
     }
     function set_dice(a,b){
         var tmp=dice_rol
@@ -215,4 +262,39 @@ Canvas3D {
         }
         dice_rol=tmp;
     }
+    property double op_dice1: 1
+    property double op_dice2: 1
+
+    NumberAnimation {
+        id:op_dice1_anim
+        target: cube
+        property: "op_dice1"
+        duration: 500
+        from:1
+        to:0
+        easing.type: Easing.InOutQuad
+        onStopped: {
+            GLCode.hide_dice1();
+        }
+    }
+    NumberAnimation {
+        id:op_dice2_anim
+        target: cube
+        property: "op_dice2"
+        duration: 500
+        from:1
+        to:0
+        easing.type: Easing.InOutQuad
+        onStopped: {
+            GLCode.hide_dice2();
+        }
+    }
+//    Behavior on op_dice1{
+//        NumberAnimation { from:1;to:0;duration: 500 }
+//        NumberAnimation { from:0;to:1;duration: 0 }
+//    }
+//    Behavior on op_dice2{
+//        NumberAnimation { from:1;to:0;duration: 500 }
+//        NumberAnimation { from:0;to:1;duration: 0 }
+//    }
 }
