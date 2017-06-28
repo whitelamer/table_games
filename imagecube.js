@@ -409,18 +409,22 @@ function paintGL(canvas) {
     if(showdrop)world.step(1/60);
     // Copy coordinates from Cannon.js to Three.js
 
-    if(cube1&&showdrop){
+    if(cube1){
+        if(showdrop){
         cube1.position.copy(body1.position);
         cube1.quaternion.copy(body1.quaternion);
+        }
+        cube1.material.materials[0].opacity=op_dice1;
+        cube1.material.materials[1].opacity=op_dice1;
     }
-    if(cube2&&showdrop){
-        cube2.position.copy(body2.position);
-        cube2.quaternion.copy(body2.quaternion);
+    if(cube2){
+        if(showdrop){
+            cube2.position.copy(body2.position);
+            cube2.quaternion.copy(body2.quaternion);
+        }
+        cube2.material.materials[0].opacity=op_dice2;
+        cube2.material.materials[1].opacity=op_dice2;
     }
-    cube1.material.materials[0].opacity=op_dice1;
-    cube2.material.materials[0].opacity=op_dice2;
-    cube1.material.materials[1].opacity=op_dice1;
-    cube2.material.materials[1].opacity=op_dice2;
     renderer.render(scene, camera);
 //    if(showdrop && is_throw_finished()){
 //        showdrop=!is_throw_finished();

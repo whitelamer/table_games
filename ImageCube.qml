@@ -124,9 +124,9 @@ Canvas3D {
     }
 
     function make_turn(src, dst){
-        console.log("Game make_turn logic_state:",logic_state);
+        console.log("Game make_turn logic_state:",logic_state,src,"->",dst);
         if(logic_state!=5&&logic_state!=6)return;
-        console.log("Game make_turn:",src,dst,now_player);
+        console.log("Game make_turn:",src,"->",dst,now_player==0?"white[0]":"black[1]");
         var tmp=game_fild_array
         tmp[src].count=tmp[src].count-1
         game_fild_array=tmp
@@ -195,18 +195,22 @@ Canvas3D {
         return logic_state;
     }
     function can_drag_fishka(index){
-        console.log("can_drag_fishka:",index,game_fild_array[index].color,now_player,take_head);
+        console.log("can_drag_fishka:",index,game_fild_array[index].color,now_player==0?"white[0]":"black[1]",take_head);
         //console.log("Game state:",logic_state);
         if(logic_state!=5&&logic_state!=6)return false;
 
-        if(game_fild_array[index].color==now_player&&index==11&&now_player==1&&!take_head)return true;
+        if(game_fild_array[index].color==now_player&&index==11&&now_player==1&&!take_head){console.log("can_drag_fishka true");return true;}
 
-        if(game_fild_array[index].color==now_player&&index==23&&now_player==0&&!take_head)return true;
+        if(game_fild_array[index].color==now_player&&index==23&&now_player==0&&!take_head){console.log("can_drag_fishka true");return true;}
 
         if(index!=23&&index!=11)
+        {
+            console.log("can_drag_fishka",game_fild_array[index].color==now_player);
             return game_fild_array[index].color==now_player;
-        else
+        }else{
+            console.log("can_drag_fishka false");
             return false;
+        }
     }
     function can_drop_fishka(src, dst){
         //console.log("can_drop_fishka:",src,dst);

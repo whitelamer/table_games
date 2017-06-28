@@ -56,6 +56,8 @@ Column{
                     //console.log(parent.Drag.hotSpot.x+"x"+parent.Drag.hotSpot.y)
                     //                    drag_image.x=parent.x
                     //                    drag_image.y=parent.y
+                    //enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
+
                     global_area.hoverEnabled=false
                     gameLogic.drag_row_index=p_ind;
                     main_form.drag_item=drag.target;
@@ -84,21 +86,27 @@ Column{
                     //row_repeater.updateModel();
 
                 }
+                onEntered: {
+                    delegateRoot.opacity=0.5
+                    this.enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
+                    delegateRoot.enabled=this.enabled
+                }
+
                 Component.onCompleted: {
-                    console.log("Component.onCompleted",p_ind,index);
+                    console.log("Component.onCompleted",p_ind,index,gameLogic.get_count(p_ind));
                     this.objectName=p_ind+"x"+index
+//                    listProperty(this);
                     enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
                     main_form.newgamestate.connect(this.updateDrag)
                 }
                 function updateDrag(state) {
-                    console.log("onGamestateChanged",this.objectName);
                     try {
                          if(!(index)||null)return;
                     } catch (e) {
                         return
                     }
                     //if(!(index)||null)return;
-                    console.log("onGamestateChanged",index,gameLogic.get_count(p_ind));
+                    console.log("onGamestateChanged",p_ind,index,gameLogic.get_count(p_ind),row_repeater.model);
                     enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
                     //console.log("onGamestateChanged",state,index,gameLogic.get_count(p_ind),enabled);
                 }
@@ -115,10 +123,14 @@ Column{
             //            }
         }
         Component.onCompleted: {
+            main_form.newgamestate.connect(this.updateGameState)
             //main_form.updateAfterDrop.connect(updateModel)
         }
         onModelChanged: {
             console.log("onModelChanged",p_ind);
+        }
+        function updateGameState(state) {
+            console.log("updateGameState",p_ind,"to state",state,"count",gameLogic.get_count(p_ind),"model",row_repeater.model);
         }
     }
 }
