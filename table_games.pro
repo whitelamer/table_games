@@ -47,7 +47,9 @@ DISTFILES += \
     physics.js \
     DragFishkaDelegate_Column.qml \
     DragFishkaDelegate_Row.qml \
-    DropAreaDelegate_Column.qml
+    DropAreaDelegate_Column.qml \
+    Fishka.qml \
+    temp_design.qml
 
 HEADERS += \
     process.h \

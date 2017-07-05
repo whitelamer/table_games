@@ -14,6 +14,10 @@ Canvas3D {
     property int turn: 0;
     property bool take_head: false
     property bool twice: false
+    property bool orientation: false
+    property double gl_axis_y: 1.8
+    property double gl_axis_x: 1.8
+    signal logicInited;
 
     onInitializeGL: {
         GLCode.initializeGL(cube);
@@ -74,6 +78,7 @@ Canvas3D {
 
     Component.onCompleted: {
         init();
+        logicInited();
     }
 //    Text {
 //        id: dice3_num
@@ -101,6 +106,9 @@ Canvas3D {
 //        renderType: Text.NativeRendering
 //        text: dice_rol[1]>0?":"+dice_rol[1]:" "
 //    }
+    function setFishkaPos(vec,index){
+        GLCode.fishkas_obj[index].position.set(vec.x,vec.y,0);
+    }
 
     function init() {
         now_player=0;
@@ -117,6 +125,7 @@ Canvas3D {
     }
 
     function get_count(index){
+        //console.log("get_count:",index);
         return game_fild_array[index].count;
     }
     function get_color(index){
@@ -213,6 +222,7 @@ Canvas3D {
         }
     }
     function can_drop_fishka(src, dst){
+        return true;
         //console.log("can_drop_fishka:",src,dst);
         if(logic_state!=5&&logic_state!=6)return false;
         if(src<0)return false;

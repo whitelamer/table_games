@@ -8,8 +8,8 @@ Item {
                 //,{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0}
                 //,{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:15,color:0}];
 
-    property var dice_first : [0];
-    property var dice_second : [0];
+//    property var dice_first : [0];
+//    property var dice_second : [0];
     property var dice_rol:[];
     property int state:0;
     property int drag_row_index: -1;

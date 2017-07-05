@@ -3,7 +3,8 @@ Qt.include("three.js")
 Qt.include("cannon.js")
 
 var camera, scene, renderer;
-var cube1,cube2,desk,desk_mat;
+var cube1,cube2,desk,desk_mat,    fishka_obj;
+var fishkas_obj = [];
 var pointLight;
 var directionalLight;
 // Physics variables
@@ -147,6 +148,41 @@ function initializeGL(canvas) {
         logic_state=3;
         //bullet.start();
     } );
+
+
+    var fishkaloader = new THREE.JSONLoader();
+    fishkaloader.useBufferGeometry = true;
+
+    fishkaloader.load( "./fishka.json", function ( geometry, materials) {
+        geometry.computeVertexNormals();
+        var bufferGeometry = new THREE.BufferGeometry();
+        bufferGeometry.fromGeometry(geometry);
+        bufferGeometry.computeBoundingBox();
+        var textureLoader = new THREE.TextureLoader();
+        var textureCase1 = textureLoader.load("img/ww_.png");
+        var textureCase2 = textureLoader.load("img/bb_.png");
+        materials[0].map=textureCase1;
+        //console.log(bufferGeometry.boundingBox.min.x,bufferGeometry.boundingBox.max.x);
+        fishka_obj = new THREE.Mesh( bufferGeometry, new THREE.MeshFaceMaterial(materials));
+        fishka_obj.castShadow=true;
+        fishka_obj.rotation.set(Math.PI*0.5,0,0);
+        fishka_obj.scale.set(0.66, 0.66, 0.66);
+        fishka_obj.position.set(1.35, 0, 0);
+        for(var i=0;i<15;i++){
+            fishka_obj.position.set(3.0, 1.0, 0);
+            fishkas_obj.push(fishka_obj.clone())
+            scene.add( fishkas_obj[i] );
+        }
+
+        fishka_obj.material=new THREE.MeshFaceMaterial(materials).clone()
+        fishka_obj.material.materials[0].map=textureCase2;
+        for(var i=0;i<15;i++){
+            fishka_obj.position.set(-3.0, -1.0, 0);
+            fishkas_obj.push(fishka_obj.clone())
+            scene.add( fishkas_obj[15+i] );
+        }
+    } );
+
     //desk_mat =new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, depthWrite: false });//,transparent: true, opacity:0.1,,depthTest: false
     desk_mat =new THREE.ShadowMaterial();//https://github.com/mrdoob/three.js/issues/1791
     desk_mat.opacity = 0.5;
@@ -194,7 +230,7 @@ function initializeGL(canvas) {
     //renderer.setSize(canvas.height, canvas.width);
 
     renderer.setSize(canvas.width, canvas.height);
-    if(canvas.width<canvas.height)
+    if(canvas.orientation)
         camera.rotation.z=+Math.PI/2;
 
     //////////////////////////////////////////////////////////////////WORLD
