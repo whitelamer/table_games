@@ -108,6 +108,9 @@ Item {
             }
             gl_axis_y:4.38
             gl_axis_x:3.5
+            phy_axis_x:3.1
+            phy_axis_y1:0.55
+            phy_axis_y2:3.8
             function translateToCanvas(x,y){
                 var newY=(x/background.width)*gl_axis_y*2-gl_axis_y
                 var newX=(y/background.height)*gl_axis_x*2-gl_axis_x

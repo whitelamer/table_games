@@ -15,8 +15,14 @@ Canvas3D {
     property bool take_head: false
     property bool twice: false
     property bool orientation: false
+
     property double gl_axis_y: 1.8
     property double gl_axis_x: 1.8
+
+    property double phy_axis_y1: 1.8
+    property double phy_axis_y2: 1.8
+    property double phy_axis_x: 1.8
+
 
     property bool gl_ready: false
     property bool logic_ready: false
@@ -47,9 +53,14 @@ Canvas3D {
             //            showdrop=!showdrop
         }
         onPressed: {
-            console.log("Game state:",logic_state);
+            console.log("Game state:",logic_state,mouse.x,mouse.y);
             if(showdrop)return;
-            drop_start = {x:mouseX,y:mouseY};
+            //drop_start = {x:mouseX,y:mouseY};
+            drop_start = translateToCanvas(mouse.x,mouse.y);
+            if(drop_start.y<0&&drop_start.y>-phy_axis_y1)
+                drop_start.y=-phy_axis_y1;
+            if(drop_start.y>0&&drop_start.y<phy_axis_y1)
+                drop_start.y=phy_axis_y1;
             op_dice1=1;
             op_dice2=1;
         }
@@ -57,11 +68,15 @@ Canvas3D {
             if(showdrop)return;
             if(!drop_start)return;
             var vector = { x: mouseX - drop_start.x, y: mouseY - drop_start.y };
-            var vector_start = { x: drop_start.x/width, y: drop_start.y/height };
+            vector = translateToCanvas(mouse.x,mouse.y);
+            var vector_start = drop_start;//{ x: drop_start.x/width, y: drop_start.y/height };
             drop_start = null;
             var dist = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
-            vector.x /= dist; vector.y /= dist;
-            //console.log("vector",vector.x,vector.y);
+            //vector.x /= dist; vector.y /= dist;
+            console.log("Game state:",logic_state,mouse.x,mouse.y);
+            console.log("vector",vector.x,vector.y);
+            console.log("vector_start",vector_start.x,vector_start.y);
+
             GLCode.dropDice(vector,vector_start);
 
             drop_finish_chk_timer.start();
@@ -150,9 +165,9 @@ Canvas3D {
     }
 
     function make_turn(src, dst){
-        console.log("Game make_turn logic_state:",logic_state,src,"->",dst);
+        //console.log("Game make_turn logic_state:",logic_state,src,"->",dst);
         if(logic_state!=5&&logic_state!=6)return;
-        console.log("Game make_turn:",src,"->",dst,now_player==0?"white[0]":"black[1]");
+        //console.log("Game make_turn:",src,"->",dst,now_player==0?"white[0]":"black[1]");
         var tmp=game_fild_array
         tmp[src].count=tmp[src].count-1
         game_fild_array=tmp
@@ -221,20 +236,26 @@ Canvas3D {
         return logic_state;
     }
     function can_drag_fishka(index){
-        console.log("can_drag_fishka:",index,game_fild_array[index].color,now_player==0?"white[0]":"black[1]",take_head);
+        //console.log("can_drag_fishka:",index,game_fild_array[index].color,now_player==0?"white[0]":"black[1]",take_head);
         //console.log("Game state:",logic_state);
         if(logic_state!=5&&logic_state!=6)return false;
 
-        if(game_fild_array[index].color==now_player&&index==11&&now_player==1&&!take_head){console.log("can_drag_fishka true");return true;}
+        if(game_fild_array[index].color==now_player&&index==11&&now_player==1&&!take_head){
+            //console.log("can_drag_fishka true");
+            return true;
+        }
 
-        if(game_fild_array[index].color==now_player&&index==23&&now_player==0&&!take_head){console.log("can_drag_fishka true");return true;}
+        if(game_fild_array[index].color==now_player&&index==23&&now_player==0&&!take_head){
+            //console.log("can_drag_fishka true");
+            return true;
+        }
 
         if(index!=23&&index!=11)
         {
-            console.log("can_drag_fishka",game_fild_array[index].color==now_player);
+            //console.log("can_drag_fishka",game_fild_array[index].color==now_player);
             return game_fild_array[index].color==now_player;
         }else{
-            console.log("can_drag_fishka false");
+            //console.log("can_drag_fishka false");
             return false;
         }
     }

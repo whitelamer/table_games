@@ -189,6 +189,7 @@ function initializeGL(canvas) {
 
     //desk_mat =new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, depthWrite: false });//,transparent: true, opacity:0.1,,depthTest: false
     desk_mat =new THREE.ShadowMaterial();//https://github.com/mrdoob/three.js/issues/1791
+
     desk_mat.opacity = 0.5;
     desk = new THREE.Mesh(new THREE.BoxGeometry(60.8, 30.5, .001), desk_mat);
     desk.position.set(0, 0, 0.0005);
@@ -264,26 +265,65 @@ function initializeGL(canvas) {
                                  }));
 
     world.addBody(new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:desk_body_material}));
-
-    var barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
+    var barrier;
+    barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
     barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
-    barrier.position.set(0, 1.8, 0);
+    barrier.position.set(0, phy_axis_y2, 0);
     world.addBody(barrier);
+
+//    barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
+//    barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+//    barrier.position.set(0, phy_axis_y1, 0);
+//    world.addBody(barrier);
+
+    barrier = new CANNON.Body({mass:0, shape:new CANNON.Box(new CANNON.Vec3(phy_axis_x*2, phy_axis_y1,20.0)), material:barrier_body_material});
+    barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), 0);
+    //barrier.position.set(phy_axis_x*2, phy_axis_y1*2, 0);
+    world.addBody(barrier);
+
 
     barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
     barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
-    barrier.position.set(0, -1.8, 0);
+    barrier.position.set(0, -phy_axis_y2, 0);
     world.addBody(barrier);
+
+//    barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
+//    barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), Math.PI / 2);
+//    barrier.position.set(0, -phy_axis_y1, 0);
+//    world.addBody(barrier);
 
     barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
     barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), -Math.PI / 2);
-    barrier.position.set(3.42, 0, 0);
+    barrier.position.set(phy_axis_x, 0, 0);
     world.addBody(barrier);
 
     barrier = new CANNON.Body({mass:0, shape:new CANNON.Plane(), material:barrier_body_material});
     barrier.quaternion.setFromAxisAngle(new CANNON.Vec3(0, 1, 0), Math.PI / 2);
-    barrier.position.set(-3.42, 0, 0);
+    barrier.position.set(-phy_axis_x, 0, 0);
     world.addBody(barrier);
+
+
+    /*var wall = new THREE.Mesh(new THREE.BoxGeometry(10, 10, .01), new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, opacity:0.8 }));
+    wall.rotation.set(0,-Math.PI / 2,0);
+    wall.position.set(phy_axis_x, 0, 0);
+    scene.add(wall);
+
+    wall = new THREE.Mesh(new THREE.BoxGeometry(10, 10, .01), new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, opacity:0.8 }));
+    wall.rotation.set(0,Math.PI / 2,0);
+    wall.position.set(-phy_axis_x, 0, 0);
+    scene.add(wall);
+
+
+
+    var wall = new THREE.Mesh(new THREE.BoxGeometry(10, 10, .01), new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, opacity:0.8 }));
+    wall.rotation.set(-Math.PI / 2,0,0);
+    wall.position.set(0, -phy_axis_y2, 0);
+    scene.add(wall);
+
+    wall = new THREE.Mesh(new THREE.BoxGeometry(10, 10, .01), new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, opacity:0.8 }));
+    wall.rotation.set(Math.PI / 2,0,0);
+    wall.position.set(0, -phy_axis_y1, 0);
+    scene.add(wall);*/
     //    var groundBody = new CANNON.Body({
     //                                         mass: 0 // mass == 0 makes the body static
     //                                     });
@@ -342,11 +382,18 @@ function dropDice(vector,vector_start){
     cube1.material.materials[1].opacity=op_dice1;
     cube2.material.materials[1].opacity=op_dice2;
 
-    body1.position= new CANNON.Vec3((vector_start.y*3.42)*2-3.42+0.35, vector_start.x*1.8*2-1.8, 4.0);
-    body2.position= new CANNON.Vec3((vector_start.y*3.42)*2-3.42-0.35, vector_start.x*1.8*2-1.8, 4.0);
+    //body1.position= new CANNON.Vec3((vector_start.y*3.42)*2-3.42+0.35, vector_start.x*1.8*2-1.8, 4.0);
+    //body2.position= new CANNON.Vec3((vector_start.y*3.42)*2-3.42-0.35, vector_start.x*1.8*2-1.8, 4.0);
 
-    body1.velocity=new CANNON.Vec3(vector.y*5, vector.x*5, 0);
-    body2.velocity=new CANNON.Vec3(vector.y*5, vector.x*5, 0);
+    body1.position= new CANNON.Vec3(vector_start.x+0.35, vector_start.y, 4.0);
+    body2.position= new CANNON.Vec3(vector_start.x-0.35, vector_start.y, 4.0);
+    var tmp=new CANNON.Vec3(vector.x, vector.y, 0);
+
+    //body1.position.vsub(tmp,tmp);
+    tmp.vsub(body1.position,tmp);
+
+    body1.velocity=tmp;//new CANNON.Vec3(vector.x, vector.y, 0);
+    body2.velocity=tmp.clone();//new CANNON.Vec3(vector.x, vector.y, 0);
     body1.angularVelocity.set(Math.floor(Math.random()*20)+5,Math.floor(Math.random()*10)+5,Math.floor(Math.random()*15)+5);
     body2.angularVelocity.set(Math.floor(Math.random()*20)+5,Math.floor(Math.random()*10)+5,Math.floor(Math.random()*15)+5);
 

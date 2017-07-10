@@ -37,7 +37,7 @@ Rectangle{
             }
         }
         onDropped: {
-            console.log("onDropped:"+main_form.drag_item)
+            //console.log("onDropped:"+main_form.drag_item)
             gameLogic.make_turn(drop.source.p_ind,parent.p_ind);
             drop.source.drop_link=parent;
             drop.source.index=gameLogic.get_count(parent.p_ind)-1;
@@ -47,7 +47,7 @@ Rectangle{
             anchors.fill: parent
             hoverEnabled: parent.enabled&&main_form.drag_need_resume
             onClicked: {
-                console.log("onClicked:",main_form.drag_item,parent.parent)
+                //console.log("onClicked:",main_form.drag_item,parent.parent)
                 gameLogic.make_turn(gameLogic.drag_row_index,parent.parent.p_ind);
                 main_form.drag_item.drop_link=parent.parent;
                 main_form.drag_item.index=gameLogic.get_count(parent.parent.p_ind)-1;
