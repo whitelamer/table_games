@@ -15,17 +15,17 @@ Item {
 
 
     anchors.horizontalCenter: drop_link.horizontalCenter
-    anchors.top: drop_link.rotation!=180?drop_link.top:undefined
-    anchors.bottom: drop_link.rotation==180?drop_link.bottom:undefined
+    anchors.top: drop_link.rotation!=0?drop_link.top:undefined
+    anchors.bottom: drop_link.rotation==0?drop_link.bottom:undefined
     //rotation: drop_link.rotation
-    anchors.topMargin: drop_link.rotation!=180?fiska_size*index:0
-    anchors.bottomMargin: drop_link.rotation==180?fiska_size*index:0
+    anchors.topMargin: drop_link.rotation!=0?fiska_size*index:0
+    anchors.bottomMargin: drop_link.rotation==0?fiska_size*index:0
     //anchors.verticalCenter: parent.verticalCenter
-    Image{
-        id:delegate_image
-        anchors.fill: parent
-        source: gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
-    }
+//    Image{
+//        id:delegate_image
+//        anchors.fill: parent
+//        source: gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
+//    }
     Drag.active: dragArea.drag.active
     Drag.hotSpot.x: 35
     Drag.hotSpot.y: 35
@@ -46,29 +46,29 @@ Item {
         }
         onReleased: {
             if(parent.Drag.target==null){
-                console.log("draging:"+main_form.drag_item)
+                //console.log("draging:"+main_form.drag_item)
                 var obj=main_form;
                 while(obj!=null){
                     obj=obj.childAt(main_form.drag_item.x+(delegateRoot.width/2),main_form.drag_item.y+(delegateRoot.height/2));
-                    console.log("child:"+obj)
+                    //console.log("child:"+obj)
                 }
                 global_area.hoverEnabled=true
                 main_form.drag_need_resume=true
-                console.log("drop reseted")
+                //console.log("drop reseted")
                 return;
             }
             global_area.hoverEnabled=false
             main_form.drag_item=null;
             main_form.drag_need_resume=false
-            console.log("parent.Drag.target:"+ parent.Drag.target)
+            //console.log("parent.Drag.target:"+ parent.Drag.target)
             var ret = parent.Drag.drop()
-            console.log("drop result:" + ret)
+            //console.log("drop result:" + ret)
             //row_repeater.updateModel();
 
         }
     }
     states: [State {
-            when: dragArea.drag.active
+            when: dragArea.drag.active||main_form.drag_item==delegateRoot
             AnchorChanges {
                 target: delegateRoot;
                 anchors.verticalCenter: undefined;
@@ -81,7 +81,7 @@ Item {
         //console.log("Component.onCompleted",p_ind,index,gameLogic.get_count(p_ind));
         this.objectName=p_ind+"x"+index
         main_form.newgamestate.connect(delegateRoot.updateDrag)
-        dddindex=main_form.fishka_count++
+        //dddindex=main_form.fishka_count++
         //main_form.fishka_count++
     }
     function updateDrag(state) {
@@ -92,13 +92,13 @@ Item {
 //            return
 //        }
         //if(!(index)||null)return;
-        console.log("onGamestateChanged",p_ind,index,gameLogic.get_count(p_ind));
+        //console.log("onGamestateChanged",p_ind,index,gameLogic.get_count(p_ind));
         dragArea.enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
-        delegate_image.source=gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
+        //delegate_image.source=gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
         //console.log("onGamestateChanged",state,index,gameLogic.get_count(p_ind),enabled);
     }
     onIndexChanged: {
-        console.log("onIndexChanged",p_ind,index,gameLogic.get_count(p_ind));
+        //console.log("onIndexChanged",p_ind,index,gameLogic.get_count(p_ind));
         //dragArea.enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
         //delegate_image.source=gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
         delegateRoot.updateDrag(gameLogic.logic_state)
@@ -109,6 +109,9 @@ Item {
         delegateRoot.updateDrag(gameLogic.logic_state)
     }
     onXChanged: {
-        gameLogic.setFishkaPos(gameLogic.translateToCanvas(x,y),dddindex);
+        gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
+    }
+    onYChanged: {
+        gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
     }
 }

@@ -49,7 +49,8 @@ DISTFILES += \
     DragFishkaDelegate_Row.qml \
     DropAreaDelegate_Column.qml \
     Fishka.qml \
-    temp_design.qml
+    temp_design.qml \
+    Drop.qml
 
 HEADERS += \
     process.h \

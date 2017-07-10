@@ -31,12 +31,12 @@ Window {
 
         onFinished: {
 
-            //if(output.length==0&&p_state<2){
+            if(output.length==0&&p_state<2){
                 console.log("Calibration falid at state:"+p_state)
                 heigth=1080;
                 mainIndex.source="Index1x.qml"
                 return;
-            //}
+            }
             if(p_state==0){
                 var touchs=output.split('\n')
                 console.log("Detect "+(touchs.length-1)+" touchscreens:"+touchs)
@@ -104,7 +104,12 @@ Window {
                 calibration_process.start("xinput",["set-int-prop",touch_2,"Evdev Axes Swap","8","0"])
                 return;
             }
-            mainIndex.source="Index2x.qml"
+
+            heigth=1080;
+            mainIndex.source="Index1x.qml"
+
+
+            //mainIndex.source="Index2x.qml"
             console.log(output);
         }
     }

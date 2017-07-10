@@ -17,10 +17,17 @@ Canvas3D {
     property bool orientation: false
     property double gl_axis_y: 1.8
     property double gl_axis_x: 1.8
+
+    property bool gl_ready: false
+    property bool logic_ready: false
+    property bool dice_ready: false
+    property bool fiska_ready: false
+
     signal logicInited;
 
     onInitializeGL: {
         GLCode.initializeGL(cube);
+        init();
     }
 
     onPaintGL: {
@@ -76,10 +83,10 @@ Canvas3D {
         }
     }
 
-    Component.onCompleted: {
-        init();
-        logicInited();
-    }
+//    Component.onCompleted: {
+//        init();
+//        logicInited();
+//    }
 //    Text {
 //        id: dice3_num
 //        color:"white"
@@ -107,6 +114,7 @@ Canvas3D {
 //        text: dice_rol[1]>0?":"+dice_rol[1]:" "
 //    }
     function setFishkaPos(vec,index){
+        //console.log("setFishka",index,"Pos:",vec.x,vec.y);
         GLCode.fishkas_obj[index].position.set(vec.x,vec.y,0);
     }
 
@@ -119,9 +127,15 @@ Canvas3D {
             else
                 tmp.push({count:15,color:1})
         tmp.push({count:15,color:0})
-        console.log("game_fild_array:"+tmp);
         game_fild_array=tmp
         logic_state=2;
+        logic_ready=true;
+        chk_ready();
+    }
+
+    function chk_ready(){
+        if(gl_ready&&logic_ready&&dice_ready&&fiska_ready)
+            logicInited();
     }
 
     function get_count(index){

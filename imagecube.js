@@ -146,6 +146,8 @@ function initializeGL(canvas) {
         cube2.material.materials[0].transparent=true
         scene.add( cube2 );
         logic_state=3;
+        dice_ready=true;
+        chk_ready();
         //bullet.start();
     } );
 
@@ -161,26 +163,28 @@ function initializeGL(canvas) {
         var textureLoader = new THREE.TextureLoader();
         var textureCase1 = textureLoader.load("img/ww_.png");
         var textureCase2 = textureLoader.load("img/bb_.png");
-        materials[0].map=textureCase1;
+        materials[0].map=textureCase2;
         //console.log(bufferGeometry.boundingBox.min.x,bufferGeometry.boundingBox.max.x);
         fishka_obj = new THREE.Mesh( bufferGeometry, new THREE.MeshFaceMaterial(materials));
         fishka_obj.castShadow=true;
         fishka_obj.rotation.set(Math.PI*0.5,0,0);
         fishka_obj.scale.set(0.66, 0.66, 0.66);
-        fishka_obj.position.set(1.35, 0, 0);
+        //fishka_obj.position.set(1.35, 0, 0);
         for(var i=0;i<15;i++){
-            fishka_obj.position.set(3.0, 1.0, 0);
+            //fishka_obj.position.set(3.0, 1.0, 0);
             fishkas_obj.push(fishka_obj.clone())
             scene.add( fishkas_obj[i] );
         }
 
         fishka_obj.material=new THREE.MeshFaceMaterial(materials).clone()
-        fishka_obj.material.materials[0].map=textureCase2;
+        fishka_obj.material.materials[0].map=textureCase1;
         for(var i=0;i<15;i++){
-            fishka_obj.position.set(-3.0, -1.0, 0);
+            //fishka_obj.position.set(-3.0, -1.0, 0);
             fishkas_obj.push(fishka_obj.clone())
             scene.add( fishkas_obj[15+i] );
         }
+        fiska_ready=true;
+        chk_ready();
     } );
 
     //desk_mat =new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, depthWrite: false });//,transparent: true, opacity:0.1,,depthTest: false
@@ -196,12 +200,12 @@ function initializeGL(canvas) {
     // Lights
     scene.add(new THREE.AmbientLight(0x444444));
 
-    directionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
 
-    directionalLight.position.y = 4.5;
-    directionalLight.position.z = 7.0;
-    directionalLight.position.x = 2.5;
-    directionalLight.position.normalize();
+    directionalLight.position.y = 8.5;
+    directionalLight.position.z = 27.0;
+    directionalLight.position.x = 6.5;
+    //directionalLight.position.normalize();
     directionalLight.castShadow = true;
     directionalLight.distance = 50;
     directionalLight.shadow.camera.near = 0;
@@ -314,6 +318,8 @@ function initializeGL(canvas) {
     //body2.angularVelocity.set(1,5,10);
     body2.angularDamping = 0.5;
     world.addBody(body2);
+    gl_ready=true;
+    chk_ready();
     //dropDice();
 }
 
