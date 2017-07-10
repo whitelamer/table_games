@@ -117,7 +117,10 @@ Canvas3D {
         //console.log("setFishka",index,"Pos:",vec.x,vec.y);
         GLCode.fishkas_obj[index].position.set(vec.x,vec.y,0);
     }
-
+    function setFishkaShadow(val,index){
+        //console.log("setFishka",index,"Pos:",vec.x,vec.y);
+        GLCode.fishkas_obj[index].castShadow=val;
+    }
     function init() {
         now_player=0;
         var tmp=[];
@@ -236,7 +239,7 @@ Canvas3D {
         }
     }
     function can_drop_fishka(src, dst){
-        return true;
+        //return true;
         //console.log("can_drop_fishka:",src,dst);
         if(logic_state!=5&&logic_state!=6)return false;
         if(src<0)return false;

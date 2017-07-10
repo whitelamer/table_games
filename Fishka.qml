@@ -18,14 +18,28 @@ Item {
     anchors.top: drop_link.rotation!=0?drop_link.top:undefined
     anchors.bottom: drop_link.rotation==0?drop_link.bottom:undefined
     //rotation: drop_link.rotation
-    anchors.topMargin: drop_link.rotation!=0?fiska_size*index:0
-    anchors.bottomMargin: drop_link.rotation==0?fiska_size*index:0
+    anchors.topMargin: drop_link.rotation!=0?fiska_size*index+5:0
+    anchors.bottomMargin: drop_link.rotation==0?fiska_size*index+5:0
     //anchors.verticalCenter: parent.verticalCenter
-//    Image{
-//        id:delegate_image
-//        anchors.fill: parent
-//        source: gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
-//    }
+    Image{
+        id:image_select
+        visible: main_form.drag_item==parent
+        height: 90
+        width: 90
+        anchors.centerIn: parent
+        source: "./img/select_me.png"
+
+        NumberAnimation {
+            target: image_select
+            property: "rotation"
+            duration: 3000
+            from: 0
+            to:360
+            easing.type: Easing.Linear
+            loops: Animation.Infinite
+            running: image_select.visible
+        }
+    }
     Drag.active: dragArea.drag.active
     Drag.hotSpot.x: 35
     Drag.hotSpot.y: 35
@@ -43,6 +57,7 @@ Item {
             gameLogic.drag_row_index=p_ind;
             main_form.drag_item=drag.target;
             main_form.drag_need_resume=false;
+            gameLogic.setFishkaShadow(false,dddindex);
         }
         onReleased: {
             if(parent.Drag.target==null){
@@ -60,6 +75,7 @@ Item {
             global_area.hoverEnabled=false
             main_form.drag_item=null;
             main_form.drag_need_resume=false
+            gameLogic.setFishkaShadow(true,dddindex);
             //console.log("parent.Drag.target:"+ parent.Drag.target)
             var ret = parent.Drag.drop()
             //console.log("drop result:" + ret)
