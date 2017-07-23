@@ -3,9 +3,8 @@ TEMPLATE = app
 QT += qml quick widgets
 CONFIG += c++11 link_pkgconfig
 CONFIG+=qml_debug
-PKGCONFIG += bullet
-SOURCES += main.cpp \
-    bulletsim.cpp
+#PKGCONFIG += bullet
+SOURCES += main.cpp
 
 RESOURCES +=
 
@@ -38,7 +37,6 @@ DISTFILES += \
     main.qml \
     calibration.sh \
     DropAreaDelegate.qml \
-    GameLogic.qml \
     cannon.js \
     Index1x.qml \
     Index2x.qml \
@@ -53,5 +51,4 @@ DISTFILES += \
     Drop.qml
 
 HEADERS += \
-    process.h \
-    bulletsim.h
+    process.h

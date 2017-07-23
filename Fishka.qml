@@ -4,6 +4,7 @@ Item {
     property int p_ind: drop_link.p_ind
     property int index: 0
     property int dddindex: 0
+    property var dddobj: null
     property int fiska_size: 106
     property var drop_link: null
     property string image_white: "1w.png"
@@ -23,11 +24,11 @@ Item {
     //anchors.verticalCenter: parent.verticalCenter
     Image{
         id:image_select
-        visible: main_form.drag_item==parent
-        height: 90
-        width: 90
+//        visible: main_form.drag_item==parent
+//        height: 90
+//        width: 90
         anchors.centerIn: parent
-        source: "./img/select_me.png"
+        source: main_form.drag_item!=parent?"./img/shadow_+.png":"./img/select_me.png"
 
         NumberAnimation {
             target: image_select
@@ -37,7 +38,7 @@ Item {
             to:360
             easing.type: Easing.Linear
             loops: Animation.Infinite
-            running: image_select.visible
+            running: main_form.drag_item==image_select.parent
         }
     }
     Drag.active: dragArea.drag.active
@@ -57,7 +58,7 @@ Item {
             gameLogic.drag_row_index=p_ind;
             main_form.drag_item=drag.target;
             main_form.drag_need_resume=false;
-            gameLogic.setFishkaShadow(false,dddindex);
+            //gameLogic.setFishkaShadow(false,dddindex);
         }
         onReleased: {
             if(parent.Drag.target==null){
@@ -75,12 +76,23 @@ Item {
             global_area.hoverEnabled=false
             main_form.drag_item=null;
             main_form.drag_need_resume=false
-            gameLogic.setFishkaShadow(true,dddindex);
+            //gameLogic.setFishkaShadow(true,dddindex);
             //console.log("parent.Drag.target:"+ parent.Drag.target)
             var ret = parent.Drag.drop()
             //console.log("drop result:" + ret)
             //row_repeater.updateModel();
 
+        }
+        onEnabledChanged: {
+//            if(!dddobj)dddobj=gameLogic.get3dObj(dddindex);
+//            if(!dddobj)return;
+//            //var dddobj=gameLogic.get3dObj(dddindex);
+//            console.log("Fishka onEnabledChanged",dragArea.enabled,dddindex ,dddobj);
+//            if(dragArea.enabled){
+//                dddobj.material.materials[0].color.setHex(0xffffff);
+//            }else{
+//                dddobj.material.materials[0].color.setHex(0x000000);
+//            }
         }
     }
     states: [State {
@@ -94,8 +106,9 @@ Item {
             }
         }]
     Component.onCompleted: {
-        //console.log("Component.onCompleted",p_ind,index,gameLogic.get_count(p_ind));
+        //console.log("Component.onCompleted",p_ind,index,dddindex);
         this.objectName=p_ind+"x"+index
+        dddobj=gameLogic.get3dObj(dddindex);
         main_form.newgamestate.connect(delegateRoot.updateDrag)
         //dddindex=main_form.fishka_count++
         //main_form.fishka_count++
@@ -110,6 +123,7 @@ Item {
         //if(!(index)||null)return;
         //console.log("onGamestateChanged",p_ind,index,gameLogic.get_count(p_ind));
         dragArea.enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
+
         //delegate_image.source=gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
         //console.log("onGamestateChanged",state,index,gameLogic.get_count(p_ind),enabled);
     }
@@ -125,9 +139,15 @@ Item {
         delegateRoot.updateDrag(gameLogic.logic_state)
     }
     onXChanged: {
-        gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
+        if(!dddobj)dddobj=gameLogic.get3dObj(dddindex);
+        var vec=gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5)
+        dddobj.position.set(vec.x,vec.y,0);
+        //gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
     }
     onYChanged: {
-        gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
+        if(!dddobj)dddobj=gameLogic.get3dObj(dddindex);
+        var vec=gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5)
+        dddobj.position.set(vec.x,vec.y,0);
+        //gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
     }
 }

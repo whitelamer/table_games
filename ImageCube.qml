@@ -1,6 +1,6 @@
 import QtQuick 2.0
 import QtCanvas3D 1.0
-import BulletSim 1.0
+//import BulletSim 1.0
 import "imagecube.js" as GLCode
 //import "cannon.js" as Cannon
 Canvas3D {
@@ -43,7 +43,37 @@ Canvas3D {
     onResizeGL: {
         GLCode.resizeGL(cube);
     }
+    Text{
+        id:label_drop
+        text: "PRESS FOR DROP DICE"
+        font.bold:true
+        font.pointSize:24
+        visible: logic_state==3&&!showdrop
+        opacity: 0
+        anchors.centerIn: parent
+        anchors.horizontalCenterOffset: (1-now_player*2)*parent.width/4
+        SequentialAnimation{
 
+            loops: Animation.Infinite
+            running: label_drop.visible
+            NumberAnimation {
+                target: label_drop
+                property: "opacity"
+                duration: 1500
+                to:1
+                easing.type: Easing.Linear
+                alwaysRunToEnd:true
+            }
+            NumberAnimation {
+                target: label_drop
+                property: "opacity"
+                duration: 1500
+                to:0
+                easing.type: Easing.Linear
+                alwaysRunToEnd:true
+            }
+        }
+    }
     MouseArea{
         property var drop_start: null
         anchors.fill: parent
@@ -82,6 +112,8 @@ Canvas3D {
             drop_finish_chk_timer.start();
         }
     }
+
+
     Timer{
         id:drop_finish_chk_timer
         running: false
@@ -98,44 +130,48 @@ Canvas3D {
         }
     }
 
-//    Component.onCompleted: {
-//        init();
-//        logicInited();
+    //    Component.onCompleted: {
+    //        init();
+    //        logicInited();
+    //    }
+    //    Text {
+    //        id: dice3_num
+    //        color:"white"
+    //        font.bold:true
+    //        font.pointSize:0
+    //        renderType: Text.NativeRendering
+    //        text: "now_player:"+now_player+" "
+    //    }
+    //    Text {
+    //        id: dice1_num
+    //        color:"white"
+    //        anchors.left: dice3_num.right
+    //        font.bold:true
+    //        font.pointSize:24
+    //        renderType: Text.NativeRendering
+    //        text: dice_rol[0]>0?dice_rol[0]:" "
+    //    }
+    //    Text {
+    //        id: dice2_num
+    //        color:"white"
+    //        anchors.left: dice1_num.right
+    //        font.bold:true
+    //        font.pointSize:24
+    //        renderType: Text.NativeRendering
+    //        text: dice_rol[1]>0?":"+dice_rol[1]:" "
+    //    }
+//    function setFishkaPos(vec,index){
+//        //console.log("setFishka",index,"Pos:",vec.x,vec.y);
+//        GLCode.fishkas_obj[index].position.set(vec.x,vec.y,0);
 //    }
-//    Text {
-//        id: dice3_num
-//        color:"white"
-//        font.bold:true
-//        font.pointSize:0
-//        renderType: Text.NativeRendering
-//        text: "now_player:"+now_player+" "
+//    function setFishkaShadow(val,index){
+//        //console.log("setFishka",index,"Pos:",vec.x,vec.y);
+//        GLCode.fishkas_obj[index].castShadow=val;
 //    }
-//    Text {
-//        id: dice1_num
-//        color:"white"
-//        anchors.left: dice3_num.right
-//        font.bold:true
-//        font.pointSize:24
-//        renderType: Text.NativeRendering
-//        text: dice_rol[0]>0?dice_rol[0]:" "
-//    }
-//    Text {
-//        id: dice2_num
-//        color:"white"
-//        anchors.left: dice1_num.right
-//        font.bold:true
-//        font.pointSize:24
-//        renderType: Text.NativeRendering
-//        text: dice_rol[1]>0?":"+dice_rol[1]:" "
-//    }
-    function setFishkaPos(vec,index){
-        //console.log("setFishka",index,"Pos:",vec.x,vec.y);
-        GLCode.fishkas_obj[index].position.set(vec.x,vec.y,0);
+    function get3dObj(index){
+        return GLCode.fishkas_obj[index];
     }
-    function setFishkaShadow(val,index){
-        //console.log("setFishka",index,"Pos:",vec.x,vec.y);
-        GLCode.fishkas_obj[index].castShadow=val;
-    }
+
     function init() {
         now_player=0;
         var tmp=[];
@@ -211,7 +247,7 @@ Canvas3D {
                     logic_state=6;
                 }
         dice_rol=tmp
-        if(tmp[0]+tmp[1]==0){
+        if(chk_end_turn()){
             now_player=!now_player
             if(now_player==1)turn++;
             logic_state=3;
@@ -235,28 +271,46 @@ Canvas3D {
     function get_state(){
         return logic_state;
     }
+    function chk_end_turn(){
+        if(dice_rol[0]+dice_rol[1]==0)return true;
+        var can_drag=true;
+        for(var i=0;i<24;i++){
+            if(can_drag_fishka(i))can_drag=false;
+        }
+        return can_drag;
+    }
+
     function can_drag_fishka(index){
         //console.log("can_drag_fishka:",index,game_fild_array[index].color,now_player==0?"white[0]":"black[1]",take_head);
         //console.log("Game state:",logic_state);
         if(logic_state!=5&&logic_state!=6)return false;
 
-        if(game_fild_array[index].color==now_player&&index==11&&now_player==1&&!take_head){
-            //console.log("can_drag_fishka true");
-            return true;
-        }
+//        if(game_fild_array[index].color==now_player&&index==11&&now_player==1&&!take_head){
+//            //console.log("can_drag_fishka true");
+//            return true;
+//        }
 
-        if(game_fild_array[index].color==now_player&&index==23&&now_player==0&&!take_head){
-            //console.log("can_drag_fishka true");
-            return true;
-        }
+//        if(game_fild_array[index].color==now_player&&index==23&&now_player==0&&!take_head){
+//            //console.log("can_drag_fishka true");
+//            return true;
+//        }
 
-        if(index!=23&&index!=11)
+        //if(index!=23&&index!=11)
+        if((index==11&&now_player==1&&take_head)||(index==23&&now_player==0&&take_head))
         {
             //console.log("can_drag_fishka",game_fild_array[index].color==now_player);
-            return game_fild_array[index].color==now_player;
-        }else{
-            //console.log("can_drag_fishka false");
             return false;
+        }else{
+            if(game_fild_array[index].color!=now_player)return false;
+            var can_drop=false;
+            if(dice_rol[0]>0&&can_drop_fishka(index,(index+24-dice_rol[0])%24))can_drop=true
+            if(dice_rol[1]>0&&can_drop_fishka(index,(index+24-dice_rol[1])%24))can_drop=true
+            if(dice_rol[0]+dice_rol[1]>0&&can_drop_fishka(index,(index+24-(dice_rol[0]+dice_rol[1]))%24))can_drop=true
+//            for(var i=index-1;i!=index;i--%24){
+//                if()can_drop=true;
+//                console.log("for",index,i,can_drop);
+//            }
+            return can_drop;
         }
     }
     function can_drop_fishka(src, dst){
@@ -279,6 +333,13 @@ Canvas3D {
 
         //console.log("can_drop_fishka:"+src+"->"+dst+" dice:"+dice_rol+" result:"+res);
         return res;
+    }
+    function chk_at_home(){
+        if(now_player){
+            return (get_count(12)+get_count(13)+get_count(14)+get_count(15)+get_count(16)+get_count(17))==15;
+        }else{
+            return (get_count(0)+get_count(1)+get_count(2)+get_count(3)+get_count(4)+get_count(5))==15;
+        }
     }
 
     function get_dice(ind){
@@ -314,6 +375,14 @@ Canvas3D {
         }
         dice_rol=tmp;
     }
+    function can_do_turn(){
+        for(var i=0;i<24;i++){
+
+        }
+
+        return false;
+    }
+
     property double op_dice1: 1
     property double op_dice2: 1
 
@@ -341,12 +410,12 @@ Canvas3D {
             GLCode.hide_dice2();
         }
     }
-//    Behavior on op_dice1{
-//        NumberAnimation { from:1;to:0;duration: 500 }
-//        NumberAnimation { from:0;to:1;duration: 0 }
-//    }
-//    Behavior on op_dice2{
-//        NumberAnimation { from:1;to:0;duration: 500 }
-//        NumberAnimation { from:0;to:1;duration: 0 }
-//    }
+    //    Behavior on op_dice1{
+    //        NumberAnimation { from:1;to:0;duration: 500 }
+    //        NumberAnimation { from:0;to:1;duration: 0 }
+    //    }
+    //    Behavior on op_dice2{
+    //        NumberAnimation { from:1;to:0;duration: 500 }
+    //        NumberAnimation { from:0;to:1;duration: 0 }
+    //    }
 }

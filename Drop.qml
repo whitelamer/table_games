@@ -51,7 +51,7 @@ Rectangle{
                 gameLogic.make_turn(gameLogic.drag_row_index,parent.parent.p_ind);
                 main_form.drag_item.drop_link=parent.parent;
                 main_form.drag_item.index=gameLogic.get_count(parent.parent.p_ind)-1;
-                gameLogic.setFishkaShadow(true,main_form.drag_item.dddindex);
+                //gameLogic.setFishkaShadow(true,main_form.drag_item.dddindex);
                 main_form.drag_item=null;
             }
         }

@@ -155,7 +155,7 @@ function initializeGL(canvas) {
     var fishkaloader = new THREE.JSONLoader();
     fishkaloader.useBufferGeometry = true;
 
-    fishkaloader.load( "./fishka.json", function ( geometry, materials) {
+    fishkaloader.load( "./fishka_small2.json", function ( geometry, materials) {
         geometry.computeVertexNormals();
         var bufferGeometry = new THREE.BufferGeometry();
         bufferGeometry.fromGeometry(geometry);
@@ -166,9 +166,10 @@ function initializeGL(canvas) {
         materials[0].map=textureCase2;
         //console.log(bufferGeometry.boundingBox.min.x,bufferGeometry.boundingBox.max.x);
         fishka_obj = new THREE.Mesh( bufferGeometry, new THREE.MeshFaceMaterial(materials));
-        fishka_obj.castShadow=true;
+        fishka_obj.castShadow=false;
         fishka_obj.rotation.set(Math.PI*0.5,0,0);
-        fishka_obj.scale.set(0.66, 0.66, 0.66);
+        var scale=0.2
+        fishka_obj.scale.set(scale, scale, scale);
         //fishka_obj.position.set(1.35, 0, 0);
         for(var i=0;i<15;i++){
             //fishka_obj.position.set(3.0, 1.0, 0);
@@ -201,14 +202,16 @@ function initializeGL(canvas) {
     // Lights
     scene.add(new THREE.AmbientLight(0x444444));
 
-    directionalLight = new THREE.DirectionalLight(0xffffff, 0.7);
+    directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
 
     directionalLight.position.y = 8.5;
-    directionalLight.position.z = 27.0;
+    directionalLight.position.z = 20.0;
     directionalLight.position.x = 6.5;
+
+    directionalLight.lookAt(new THREE.Vector3(0,0,0));
     //directionalLight.position.normalize();
     directionalLight.castShadow = true;
-    directionalLight.distance = 50;
+    directionalLight.distance = 100;
     directionalLight.shadow.camera.near = 0;
     directionalLight.shadow.camera.far = 500;
     directionalLight.shadow.camera.fov = 50;
