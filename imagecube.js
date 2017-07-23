@@ -155,7 +155,7 @@ function initializeGL(canvas) {
     var fishkaloader = new THREE.JSONLoader();
     fishkaloader.useBufferGeometry = true;
 
-    fishkaloader.load( "./fishka_small2.json", function ( geometry, materials) {
+    fishkaloader.load( "./fishka_small2.json", function ( geometry, materials) {//_small2
         geometry.computeVertexNormals();
         var bufferGeometry = new THREE.BufferGeometry();
         bufferGeometry.fromGeometry(geometry);
@@ -167,8 +167,9 @@ function initializeGL(canvas) {
         //console.log(bufferGeometry.boundingBox.min.x,bufferGeometry.boundingBox.max.x);
         fishka_obj = new THREE.Mesh( bufferGeometry, new THREE.MeshFaceMaterial(materials));
         fishka_obj.castShadow=false;
+        fishka_obj.receiveShadow=true;
         fishka_obj.rotation.set(Math.PI*0.5,0,0);
-        var scale=0.2
+        var scale=0.19
         fishka_obj.scale.set(scale, scale, scale);
         //fishka_obj.position.set(1.35, 0, 0);
         for(var i=0;i<15;i++){
@@ -390,7 +391,7 @@ function dropDice(vector,vector_start){
 
     body1.position= new CANNON.Vec3(vector_start.x+0.35, vector_start.y, 4.0);
     body2.position= new CANNON.Vec3(vector_start.x-0.35, vector_start.y, 4.0);
-    var tmp=new CANNON.Vec3(vector.x, vector.y, 0);
+    var tmp=new CANNON.Vec3(vector.x*2, vector.y*2, 0);
 
     //body1.position.vsub(tmp,tmp);
     tmp.vsub(body1.position,tmp);

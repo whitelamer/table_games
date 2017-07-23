@@ -10,6 +10,8 @@ Canvas3D {
     property var game_fild_array: [];
     property var dice_rol:[];
     property int logic_state:0;
+    property int white_home:0;
+    property int black_home:0;
     property int drag_row_index: -1;
     property int turn: 0;
     property bool take_head: false
@@ -174,6 +176,8 @@ Canvas3D {
 
     function init() {
         now_player=0;
+        white_home=0;
+        black_home=0;
         var tmp=[];
         for (var i = 0; i < 23; i++)
             if(i!=11)
@@ -330,15 +334,20 @@ Canvas3D {
             if(src==(dice_rol[1]+dst)%24)res=true;
             if(src==((dice_rol[0]+dice_rol[1])+dst)%24)res=true;
         }
+        if(dst==25){
+            if(chk_at_home()){//paranoya
+
+            }
+        }
 
         //console.log("can_drop_fishka:"+src+"->"+dst+" dice:"+dice_rol+" result:"+res);
         return res;
     }
     function chk_at_home(){
         if(now_player){
-            return (get_count(12)+get_count(13)+get_count(14)+get_count(15)+get_count(16)+get_count(17))==15;
+            return (get_count(12)+get_count(13)+get_count(14)+get_count(15)+get_count(16)+get_count(17)+black_home)==15;
         }else{
-            return (get_count(0)+get_count(1)+get_count(2)+get_count(3)+get_count(4)+get_count(5))==15;
+            return (get_count(0)+get_count(1)+get_count(2)+get_count(3)+get_count(4)+get_count(5)+white_home)==15;
         }
     }
 
