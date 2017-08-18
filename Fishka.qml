@@ -1,5 +1,6 @@
 import QtQuick 2.0
 
+
 Item {
     property int p_ind: drop_link.p_ind
     property int index: 0
@@ -113,6 +114,7 @@ Item {
         //dddindex=main_form.fishka_count++
         //main_form.fishka_count++
     }
+
     function updateDrag(state) {
 //        try {
 //            if(!(index)||null)return;

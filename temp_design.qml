@@ -24,5 +24,25 @@ Item {
         anchors.topMargin: 0
         anchors.horizontalCenter: rectangle.horizontalCenter
     }
+    states: [
+        State {
+            name: "State1"
+
+            PropertyChanges {
+                target: rectangle
+                x: 79
+                y: 122
+            }
+        },
+        State {
+            name: "State2"
+
+            PropertyChanges {
+                target: rectangle1
+                anchors.horizontalCenterOffset: 165
+                anchors.topMargin: 134
+            }
+        }
+    ]
 
 }

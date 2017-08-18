@@ -155,7 +155,7 @@ function initializeGL(canvas) {
     var fishkaloader = new THREE.JSONLoader();
     fishkaloader.useBufferGeometry = true;
 
-    fishkaloader.load( "./fishka_small2.json", function ( geometry, materials) {//_small2
+    fishkaloader.load( "./fishka_new.json", function ( geometry, materials) {//_small2
         geometry.computeVertexNormals();
         var bufferGeometry = new THREE.BufferGeometry();
         bufferGeometry.fromGeometry(geometry);
@@ -169,7 +169,7 @@ function initializeGL(canvas) {
         fishka_obj.castShadow=false;
         fishka_obj.receiveShadow=true;
         fishka_obj.rotation.set(Math.PI*0.5,0,0);
-        var scale=0.19
+        var scale=0.60
         fishka_obj.scale.set(scale, scale, scale);
         //fishka_obj.position.set(1.35, 0, 0);
         for(var i=0;i<15;i++){
@@ -201,18 +201,18 @@ function initializeGL(canvas) {
     //camera.lookAt(cube.position);
 
     // Lights
-    scene.add(new THREE.AmbientLight(0x444444));
+    scene.add(new THREE.AmbientLight(0x808080));
 
-    directionalLight = new THREE.DirectionalLight(0xffffff, 0.75);
+    directionalLight = new THREE.DirectionalLight(0xd0d0d0, 0.75);
 
-    directionalLight.position.y = 8.5;
+    directionalLight.position.y = -6.5;
     directionalLight.position.z = 20.0;
-    directionalLight.position.x = 6.5;
+    directionalLight.position.x = -6.5;
 
     directionalLight.lookAt(new THREE.Vector3(0,0,0));
     //directionalLight.position.normalize();
     directionalLight.castShadow = true;
-    directionalLight.distance = 100;
+    directionalLight.distance = 40;
     directionalLight.shadow.camera.near = 0;
     directionalLight.shadow.camera.far = 500;
     directionalLight.shadow.camera.fov = 50;
@@ -398,6 +398,10 @@ function dropDice(vector,vector_start){
 
     body1.velocity=tmp;//new CANNON.Vec3(vector.x, vector.y, 0);
     body2.velocity=tmp.clone();//new CANNON.Vec3(vector.x, vector.y, 0);
+
+    //body1.angularVelocity.set(5,5,5);
+    //body2.angularVelocity.set(5,5,5);
+
     body1.angularVelocity.set(Math.floor(Math.random()*20)+5,Math.floor(Math.random()*10)+5,Math.floor(Math.random()*15)+5);
     body2.angularVelocity.set(Math.floor(Math.random()*20)+5,Math.floor(Math.random()*10)+5,Math.floor(Math.random()*15)+5);
 

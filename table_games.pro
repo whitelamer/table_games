@@ -48,7 +48,13 @@ DISTFILES += \
     DropAreaDelegate_Column.qml \
     Fishka.qml \
     temp_design.qml \
-    Drop.qml
+    Drop.qml \
+    menu1x.qml \
+    menu1x_test.qml \
+    Menu1x_.qml \
+    ListsDelegate.qml \
+    UserCard.qml \
+    TableButton.qml
 
 HEADERS += \
     process.h

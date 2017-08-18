@@ -20,69 +20,69 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-//function listProperty(item)
-//{
-//    console.log("console.log(typeof instanceName);");
-//    console.log(typeof item);
-//    console.log("console.log(Object.keys(instanceName));");
-//    console.log(Object.keys(item));
-//    console.log("\nA 'for-in' loop over object instanceName will give:");
-//   for (var propertyKey in item) {
-//           console.log("\nObject instanceName has a property, with " +
-//                     "\n\t property-key " + propertyKey +
-//                     "\n\t its associated value is " + item[propertyKey] +
-//                     "\n\t and propertyKey " + propertyKey +
-//                     " is its own is " +
-//                     item.hasOwnProperty(propertyKey) );
-//    }
-//}
-//function debug(id, level) {
-//    var level_string = '';
+function listProperty(item)
+{
+    console.log("console.log(typeof instanceName);");
+    console.log(typeof item);
+    console.log("console.log(Object.keys(instanceName));");
+    console.log(Object.keys(item));
+    console.log("\nA 'for-in' loop over object instanceName will give:");
+   for (var propertyKey in item) {
+           console.log("\nObject instanceName has a property, with " +
+                     "\n\t property-key " + propertyKey +
+                     "\n\t its associated value is " + item[propertyKey] +
+                     "\n\t and propertyKey " + propertyKey +
+                     " is its own is " +
+                     item.hasOwnProperty(propertyKey) );
+    }
+}
+function debug(id, level) {
+    var level_string = '';
 
-//    // If isn't a first level function, add some formattation
-//    for (var i = 0; i < level; i++) {
-//        if (i+1 === level) {
-//            level_string += '|--------';
-//        }
-//        else {
-//            level_string += '         ';
-//        }
-//    }
+    // If isn't a first level function, add some formattation
+    for (var i = 0; i < level; i++) {
+        if (i+1 === level) {
+            level_string += '|--------';
+        }
+        else {
+            level_string += '         ';
+        }
+    }
 
-//    if (level === 0) {
-//        level_string = 'property ';
-//    }
-//    else {
-//        level_string += '> ';
-//    }
+    if (level === 0) {
+        level_string = 'property ';
+    }
+    else {
+        level_string += '> ';
+    }
 
-//    // For every value in the object
-//    for (var value in id) {
+    // For every value in the object
+    for (var value in id) {
 
-//        // We need to don't take care of these elements because the output is too long. I mean, do you want to print all children of the parent? :-)
-//        // If you are interesting in the output of anchors, set a maximum to leveles of recursion
-//        if (value != 'parent' && value != 'anchors' && value != 'data' && value != 'resources' && value != 'children') {
-//            // Functions haven't children and aren't property
-//            if (typeof(id[value]) === 'function') {
-//                if (level === 0) {
-//                    console.log('function ' + value + '()');
-//                }
-//                else {
-//                    console.log(level_string + 'function ' + value + '()');
-//                }
-//            }
-//            // Objects have children
-//            else if (typeof(id[value]) === 'object') {
-//                console.log(level_string + value + ' [object]');
-//                debug(id[value], level+1);
-//            }
-//            // Of all others things we print value and type :-)
-//            else {
-//                console.log(level_string + value + ': ' + id[value] + ' [' + typeof(id[value]) + ']');
-//            }
-//        }
-//    }
-//}
+        // We need to don't take care of these elements because the output is too long. I mean, do you want to print all children of the parent? :-)
+        // If you are interesting in the output of anchors, set a maximum to leveles of recursion
+        if (value != 'parent' && value != 'anchors' && value != 'data' && value != 'resources' && value != 'children') {
+            // Functions haven't children and aren't property
+            if (typeof(id[value]) === 'function') {
+                if (level === 0) {
+                    console.log('function ' + value + '()');
+                }
+                else {
+                    console.log(level_string + 'function ' + value + '()');
+                }
+            }
+            // Objects have children
+            else if (typeof(id[value]) === 'object') {
+                console.log(level_string + value + ' [object]');
+                debug(id[value], level+1);
+            }
+            // Of all others things we print value and type :-)
+            else {
+                console.log(level_string + value + ': ' + id[value] + ' [' + typeof(id[value]) + ']');
+            }
+        }
+    }
+}
 //(function sayName(name) { console.log(name) } )('Millzie')
 //.pragma library
 

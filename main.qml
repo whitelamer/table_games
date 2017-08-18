@@ -1,6 +1,8 @@
 import QtQuick 2.5
 import QtQuick.Window 2.2
 import Processlib 1.0
+import Qt.labs.settings 1.0
+
 Window {
     id:main_win
     visible: true
@@ -14,7 +16,10 @@ Window {
     //minimumHeight: 2160
     //visibility: Window.FullScreen
     title: qsTr("Table Game")
-
+    Settings {
+        id: settings
+        property string state: "active"
+    }
     Process{
         property int p_state: 0
         property string output: ""
@@ -34,7 +39,7 @@ Window {
             if(output.length==0&&p_state<2){
                 console.log("Calibration falid at state:"+p_state)
                 heigth=1080;
-                mainIndex.source="Index1x.qml"
+                mainIndex.source="menu1x_test.qml"
                 return;
             }
             if(p_state==0){
@@ -106,10 +111,10 @@ Window {
             }
 
             heigth=1080;
-            mainIndex.source="Index1x.qml"
+            mainIndex.source="menu1x.qml"
 
 
-            //mainIndex.source="Index2x.qml"
+            //mainIndex.source="menu2x.qml"
             console.log(output);
         }
     }

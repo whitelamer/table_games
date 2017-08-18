@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtQuick.Particles 2.0
 
 Item {
     id:main_form
@@ -49,7 +50,23 @@ Item {
         height: 1024
         fillMode: Image.PreserveAspectFit
         source:"./img/fone1280x1024.png"
-
+        ParticleSystem{
+            anchors.fill: parent
+            ImageParticle{
+                source: "./img/star.png"
+            }
+            Emitter{
+                height: fiska_size
+                width: fiska_size
+                enabled: drag_item!=null
+                x:drag_item!=null?drag_item.x:0
+                y:drag_item!=null?drag_item.y:0
+                emitRate:30
+                //anchors.centerIn: drag_item
+                size:30
+                endSize:10
+            }
+        }
         MouseArea{
             id:global_area
             anchors.rightMargin: 0
@@ -71,6 +88,16 @@ Item {
                     //console.log(main_form.childAt(main_form.drag_item.x+48,main_form.drag_item.y+48))
                 }
             }
+        }
+
+        Drop {
+            id: drop
+            x: 12
+            y: 628
+            width: 45
+            height: 324
+            p_ind: 25
+            img:"./img/44.png"
         }
 
         ImageCube {
@@ -119,6 +146,7 @@ Item {
                 return vector;
             }
         }
+
 
     }
     Component.onCompleted: {
