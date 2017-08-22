@@ -13,9 +13,12 @@ Rectangle {
         id: text8
         color: "#c69c6d"
         text: caption
+        anchors.rightMargin: 10
+        anchors.leftMargin: 10
         font.pixelSize: 28
         renderType: Text.NativeRendering
         font.bold: true
+        fontSizeMode: Text.Fit
         horizontalAlignment: Text.AlignHCenter
         anchors.fill: parent
         verticalAlignment: Text.AlignVCenter

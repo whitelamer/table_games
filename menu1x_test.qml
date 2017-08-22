@@ -3,6 +3,9 @@ import QtQuick 2.0
 Item {
     property int main_user: 0
     property int second_user: 0
+    property int board_mode: 0
+    property int main_balance: 0
+    property int second_balance: 0
     id: item1
     width: 1280
     height: 1024
@@ -22,6 +25,15 @@ Item {
     }
     ListModel {
         id:mainGameList
+        function setSelected(ind){
+            for(var i=0;i<this.count;i++){
+                this.set(i,{"selected":false})
+                secondGameList.set(i,{"enable":false,"selected":false})
+            }
+            this.set(ind,{"selected":true});
+            secondGameList.set(ind,{"enable":false,"selected":true})
+        }
+
         ListElement {
             num: 1
             selected:false
@@ -51,6 +63,9 @@ Item {
     }
     ListModel {
         id:secondGameList
+        function setSelected(ind){
+
+        }
         ListElement {
             num: 1
             selected:false
@@ -81,6 +96,14 @@ Item {
 
     ListModel {
         id:mainGameTypeList
+        function setSelected(ind){
+            for(var i=0;i<this.count;i++){
+                this.set(i,{"selected":false})
+                secondGameTypeList.set(i,{"enable":false,"selected":false})
+            }
+            this.set(ind,{"selected":true});
+            secondGameTypeList.set(ind,{"enable":false,"selected":true})
+        }
         ListElement {
             num: 1
             selected:false
@@ -101,6 +124,9 @@ Item {
     }
     ListModel {
         id:secondGameTypeList
+        function setSelected(ind){
+
+        }
         ListElement {
             num: 1
             selected:false
@@ -122,6 +148,14 @@ Item {
 
     ListModel {
         id:mainGameTimeList
+        function setSelected(ind){
+            for(var i=0;i<this.count;i++){
+                this.set(i,{"selected":false})
+                secondGameTimeList.set(i,{"enable":false,"selected":false})
+            }
+            this.set(ind,{"selected":true});
+            secondGameTimeList.set(ind,{"enable":false,"selected":true})
+        }
         ListElement {
             num: 1
             selected:false
@@ -167,6 +201,9 @@ Item {
 
     ListModel {
         id:secondGameTimeList
+        function setSelected(ind){
+
+        }
         ListElement {
             num: 1
             selected:false
@@ -212,6 +249,14 @@ Item {
 
     ListModel {
         id:mainGameStyleList
+        function setSelected(ind){
+            for(var i=0;i<this.count;i++){
+                this.set(i,{"selected":false})
+                secondGameStyleList.set(i,{"enable":false,"selected":false})
+            }
+            this.set(ind,{"selected":true});
+            secondGameStyleList.set(ind,{"enable":false,"selected":true})
+        }
         ListElement {
             num: 1
             selected:false
@@ -241,6 +286,9 @@ Item {
     }
     ListModel {
         id:secondGameStyleList
+        function setSelected(ind){
+
+        }
         ListElement {
             num: 1
             selected:false
@@ -268,11 +316,43 @@ Item {
             enable:false
         }
     }
+    function setGemeboardMode(mode){
+        board_mode=mode;
+        if(mode==1){
+            menu1x_1.state="menu2"
+            menu1x_2.state="menu2"
+            second_user=3-main_user;
+        }
+    }
+    function generateUUID () { // Public Domain/MIT
+        var d = new Date().getTime();
+        if (typeof performance !== 'undefined' && typeof performance.now === 'function'){
+            d += performance.now(); //use high-precision timer if available
+        }
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+            var r = (d + Math.random() * 16) % 16 | 0;
+            d = Math.floor(d / 16);
+            return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+    }
 
+    function userLogin(ind,name){
+        if(ind==1)menu1x_1.user_name=name
+        if(ind==2)menu1x_2.user_name=name
+        if(board_mode==1){
+            if(main_user==ind){
+
+                console.time('t');
+                console.log(generateUUID());
+                console.timeEnd('t');
+            }
+        }
+    }
     function have_player(ind){
-        if(main_user==0)
+        if(main_user==0){
+            //TODO: clean lists
             main_user=ind;
-        else
+        }else
             second_user=ind;
     }
     function leave_player(ind){
@@ -299,9 +379,11 @@ Item {
                 listUpdated();
             }else{
                 main_user=0;
+                board_mode=0;
             }
         }else{
             second_user=0;
+            board_mode=0;
         }
     }
     function listUpdated(){

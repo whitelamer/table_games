@@ -54,8 +54,6 @@ Item {
 
         MouseArea {
             id: mouseArea6
-            x: -9
-            y: -4
             anchors.fill: parent
         }
     }
@@ -135,7 +133,11 @@ Item {
             }
             onClicked: {
                 have_player(player_menu.index);
-                player_menu.state="menu2"
+                if(board_mode==0)
+                    player_menu.state="menu1_2"
+                else
+                    if(board_mode==1)
+                        player_menu.state="menu2"
                 login_timer.start();
             }
         }
@@ -170,6 +172,7 @@ Item {
             width: 440
             height: 115
             radius: 20
+            opacity: 0
             gradient: Gradient {
                 GradientStop {
                     position: 0
@@ -201,7 +204,7 @@ Item {
                 anchors.fill: parent
                 enabled: player_menu2.opacity==1
                 onClicked: {
-                    user_name="МИХА"
+                    userLogin(player_menu.index,"МИХА")
                     player_menu.state="menu3"
                     login_timer.stop();
                 }
@@ -215,6 +218,7 @@ Item {
             width: 400
             height: 80
             radius: 20
+            opacity: 0
             Text {
                 id: text3
                 color: "#c69c6d"
@@ -233,7 +237,7 @@ Item {
                 anchors.fill: parent
                 enabled: player_menu2.opacity==1
                 onClicked: {
-                    user_name="ГОСТЬ"
+                    userLogin(player_menu.index,"ГОСТЬ")
                     player_menu.state="menu3"
                     login_timer.stop();
                 }
@@ -256,7 +260,44 @@ Item {
             id: image
             x: 151
             y: 518
+            opacity: 0
             source: "img/menu/social_btn.png"
+        }
+
+        Image {
+            id: image6
+            y: 344
+            anchors.horizontalCenter: parent.horizontalCenter
+            opacity: 0
+            source: "img/menu/player_local.png"
+
+            MouseArea {
+                id: mouseArea8
+                anchors.fill: parent
+                enabled: parent.opacity==1
+                onClicked: {
+                    setGemeboardMode(1);
+                    player_menu.state="menu2"
+                }
+            }
+        }
+
+        Image {
+            id: image7
+            y: 579
+            anchors.horizontalCenter: parent.horizontalCenter
+            opacity: 0
+            source: "img/menu/player_online.png"
+
+            MouseArea {
+                id: mouseArea9
+                anchors.fill: parent
+                enabled: parent.opacity==1
+                onClicked: {
+                    setGemeboardMode(2);
+                    player_menu.state="menu2"
+                }
+            }
         }
     }
 
@@ -313,6 +354,8 @@ Item {
                 id:gameRepView
                 model: getGameList(player_menu.index);
                 delegate:ListsDelegate{
+                    width: 220
+                    height: 64
                     parentmodel: getGameList(player_menu.index);
                 }
             }
@@ -508,6 +551,84 @@ Item {
         id: player_menu4
         anchors.fill: parent
         opacity: 1
+        enabled: opacity==1
+        UserCard {
+            id: userCard
+            enabled: parent.opacity==0
+            x: 95
+            y: 167
+        }
+
+        Flow {
+            id: gameFilerGridView
+            x: 99
+            width: 440
+            height: 64
+            Repeater {
+                id: gameFilterRepView
+                model: getGameList(player_menu.index)
+                ListsDelegate {
+                    width: 150
+                    height: 40
+                    parentmodel: getGameList(player_menu.index)
+                }
+            }
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 10
+            anchors.top: userCard.bottom
+        }
+
+        ListView {
+            id: listView
+            x: 100
+            width: 440
+            height: 365
+            anchors.top: gameFilerGridView.bottom
+            anchors.topMargin: 10
+            anchors.horizontalCenter: parent.horizontalCenter
+            model: ListModel {
+                ListElement {
+                    name: "Grey"
+                    colorCode: "grey"
+                }
+
+                ListElement {
+                    name: "Red"
+                    colorCode: "red"
+                }
+
+                ListElement {
+                    name: "Blue"
+                    colorCode: "blue"
+                }
+
+                ListElement {
+                    name: "Green"
+                    colorCode: "green"
+                }
+            }
+            delegate: Item {
+                x: 5
+                width: 80
+                height: 40
+                Row {
+                    id: row1
+                    spacing: 10
+                    Rectangle {
+                        width: 40
+                        height: 40
+                        color: colorCode
+                    }
+
+                    Text {
+                        text: name
+                        font.bold: true
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+                }
+            }
+        }
+
     }
 
 
@@ -557,6 +678,85 @@ Item {
             }
         },
         State {
+            name: "menu1_2"
+            PropertyChanges {
+                target: player_menu1
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: player_menu_img
+                source: "img/menu/fon_.png"
+            }
+
+            PropertyChanges {
+                target: text1
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: player_menu2
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: player_menu3
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: image1
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: image3
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: image5
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: player_menu4
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: rectangle
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: image
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: rectangle1
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: image6
+                anchors.horizontalCenterOffset: 0
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: image7
+                anchors.horizontalCenterOffset: 0
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: mouseArea8
+                opacity: 1
+            }
+        },
+        State {
             name: "menu2"
 
             PropertyChanges {
@@ -603,6 +803,31 @@ Item {
                 target: player_menu4
                 opacity: 0
             }
+
+            PropertyChanges {
+                target: image6
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: image7
+                opacity: 0
+            }
+
+            PropertyChanges {
+                target: rectangle
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: rectangle1
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: image
+                opacity: 1
+            }
         },
         State {
             name: "menu3"
@@ -648,7 +873,7 @@ Item {
 
             PropertyChanges {
                 target: image5
-                opacity: 1
+                opacity: (board_mode==1&&main_user==index)?1:0
             }
 
             PropertyChanges {
@@ -763,12 +988,12 @@ Item {
 
             PropertyChanges {
                 target: image3
-                opacity: 0
+                opacity: 1
             }
 
             PropertyChanges {
                 target: image5
-                opacity: 0
+                opacity: 1
             }
 
             PropertyChanges {

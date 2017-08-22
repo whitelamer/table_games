@@ -31,7 +31,8 @@ Item {
             anchors.fill: parent
             enabled: enable
             onClicked: {
-                parentmodel.set(index,{"selected":!selected});
+                //parentmodel.set(index,{"selected":!selected});
+                parentmodel.setSelected(index);
                 listUpdated();
             }
         }

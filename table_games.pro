@@ -54,7 +54,8 @@ DISTFILES += \
     Menu1x_.qml \
     ListsDelegate.qml \
     UserCard.qml \
-    TableButton.qml
+    TableButton.qml \
+    oldandtempfunc.js
 
 HEADERS += \
     process.h
