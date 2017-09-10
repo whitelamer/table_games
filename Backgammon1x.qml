@@ -101,69 +101,18 @@ Item {
             p_height: 324
             p_ind: 25
             img:"./img/backgammon/44.png"
-//            function dropping(source){
-//                var turn_dst=0;
-//                for(var i=6;i<12;i++){
-//                    if(gameLogic.can_drop_fishka(gameLogic.drag_row_index,i))turn_dst=i;
-//                }
-//                gameLogic.make_turn(gameLogic.drag_row_index,turn_dst);
-//                source.drop_link=drop_black_home;
-//                source.index=gameLogic.get_count(p_ind)-1;
-//                //main_form.drag_item=null;
-//            }
-//            function isEnable(){
-//                if(nowplayer==1&&gameLogic.chk_at_home()){
-//                    var can_drop=false;
-//                    for(var k=12;k>=6;k--){
-//                        //can_drop=can_drop||gameLogic.can_drop_fishka(gameLogic.drag_row_index,i);
-//                        for(var i=0;i<4;i++){
-//                            if(gameLogic.available_turns[i])
-//                                for(var j=0;j<gameLogic.available_turns[i].length;j++){
-//                                    if(gameLogic.available_turns[i][j].src==gameLogic.drag_row_index&&gameLogic.available_turns[i][j].dst==k)can_drop=true;
-//                                }
-//                        }
-//                    }
-//                    return can_drop;
-//                }
-//                return false;
-//            }
         }
         Drop {
             id: drop_white_home
-            x: 1218
+            x: 1225
             y: 64
             width: 45
             height: 324
             p_height: 324
             p_ind: 24
             img:"./img/backgammon/44.png"
-//            function dropping(source){
-//                var turn_dst=0;
-//                for(var i=18;i<24;i++){
-//                    if(gameLogic.can_drop_fishka(gameLogic.drag_row_index,i))turn_dst=i;
-//                }
-//                gameLogic.make_turn(gameLogic.drag_row_index,turn_dst);
-//                source.drop_link=drop_white_home;
-//                source.index=gameLogic.get_count(p_ind)-1;
-//                //main_form.drag_item=null;
-//            }
-//            function isEnable(){
-//                if(nowplayer==0&&gameLogic.chk_at_home()){
-//                    var can_drop=false;
-//                    for(var k=23;k>=18;k--){
-////                        can_drop=can_drop||gameLogic.can_drop_fishka(gameLogic.drag_row_index,i);
-//                        for(var i=0;i<4;i++){
-//                            if(gameLogic.available_turns[i])
-//                                for(var j=0;j<gameLogic.available_turns[i].length;j++){
-//                                    if(gameLogic.available_turns[i][j].src==gameLogic.drag_row_index&&gameLogic.available_turns[i][j].dst==k)can_drop=true;
-//                                }
-//                        }
-//                    }
-//                    return can_drop;
-//                }
-//                return false;
-//            }
         }
+
         ImageCube {
             id: gameLogic
             //width: 1090
@@ -303,18 +252,11 @@ Item {
     }
 
     function createFishkas(){
-        console.log("createFishkas");
         if(fishka_c==null)return;
-        //var tmp=drag_fishkas;
-
-        //for(var j=0;j<gameLogic.get_count(index);j++){
         for(var j=0;j<15;j++){
             var fishka = fishka_c.createObject(background, {
-//                                                   "drop_link":lnk,
-                                                   //"dddindex":main_form.fishka_count++,
-                                                   //"index": j,
                                                    "player":1,
-                                                   "pos":11,
+                                                   "pos":14,
                                                    "fiska_size": fiska_size});
             if (fishka == null)
                 console.log("Error creating object");
@@ -322,18 +264,57 @@ Item {
                 gameLogic.add_fishka(fishka);
 
             fishka = fishka_c.createObject(background, {
-//                                                   "drop_link":lnk,
-                                                   //"dddindex":main_form.fishka_count++,
-                                                   //"index": j,
                                                    "player":0,
-                                                   "pos":23,
+                                                   "pos":3,
                                                    "fiska_size": fiska_size});
             if (fishka == null)
                 console.log("Error creating object");
             else
                 gameLogic.add_fishka(fishka);
         }
-        console.log("createFishkas create:"+main_form.fishka_count);
-        //drag_fishkas=tmp;
+    }
+    WinForm{
+        id:left_win_form
+        rotation: 180
+        anchors.centerIn: background
+        anchors.horizontalCenterOffset: -background.width/4
+        visible: false
+        opacity: 0
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 550
+                easing.type: Easing.Linear
+            }
+        }
+    }
+    WinForm{
+        id:right_win_form
+        anchors.centerIn: background
+        anchors.horizontalCenterOffset: background.width/4
+        visible: false
+        opacity: 0
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 550
+                easing.type: Easing.Linear
+            }
+        }
+    }
+
+    function showWhiteWin(){
+        left_win_form.setWiner(0,null);
+        right_win_form.setWiner(0,null);
+        left_win_form.opacity=1
+        right_win_form.opacity=1
+        left_win_form.visible=true
+        right_win_form.visible=true
+    }
+    function showBlackWin(){
+        left_win_form.setWiner(1,null);
+        right_win_form.setWiner(1,null);
+        left_win_form.opacity=1
+        right_win_form.opacity=1
+        left_win_form.visible=true
+        right_win_form.visible=true
     }
 }

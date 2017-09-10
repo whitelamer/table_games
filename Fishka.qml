@@ -152,6 +152,11 @@ Item {
     onPosChanged: {
         //console.log("Fishka onPosChanged",pos);
         drop_link=getDropArea(pos);
+        if(pos==24||pos==25){
+            delegateRoot.height=fiska_size/2;
+            dddobj.rotation.set(0,0,Math.PI*0.5);
+        }
+
         //index=gameLogic.get_count(pos)-1;
     }
 
