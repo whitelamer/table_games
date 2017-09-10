@@ -9,7 +9,7 @@ Item {
     Image {
         id:delegate_image
         source: selected?img:img_
-        opacity: enable?1:0.5
+        opacity: enable?1:0.25
         anchors.centerIn: parent
         //width: parent.GridView.view.idealCellWidth
         //visible: enable
@@ -41,9 +41,9 @@ Item {
         anchors.fill: delegate_image
         source: delegate_image
         cached: true
-        opacity: enable?1:0.5
+        opacity: enable?1:0.25
         visible: !enable
-        desaturation: 0.5
+        desaturation: 0.75
     }
 }
 

@@ -38,8 +38,6 @@ DISTFILES += \
     calibration.sh \
     DropAreaDelegate.qml \
     cannon.js \
-    Index1x.qml \
-    Index2x.qml \
     CUB.json \
     ammo.js \
     physics.js \
@@ -55,7 +53,9 @@ DISTFILES += \
     ListsDelegate.qml \
     UserCard.qml \
     TableButton.qml \
-    oldandtempfunc.js
+    oldandtempfunc.js \
+    Backgammon1x.qml \
+    Backgammon2x.qml
 
 HEADERS += \
     process.h

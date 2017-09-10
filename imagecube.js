@@ -174,16 +174,20 @@ function initializeGL(canvas) {
         //fishka_obj.position.set(1.35, 0, 0);
         for(var i=0;i<15;i++){
             //fishka_obj.position.set(3.0, 1.0, 0);
-            fishkas_obj.push(fishka_obj.clone())
-            scene.add( fishkas_obj[i] );
+            var obj=fishka_obj.clone()
+            obj.color=1
+            fishkas_obj.push(obj)
+            scene.add(obj);
         }
 
         fishka_obj.material=new THREE.MeshFaceMaterial(materials).clone()
         fishka_obj.material.materials[0].map=textureCase1;
         for(var i=0;i<15;i++){
             //fishka_obj.position.set(-3.0, -1.0, 0);
-            fishkas_obj.push(fishka_obj.clone())
-            scene.add( fishkas_obj[15+i] );
+            var obj=fishka_obj.clone()
+            obj.color=0
+            fishkas_obj.push(obj)
+            scene.add( obj );
         }
         fiska_ready=true;
         chk_ready();
@@ -381,6 +385,7 @@ function initPhysics() {
 function dropDice(vector,vector_start){
 //    body1.position= new CANNON.Vec3(0.35, 0, 2.0);
 //    body2.position= new CANNON.Vec3(-0.35, 0, 2.0);
+    op_dice1=op_dice2=1;
     cube1.material.materials[0].opacity=op_dice1;
     cube2.material.materials[0].opacity=op_dice2;
     cube1.material.materials[1].opacity=op_dice1;
@@ -398,7 +403,6 @@ function dropDice(vector,vector_start){
 
     body1.velocity=tmp;//new CANNON.Vec3(vector.x, vector.y, 0);
     body2.velocity=tmp.clone();//new CANNON.Vec3(vector.x, vector.y, 0);
-
     //body1.angularVelocity.set(5,5,5);
     //body2.angularVelocity.set(5,5,5);
 
@@ -419,6 +423,7 @@ function dropDice(vector,vector_start){
 }
 function is_throw_finished(){
     var e=.01;
+    var delta=0.05
     var direction_x,direction_y,direction_z;
     if(!dice1.dice_stopped){
         var a = body1.angularVelocity, v = body1.velocity;
@@ -432,21 +437,21 @@ function is_throw_finished(){
             direction_y = new THREE.Vector3( 0, 1, 0 ).applyQuaternion( cube1.quaternion );
             direction_z = new THREE.Vector3( 0, 0, 1 ).applyQuaternion( cube1.quaternion );
 
-            if(Math.abs(direction_z.x)<0.001&&Math.abs(direction_z.y)<0.001&&Math.abs(direction_z.z)>0.998){
+            if(Math.abs(direction_z.x)<delta&&Math.abs(direction_z.y)<delta&&Math.abs(direction_z.z)>1-delta){
                 if(direction_z.z>0)
                     set_dice(2,0)
                 else
                     set_dice(5,0)
             }
 
-            if(Math.abs(direction_x.x)<0.001&&Math.abs(direction_x.y)<0.001&&Math.abs(direction_x.z)>0.998){
+            if(Math.abs(direction_x.x)<delta&&Math.abs(direction_x.y)<delta&&Math.abs(direction_x.z)>1-delta){
                 if(direction_x.z>0)
                     set_dice(1,0)
                 else
                     set_dice(6,0)
             }
 
-            if(Math.abs(direction_y.x)<0.001&&Math.abs(direction_y.y)<0.001&&Math.abs(direction_y.z)>0.998){
+            if(Math.abs(direction_y.x)<delta&&Math.abs(direction_y.y)<delta&&Math.abs(direction_y.z)>1-delta){
                 if(direction_y.z>0)
                     set_dice(3,0)
                 else
@@ -466,21 +471,21 @@ function is_throw_finished(){
             direction_y = new THREE.Vector3( 0, 1, 0 ).applyQuaternion( cube2.quaternion );
             direction_z = new THREE.Vector3( 0, 0, 1 ).applyQuaternion( cube2.quaternion );
 
-            if(Math.abs(direction_z.x)<0.001&&Math.abs(direction_z.y)<0.001&&Math.abs(direction_z.z)>0.998){
+            if(Math.abs(direction_z.x)<delta&&Math.abs(direction_z.y)<delta&&Math.abs(direction_z.z)>1-delta){
                 if(direction_z.z>0)
                     set_dice(0,2)
                 else
                     set_dice(0,5)
             }
 
-            if(Math.abs(direction_x.x)<0.001&&Math.abs(direction_x.y)<0.001&&Math.abs(direction_x.z)>0.998){
+            if(Math.abs(direction_x.x)<delta&&Math.abs(direction_x.y)<delta&&Math.abs(direction_x.z)>1-delta){
                 if(direction_x.z>0)
                     set_dice(0,1)
                 else
                     set_dice(0,6)
             }
 
-            if(Math.abs(direction_y.x)<0.001&&Math.abs(direction_y.y)<0.001&&Math.abs(direction_y.z)>0.998){
+            if(Math.abs(direction_y.x)<delta&&Math.abs(direction_y.y)<delta&&Math.abs(direction_y.z)>1-delta){
                 if(direction_y.z>0)
                     set_dice(0,3)
                 else
@@ -530,8 +535,10 @@ function paintGL(canvas) {
     //desk_mat.alphaMap=directionalLight.shadow.camera.map
 }
 function hide_dice1(){
+    //op_dice1=0.5
     cube1.position.set(999,999,999);
 }
 function hide_dice2(){
+    //op_dice2=0.5
     cube2.position.set(999,999,999);
 }

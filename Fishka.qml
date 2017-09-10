@@ -2,14 +2,16 @@ import QtQuick 2.0
 
 
 Item {
-    property int p_ind: drop_link.p_ind
+    //property int p_ind: drop_link.p_ind
     property int index: 0
     property int dddindex: 0
     property var dddobj: null
     property int fiska_size: 106
-    property var drop_link: null
+    property var drop_link: null//getDropArea(pos)
     property string image_white: "1w.png"
     property string image_black: "1b.png"
+    property int player:2
+    property int pos:0
 
     id:delegateRoot
     width: fiska_size
@@ -17,19 +19,18 @@ Item {
 
 
     anchors.horizontalCenter: drop_link.horizontalCenter
-    anchors.top: drop_link.rotation!=0?drop_link.top:undefined
-    anchors.bottom: drop_link.rotation==0?drop_link.bottom:undefined
-    //rotation: drop_link.rotation
-    anchors.topMargin: drop_link.rotation!=0?fiska_size*index+5:0
-    anchors.bottomMargin: drop_link.rotation==0?fiska_size*index+5:0
-    //anchors.verticalCenter: parent.verticalCenter
+    anchors.top: drop_link.p_rotation!==0?drop_link.top:undefined
+    anchors.bottom: drop_link.p_rotation===0?drop_link.bottom:undefined
+    anchors.topMargin: drop_link.p_rotation!==0?fiska_size*index+5:0
+    anchors.bottomMargin: drop_link.p_rotation===0?fiska_size*index+5:0
+
     Image{
         id:image_select
 //        visible: main_form.drag_item==parent
 //        height: 90
 //        width: 90
         anchors.centerIn: parent
-        source: main_form.drag_item!=parent?"./img/shadow_+.png":"./img/select_me.png"
+        source: main_form.drag_item!=parent?"./img/backgammon/shadow_+.png":"./img/backgammon/select_me.png"
 
         NumberAnimation {
             target: image_select
@@ -53,12 +54,14 @@ Item {
         anchors.fill: parent
         drag.target: parent
         drag.smoothed:true
-        enabled: false
+        enabled: isEnable()&&(main_form.drag_item==null||dragArea.drag.active)
         onPressed: {
             global_area.hoverEnabled=false
-            gameLogic.drag_row_index=p_ind;
+//            gameLogic.drag_row_index=pos;
             main_form.drag_item=drag.target;
             main_form.drag_need_resume=false;
+            //dragArea.enabled=false;
+            //console.log("eiqwoiepoqwieopqwiepoqweipoqw");
             //gameLogic.setFishkaShadow(false,dddindex);
         }
         onReleased: {
@@ -77,6 +80,7 @@ Item {
             global_area.hoverEnabled=false
             main_form.drag_item=null;
             main_form.drag_need_resume=false
+            //dragArea.enabled=true;
             //gameLogic.setFishkaShadow(true,dddindex);
             //console.log("parent.Drag.target:"+ parent.Drag.target)
             var ret = parent.Drag.drop()
@@ -107,49 +111,58 @@ Item {
             }
         }]
     Component.onCompleted: {
-        //console.log("Component.onCompleted",p_ind,index,dddindex);
-        this.objectName=p_ind+"x"+index
-        dddobj=gameLogic.get3dObj(dddindex);
+        //console.log("Component.onCompleted",pos,index,dddindex,anchors.topMargin,anchors.bottomMargin,x,y);
+        //this.objectName=p_ind+"x"+index
+        if(dddobj==null)
+            dddobj=gameLogic.get3dObj(player);//dddindex);
+        update3dObj();
+        //drop_link=getDropArea(pos);
+
         main_form.newgamestate.connect(delegateRoot.updateDrag)
+
+        //console.log("Component.onCompleted",drop_link.x,drop_link.y,drop_link.width,drop_link.height);
         //dddindex=main_form.fishka_count++
         //main_form.fishka_count++
     }
-
-    function updateDrag(state) {
-//        try {
-//            if(!(index)||null)return;
-//        } catch (e) {
-//            console.log(e)
-//            return
-//        }
-        //if(!(index)||null)return;
-        //console.log("onGamestateChanged",p_ind,index,gameLogic.get_count(p_ind));
-        dragArea.enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
-
-        //delegate_image.source=gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
-        //console.log("onGamestateChanged",state,index,gameLogic.get_count(p_ind),enabled);
-    }
-    onIndexChanged: {
-        //console.log("onIndexChanged",p_ind,index,gameLogic.get_count(p_ind));
-        //dragArea.enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
-        //delegate_image.source=gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
-        delegateRoot.updateDrag(gameLogic.logic_state)
-    }
-    onDrop_linkChanged: {
-        //dragArea.enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
-        //delegate_image.source=gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
-        delegateRoot.updateDrag(gameLogic.logic_state)
-    }
-    onXChanged: {
-        if(!dddobj)dddobj=gameLogic.get3dObj(dddindex);
+    function update3dObj(){
+        if(dddobj==null)return;
         var vec=gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5)
         dddobj.position.set(vec.x,vec.y,0);
+    }
+
+    function updateDrag(state) {
+        //dragArea.enabled=gameLogic.canDragFishka(delegateRoot);
+        //console.log("updateDrag",dragArea.enabled);
+    }
+    function isEnable(){
+        return gameLogic.canDragFishka(delegateRoot);
+    }
+
+//    onIndexChanged: {
+//        //console.log("onIndexChanged",p_ind,index,gameLogic.get_count(p_ind));
+//        delegateRoot.updateDrag(gameLogic.logic_state)
+//    }
+//    onDrop_linkChanged: {
+//        //console.log("onDrop_linkChanged",p_ind,drop_link.p_ind,gameLogic.get_count(p_ind));
+//        pos=drop_link.p_ind;
+//        //dragArea.enabled=gameLogic.get_count(p_ind)-1==index&&gameLogic.can_drag_fishka(p_ind);
+//        //delegate_image.source=gameLogic.get_color(p_ind)==0?"./img/"+image_white:"./img/"+image_black
+//        delegateRoot.updateDrag(gameLogic.logic_state)
+//    }
+    onPosChanged: {
+        //console.log("Fishka onPosChanged",pos);
+        drop_link=getDropArea(pos);
+        //index=gameLogic.get_count(pos)-1;
+    }
+
+    onXChanged: {
+        if(!dddobj)dddobj=gameLogic.get3dObj(player);//dddindex);
+        update3dObj();
         //gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
     }
     onYChanged: {
-        if(!dddobj)dddobj=gameLogic.get3dObj(dddindex);
-        var vec=gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5)
-        dddobj.position.set(vec.x,vec.y,0);
+        if(!dddobj)dddobj=gameLogic.get3dObj(player);//dddindex);
+        update3dObj();
         //gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
     }
 }

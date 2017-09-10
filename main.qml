@@ -39,8 +39,8 @@ Window {
             if(output.length==0&&p_state<2){
                 console.log("Calibration falid at state:"+p_state)
                 heigth=1080;
-                mainIndex.source="Index1x.qml"
-                //mainIndex.source="menu1x_test.qml"
+                //mainIndex.source="Index1x.qml"
+                mainMenu.source="menu1x_test.qml"
                 return;
             }
             if(p_state==0){
@@ -112,7 +112,8 @@ Window {
             }
 
             heigth=1080;
-            mainIndex.source="menu1x.qml"
+            mainMenu.source="menu1x.qml"
+            //mainIndex
 
 
             //mainIndex.source="menu2x.qml"
@@ -124,10 +125,19 @@ Window {
         calibration_process.output=""
         calibration_process.start("bash",["-c","xinput | grep Touchscreen | cut -f 2"])
     }
-
+    Loader{
+        id:mainIndex
+        anchors.fill: parent
+        asynchronous: true
+        onStatusChanged: {
+            if(status==Loader.Ready){
+                mainMenu.opacity=0;
+            }
+        }
+    }
     Loader{
         //source: "Index.qml"
-        id:mainIndex
+        id:mainMenu
         anchors.fill: parent
         onStatusChanged: {
             if(status==Loader.Ready){
@@ -136,9 +146,17 @@ Window {
                 main_win.height=calibration_process.heigth;
                 main_win.minimumHeight=calibration_process.heigth;
                 main_win.showFullScreen();
+                startGame(0,0,0);
+            }
+        }
+        Behavior on opacity {
+            NumberAnimation {
+                duration: 1500
+                easing.type: Easing.Linear
             }
         }
     }
+
     Item{
         focus:true
         Keys.onPressed:{
@@ -146,6 +164,14 @@ Window {
             if(event.key==Qt.Key_Escape)Qt.quit();
         }
     }
+    function startGame(game,match,style){
+        mainMenu.enabled=false;
+        if(calibration_process.heigth==1080)
+            mainIndex.source="Backgammon1x.qml";
+        else
+            mainIndex.source="Backgammon2x.qml";
+    }
+
     function listProperty(item)
     {
         console.log("console.log(typeof instanceName);");

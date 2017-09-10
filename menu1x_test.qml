@@ -316,6 +316,15 @@ Item {
             enable:false
         }
     }
+
+    Image {
+        id: image
+        height: 1024
+        width: 30
+        y:0
+        x:625
+        source: "img/menu/seredka.png"
+    }
     function setGemeboardMode(mode){
         board_mode=mode;
         if(mode==1){
@@ -345,6 +354,13 @@ Item {
                 console.time('t');
                 console.log(generateUUID());
                 console.timeEnd('t');
+            }else{
+                if(second_user==1&&menu1x_2.state=="menu6"){
+                    startGame(0,0,0);
+                }
+                if(second_user==2&&menu1x_1.state=="menu6"){
+                    startGame(0,0,0);
+                }
             }
         }
     }
@@ -356,8 +372,9 @@ Item {
             second_user=ind;
     }
     function leave_player(ind){
+        //console.log("leave_player",main_user,second_user)
         if(main_user==ind){
-            if(second_user!=0){
+            if(second_user!=0&&menu1x_1.state!="menu1"&&menu1x_1.state!="menu2"){
                 main_user=second_user;
                 second_user=0;
                 for(var i=0;i<mainGameList.count;i++){
@@ -377,13 +394,19 @@ Item {
                     secondGameStyleList.set(i,{"enable":false,"selected":false})
                 }
                 listUpdated();
+                if(main_user==1)menu1x_2.state="menu2"
+                if(main_user==2)menu1x_1.state="menu2"
             }else{
+                menu1x_1.state="menu1"
+                menu1x_2.state="menu1"
                 main_user=0;
                 board_mode=0;
             }
         }else{
-            second_user=0;
-            board_mode=0;
+//            menu1x_1.state="menu1"
+//            menu1x_2.state="menu1"
+//            second_user=0;
+//            board_mode=0;
         }
     }
     function listUpdated(){
@@ -429,5 +452,22 @@ Item {
         }else{
             return secondGameStyleList;
         }
+    }
+    function checkCanStart(){
+        if(mainGameList.get(0).selected&&mainGameTypeList.get(0).selected)return true
+        return false;
+    }
+    function canStartGame(){
+        if(board_mode==1&&mainGameList.get(0).selected&&mainGameTypeList.get(0).selected){
+            if(second_user==1&&menu1x_1.state!="menu1"&&menu1x_1.state!="menu2"){
+                startGame(0,0,0);
+                return true;
+            }
+            if(second_user==2&&menu1x_2.state!="menu1"&&menu1x_2.state!="menu2"){
+                startGame(0,0,0);
+                return true;
+            }
+        }
+        return false
     }
 }
