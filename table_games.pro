@@ -50,7 +50,8 @@ DISTFILES += \
     TableButton.qml \
     oldandtempfunc.js \
     Backgammon1x.qml \
-    Backgammon2x.qml
+    Backgammon2x.qml \
+    WinForm.qml
 
 HEADERS += \
     process.h

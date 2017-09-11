@@ -112,7 +112,7 @@ Window {
             }
 
             heigth=1080;
-            mainMenu.source="menu1x.qml"
+            mainMenu.source="menu1x_test.qml"
             //mainIndex
 
 

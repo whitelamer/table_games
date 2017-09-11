@@ -333,6 +333,7 @@ Canvas3D {
                     }
                 }
             }
+
             var new_logic_state=logic_state;
             new_logic_state++;
             if(available_turns.length==0){
@@ -344,6 +345,18 @@ Canvas3D {
                 GLCode.hide_dice1();
                 GLCode.hide_dice2();
                 new_logic_state=3;
+                if(dst==24){
+                    if(get_count(24)==15){
+                        showWhiteWin();
+                        new_logic_state=24;
+                    }
+                }
+                if(dst==25){
+                    if(get_count(25)==15){
+                        showBlackWin();
+                        new_logic_state=25;
+                    }
+                }
             }
             logic_state=new_logic_state;
         }
@@ -624,6 +637,7 @@ Canvas3D {
 
 
                 // проверка на 6 подряд
+
 
                 calculate_moves2(new_board,player,dice_lines,line,tree2,dice+1);
                 //for(var saveidx=0;saveidx<save.length;saveidx++)game_coins[save[saveidx][0]].pos = save[saveidx][1];
