@@ -535,10 +535,8 @@ function paintGL(canvas) {
     //desk_mat.alphaMap=directionalLight.shadow.camera.map
 }
 function hide_dice1(){
-    //op_dice1=0.5
     cube1.position.set(999,999,999);
 }
 function hide_dice2(){
-    //op_dice2=0.5
     cube2.position.set(999,999,999);
 }
