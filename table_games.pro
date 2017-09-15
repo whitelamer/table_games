@@ -43,7 +43,6 @@ DISTFILES += \
     temp_design.qml \
     Drop.qml \
     menu1x.qml \
-    menu1x_test.qml \
     Menu1x_.qml \
     ListsDelegate.qml \
     UserCard.qml \
@@ -51,7 +50,10 @@ DISTFILES += \
     oldandtempfunc.js \
     Backgammon1x.qml \
     Backgammon2x.qml \
-    WinForm.qml
+    WinForm.qml \
+    GameSettingsMenu.qml \
+    GameSelectMenu.qml \
+    Menu1x_test.qml
 
 HEADERS += \
     process.h

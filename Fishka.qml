@@ -12,6 +12,7 @@ Item {
     property string image_black: "1b.png"
     property int player:2
     property int pos:0
+    property double dddk: 0.5
 
     id:delegateRoot
     width: fiska_size
@@ -21,14 +22,18 @@ Item {
     anchors.horizontalCenter: drop_link.horizontalCenter
     anchors.top: drop_link.p_rotation!==0?drop_link.top:undefined
     anchors.bottom: drop_link.p_rotation===0?drop_link.bottom:undefined
-    anchors.topMargin: drop_link.p_rotation!==0?fiska_size*index+5:0
-    anchors.bottomMargin: drop_link.p_rotation===0?fiska_size*index+5:0
+    anchors.topMargin: drop_link.p_rotation!==0?delegateRoot.height*index+5:0
+    anchors.bottomMargin: drop_link.p_rotation===0?delegateRoot.height*index+5:0
+//    Rectangle{
+//        anchors.fill: parent
+//    }
 
     Image{
         id:image_select
 //        visible: main_form.drag_item==parent
 //        height: 90
 //        width: 90
+        visible: dddobj!=null
         anchors.centerIn: parent
         source: main_form.drag_item!=parent?"./img/backgammon/shadow_+.png":"./img/backgammon/select_me.png"
 
@@ -126,7 +131,8 @@ Item {
     }
     function update3dObj(){
         if(dddobj==null)return;
-        var vec=gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5)
+        var vec=gameLogic.translateToCanvas(x+delegateRoot.width*dddk,y+delegateRoot.height*dddk)
+        //var vec=gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5)
         dddobj.position.set(vec.x,vec.y,0);
     }
 
@@ -153,8 +159,11 @@ Item {
         //console.log("Fishka onPosChanged",pos);
         drop_link=getDropArea(pos);
         if(pos==24||pos==25){
-            delegateRoot.height=fiska_size/2;
-            dddobj.rotation.set(0,0,Math.PI*0.5);
+            delegateRoot.height=fiska_size/4;
+            delegateRoot.width=delegateRoot.width-10;
+            dddobj.rotation.set(0,0,Math.PI*(0.5-player));
+            dddk=0.55-0.1*player
+            image_select.source="";
         }
 
         //index=gameLogic.get_count(pos)-1;

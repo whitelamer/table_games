@@ -1,6 +1,6 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
+//import QtQuick.Controls 1.4
+//import QtQuick.Controls.Styles 1.4
 import QtGraphicalEffects 1.0
 
 Item {
@@ -12,20 +12,7 @@ Item {
     state: "menu1"
     Image {
         id: player_menu_img
-        source: "img/menu/fon_0_1-19-19copy_+.png"
-    }
-
-    Image{
-        id: image1
-        x: 92
-        y: 251
-        visible: false
-        source: "img/fon_+_-22 copy.png"
-        AnimatedImage{
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            source: "img/fon_+_-22 copy.gif"
-        }
+        source: "img/menu/Back-1.png"
     }
 
     Image {
@@ -81,36 +68,6 @@ Item {
                 easing.type: Easing.Linear
             }
             loops: Animation.Infinite
-        }
-    }
-
-    Image {
-        id: image5
-        x: 125
-        y: 876
-        width: 238
-        height: 87
-        opacity: 0
-        source: "img/menu/image14.png"
-
-        Text {
-            id: text7
-            color: "#ed0000"
-            text: "500р Нажми  для пополнения"
-            wrapMode: Text.WordWrap
-            fontSizeMode: Text.Fit
-            font.pixelSize: 25
-            renderType: Text.NativeRendering
-            font.bold: true
-            horizontalAlignment: Text.AlignHCenter
-            anchors.fill: parent
-            verticalAlignment: Text.AlignVCenter
-            font.family: "Myriad Pro"
-        }
-
-        MouseArea {
-            id: mouseArea6
-            anchors.fill: parent
         }
     }
 
@@ -197,9 +154,9 @@ Item {
             enabled: parent.opacity==1
             onClicked: {
                 have_player(player_menu.index);
-                login_timer.start();
+                login_timer.stop;
                 setGemeboardMode(1);
-                player_menu.state="menu2"
+                player_menu.state="menu_offline"
             }
 
             Image {
@@ -416,245 +373,50 @@ Item {
         opacity: 0
         anchors.fill: parent
         enabled: opacity==1
+        GameSelectMenu{
+            id:gameselectmenu
+            anchors.fill: parent
+            index: player_menu.index
+            enable:main_user==player_menu.index
+        }
+        GameSettingsMenu{
+            id:gamesettingsmenu
+            anchors.fill: parent
+            index: player_menu.index
+            enable:main_user==player_menu.index
+        }
         Text {
-            id: text4
-            x: 99
-            y: 264
-            width: 440
-            height: 93
-            color: "#42210b"
-            text: "ПРИВЕТСТВУЕМ\n" + user_name
-            anchors.horizontalCenterOffset: 0
-            anchors.horizontalCenter: parent.horizontalCenter
+            id: text_user_need_pay
+            x: 264
+            y: 848
+            width: 100
+            height: 27
+            color: "#ffbd09"
+            text: user_pay_selected
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignBottom
             fontSizeMode: Text.Fit
-            font.pixelSize: 45
             renderType: Text.NativeRendering
             font.bold: true
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
             font.family: "Myriad Pro"
-        }
-
-        Text {
-            id: text5
-            x: 99
-            width: 440
-            height: 40
-            color: "#42210b"
-            text: "ВЫБЕРИТЕ ИГРЫ"
-            anchors.top: text4.bottom
-            anchors.topMargin: 0
-            fontSizeMode: Text.Fit
-            font.pixelSize: 25
-            renderType: Text.NativeRendering
-            font.bold: true
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            font.family: "Myriad Pro"
-        }
-
-        Flow {
-            id: gameGridView
-            x: 99
-            width: 440
-            height: 128
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: text5.bottom
-            anchors.topMargin: 0
-            Repeater{
-                id:gameRepView
-                model: getGameList(player_menu.index);
-                delegate:ListsDelegate{
-                    width: 220
-                    height: 64
-                    parentmodel: getGameList(player_menu.index);
-                }
-            }
-        }
-
-        Flow {
-            id: typeGridView
-            x: 99
-            width: 292
-            height: 64
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.top: text9.bottom
-            anchors.topMargin: 0
-            Repeater{
-                id:typeRepView
-                model: getTypeList(player_menu.index);
-                delegate:ListsDelegate{
-                    parentmodel: getTypeList(player_menu.index);
-                }
-            }
-        }
-
-        Rectangle {
-            id: rectangle2
-            x: 123
-            y: 784
-            width: 240
-            height: 80
-            radius: 20
-            Text {
-                id: text8
-                color: "#c69c6d"
-                text: qsTr("ДОП ОПЦИИ >")
-                font.pixelSize: 28
-                renderType: Text.NativeRendering
-                font.bold: true
-                horizontalAlignment: Text.AlignHCenter
-                anchors.fill: parent
-                verticalAlignment: Text.AlignVCenter
-                font.family: "Myriad Pro"
-            }
-
-            MouseArea {
-                id: mouseArea7
-                anchors.fill: parent
-                enabled: player_menu3.opacity==1
-                onClicked: {
-                    if(player_menu.state=="menu3")
-                        player_menu.state="menu4"
-                    else
-                        player_menu.state="menu3"
-                }
-            }
-            gradient: Gradient {
-                GradientStop {
-                    position: 0
-                    color: "#623113"
-                }
-
-                GradientStop {
-                    position: 1
-                    color: "#321405"
-                }
-            }
-            border.width: 0
+            font.pixelSize: 30
         }
 
         Text {
-            id: text9
-            x: 99
-            width: 440
-            height: 40
-            color: "#42210b"
-            text: "РЕЖИМЫ И СТОИМОСТЬ ИГР"
-            anchors.top: gameGridView.bottom
-            anchors.topMargin: 0
+            id: text_user_balance
+            x: 264
+            y: 885
+            width: 100
+            height: 27
+            color: "#ffbd09"
+            text: user_balance
+            verticalAlignment: Text.AlignBottom
+            horizontalAlignment: Text.AlignHCenter
             fontSizeMode: Text.Fit
-            font.pixelSize: 25
             renderType: Text.NativeRendering
             font.bold: true
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
             font.family: "Myriad Pro"
-        }
-
-        Flow {
-            id: timeGridView
-            enabled: opacity==1
-            width: 440
-            height: 130
-            Repeater {
-                id: timeRepView
-                model: getTimeList(player_menu.index)
-                ListsDelegate {
-                    parentmodel: getTimeList(player_menu.index)
-                }
-            }
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: 10
-            anchors.top: typeGridView.bottom
-        }
-        TabView {
-            id: options
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: 20
-            anchors.top: gameGridView.bottom
-            width: 440
-            height: 194
-            enabled: opacity==1
-            Tab {
-                title: "ОФОРМЛЕНИЕ"
-
-                Flow {
-                    id: styleGridView
-                    width: 440
-                    height: 64
-                    Repeater {
-                        id: styleRepView
-                        model: getStyleList(player_menu.index)
-                        ListsDelegate {
-                            parentmodel: getStyleList(player_menu.index)
-                        }
-                    }
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.topMargin: 10
-                }
-            }
-            Tab {
-                title: "ПРАВИЛА"
-            }
-            Tab {
-                title: "МОЙ КАБИНЕТ"
-            }
-            style: TabViewStyle {
-                frameOverlap: 5
-                frame: Rectangle {
-                    gradient: Gradient {
-                        GradientStop {
-                            position: 0
-                            color: "#623113"
-                        }
-
-                        GradientStop {
-                            position: 1
-                            color: "#321405"
-                        }
-                    }
-                    radius: 15
-                }
-                tab: Rectangle {
-                    color: "transparent"//styleData.selected ? "steelblue" :"lightsteelblue"
-                    //border.color:  "steelblue"
-                    implicitWidth: 146
-                    implicitHeight: 45
-                    Rectangle{
-                        //color: "#e6e7e8"
-                        opacity: styleData.selected ? 1.0 :0.5
-                        radius: 10
-                        anchors.fill: parent
-                        gradient: Gradient {
-                            GradientStop {
-                                position: 0
-                                color: "#623113"
-                            }
-
-                            GradientStop {
-                                position: 1
-                                color: "#321405"
-                            }
-                        }
-                    }
-                    Text {
-                        text: styleData.title
-                        font.bold: true
-                        color: "#c69c6d"
-                        fontSizeMode: Text.Fit
-                        font.pixelSize: 25
-                        anchors.fill: parent
-                        renderType: Text.NativeRendering
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                        anchors.leftMargin: 10
-                        anchors.rightMargin: 10
-                        font.family: "Myriad Pro"
-                        //color: styleData.selected ? "white" : "black"
-                    }
-                }
-            }
+            font.pixelSize: 30
         }
     }
 
@@ -682,96 +444,6 @@ Item {
         anchors.fill: parent
         opacity: 1
         enabled: opacity==1
-        UserCard {
-            id: userCard
-            enabled: parent.opacity==0
-            x: 95
-            y: 273
-        }
-
-        Flow {
-            id: gameFilerGridView
-            x: 99
-            width: 440
-            height: 64
-            Repeater {
-                id: gameFilterRepView
-                model: getGameList(player_menu.index)
-                ListsDelegate {
-                    width: 150
-                    height: 40
-                    parentmodel: getGameList(player_menu.index)
-                }
-            }
-            anchors.horizontalCenter: parent.horizontalCenter
-            anchors.topMargin: 10
-            anchors.top: userCard.bottom
-        }
-
-        ListView {
-            id: listView
-            x: 100
-            width: 440
-            height: 365
-            anchors.top: gameFilerGridView.bottom
-            anchors.topMargin: 10
-            anchors.horizontalCenter: parent.horizontalCenter
-            model: ListModel {
-                ListElement {
-                    name: "Grey"
-                    colorCode: "grey"
-                }
-
-                ListElement {
-                    name: "Red"
-                    colorCode: "red"
-                }
-
-                ListElement {
-                    name: "Blue"
-                    colorCode: "blue"
-                }
-
-                ListElement {
-                    name: "Green"
-                    colorCode: "green"
-                }
-            }
-            delegate: Item {
-                x: 5
-                width: 80
-                height: 40
-                Row {
-                    id: row1
-                    spacing: 10
-                    Rectangle {
-                        width: 40
-                        height: 40
-                        color: colorCode
-                    }
-
-                    Text {
-                        text: name
-                        font.bold: true
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-                }
-            }
-        }
-
-        Text {
-            id: text10
-            text: qsTr("ОЖИДАНИЕ СОПЕРНИКА")
-            font.bold: true
-            renderType: Text.NativeRendering
-            verticalAlignment: Text.AlignVCenter
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.horizontalCenter: parent.horizontalCenter
-            font.pixelSize: 32
-            opacity: 1
-        }
 
     }
 
@@ -811,11 +483,6 @@ Item {
             }
 
             PropertyChanges {
-                target: image5
-                opacity: 0
-            }
-
-            PropertyChanges {
                 target: player_menu4
                 opacity: 0
             }
@@ -832,7 +499,7 @@ Item {
             }
         },
         State {
-            name: "menu2"
+            name: "menu_login"
 
             PropertyChanges {
                 target: player_menu1
@@ -856,11 +523,6 @@ Item {
 
             PropertyChanges {
                 target: player_menu3
-                opacity: 0
-            }
-
-            PropertyChanges {
-                target: image5
                 opacity: 0
             }
 
@@ -932,11 +594,6 @@ Item {
             }
 
             PropertyChanges {
-                target: image5
-                opacity: (board_mode==1&&main_user==index)?1:0
-            }
-
-            PropertyChanges {
                 target: options
                 opacity: 0
             }
@@ -980,11 +637,6 @@ Item {
             }
 
             PropertyChanges {
-                target: image5
-                opacity: 1
-            }
-
-            PropertyChanges {
                 target: timeGridView
                 opacity: 0
             }
@@ -1001,11 +653,6 @@ Item {
 
             PropertyChanges {
                 target: player_menu4
-                opacity: 0
-            }
-
-            PropertyChanges {
-                target: text9
                 opacity: 0
             }
 
@@ -1042,18 +689,8 @@ Item {
             }
 
             PropertyChanges {
-                target: image5
-                opacity: 1
-            }
-
-            PropertyChanges {
                 target: player_menu4
                 opacity: 1
-            }
-
-            PropertyChanges {
-                target: text10
-                opacity: 0
             }
         },
         State {
@@ -1084,22 +721,46 @@ Item {
             }
 
             PropertyChanges {
-                target: image5
+                target: player_menu4
+                opacity: 1
+            }
+        },
+        State {
+            name: "menu_offline"
+            PropertyChanges {
+                target: player_menu1
                 opacity: 0
             }
 
             PropertyChanges {
-                target: player_menu4
+                target: player_menu_img
+                x: 0
+                y: 0
+                source: "img/menu/Back-1.png"
+            }
+
+            PropertyChanges {
+                target: text1
                 opacity: 1
             }
 
             PropertyChanges {
-                target: gameFilerGridView
+                target: player_menu2
                 opacity: 0
             }
 
             PropertyChanges {
-                target: listView
+                target: player_menu3
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: back_button
+                opacity: 1
+            }
+
+            PropertyChanges {
+                target: player_menu4
                 opacity: 0
             }
         }
@@ -1109,8 +770,4 @@ Item {
             NumberAnimation { properties: "opacity,x,y"; easing.type: Easing.Linear; duration: 250 }
         }
     ]
-    function updateList(){
-        gameRepView.update();
-        typeRepView.update();
-    }
 }

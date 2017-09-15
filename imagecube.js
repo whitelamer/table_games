@@ -147,7 +147,6 @@ function initializeGL(canvas) {
         scene.add( cube2 );
         logic_state=3;
         dice_ready=true;
-        chk_ready();
         //bullet.start();
     } );
 
@@ -190,7 +189,6 @@ function initializeGL(canvas) {
             scene.add( obj );
         }
         fiska_ready=true;
-        chk_ready();
     } );
 
     //desk_mat =new THREE.MeshPhongMaterial({ color: 0xffffff,transparent: true, depthWrite: false });//,transparent: true, opacity:0.1,,depthTest: false
@@ -367,7 +365,6 @@ function initializeGL(canvas) {
     body2.angularDamping = 0.5;
     world.addBody(body2);
     gl_ready=true;
-    chk_ready();
     //dropDice();
 }
 
@@ -516,16 +513,16 @@ function paintGL(canvas) {
         cube1.position.copy(body1.position);
         cube1.quaternion.copy(body1.quaternion);
         }
-        cube1.material.materials[0].opacity=op_dice1;
-        cube1.material.materials[1].opacity=op_dice1;
+        //cube1.material.materials[0].opacity=op_dice1;
+        //cube1.material.materials[1].opacity=op_dice1;
     }
     if(cube2){
         if(showdrop){
             cube2.position.copy(body2.position);
             cube2.quaternion.copy(body2.quaternion);
         }
-        cube2.material.materials[0].opacity=op_dice2;
-        cube2.material.materials[1].opacity=op_dice2;
+        //cube2.material.materials[0].opacity=op_dice2;
+        //cube2.material.materials[1].opacity=op_dice2;
     }
     renderer.render(scene, camera);
 //    if(showdrop && is_throw_finished()){
@@ -533,6 +530,14 @@ function paintGL(canvas) {
 //        console.log("throw_finished")
 //    }
     //desk_mat.alphaMap=directionalLight.shadow.camera.map
+}
+function opacity_dice1(opacity){
+    cube1.material.materials[0].opacity=opacity;
+    cube1.material.materials[1].opacity=opacity;
+}
+function opacity_dice2(opacity){
+    cube2.material.materials[0].opacity=opacity;
+    cube2.material.materials[1].opacity=opacity;
 }
 function hide_dice1(){
     cube1.position.set(999,999,999);

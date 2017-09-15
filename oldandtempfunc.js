@@ -419,3 +419,208 @@ function can_drop_fishka(src, dst){
 //        }
     return false;
 }
+
+
+/*ListsDelegate{
+    id:black_game
+    y: 280
+    index: 0
+    model: getGameList(player_menu.index);
+}
+ListsDelegate{
+    id:chess_game
+    y: 280
+    index: 1
+    model: getGameList(player_menu.index);
+}
+ListsDelegate{
+    id:shah_game
+    y: 280
+    index: 2
+    model: getGameList(player_menu.index);
+}*/
+
+/*Flow {
+    id: gameGridView
+    x: 99
+    y: 280
+    width: 440
+    height: 50
+    anchors.horizontalCenter: parent.horizontalCenter
+    Repeater{
+        id:gameRepView
+        model: getGameList(player_menu.index);
+        delegate:ListsDelegate{
+            //width: 220
+            //height: 64
+            parentmodel: getGameList(player_menu.index);
+        }
+    }
+}*/
+
+Flow {
+    id: typeGridView
+    x: 99
+    width: 440
+    height: 60
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: chess_game.bottom
+    anchors.topMargin: 50
+    Repeater{
+        id:typeRepView
+        model: getTypeList(player_menu.index);
+        delegate:ListsDelegate{
+            model: getTypeList(player_menu.index);
+        }
+    }
+}
+
+Rectangle {
+    id: rectangle2
+    x: 403
+    y: 553
+    width: 137
+    height: 52
+    radius: 3
+    Text {
+        id: text8
+        color: "#c69c6d"
+        text: qsTr("ДОП ОПЦИИ >")
+        font.pixelSize: 28
+        renderType: Text.NativeRendering
+        font.bold: true
+        horizontalAlignment: Text.AlignHCenter
+        anchors.fill: parent
+        verticalAlignment: Text.AlignVCenter
+        font.family: "Myriad Pro"
+    }
+
+    MouseArea {
+        id: mouseArea7
+        anchors.fill: parent
+        enabled: player_menu3.opacity==1
+        onClicked: {
+            if(player_menu.state=="menu3")
+                player_menu.state="menu4"
+            else
+                player_menu.state="menu3"
+        }
+    }
+    gradient: Gradient {
+        GradientStop {
+            position: 0
+            color: "#623113"
+        }
+
+        GradientStop {
+            position: 1
+            color: "#321405"
+        }
+    }
+    border.width: 0
+}
+
+Flow {
+    id: timeGridView
+    enabled: opacity==1
+    width: 440
+    height: 118
+    Repeater {
+        id: timeRepView
+        model: getTimeList(player_menu.index)
+        ListsDelegate {
+            model: getTimeList(player_menu.index)
+        }
+    }
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.topMargin: 48
+    anchors.top: typeGridView.bottom
+}
+TabView {
+    id: options
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.topMargin: 20
+    anchors.top: timeGridView.bottom
+    width: 440
+    height: 194
+    enabled: opacity==1
+    Tab {
+        title: "ОФОРМЛЕНИЕ"
+
+        Flow {
+            id: styleGridView
+            width: 440
+            height: 64
+            Repeater {
+                id: styleRepView
+                model: getStyleList(player_menu.index)
+                ListsDelegate {
+                    model: getStyleList(player_menu.index)
+                }
+            }
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.topMargin: 10
+        }
+    }
+    Tab {
+        title: "ПРАВИЛА"
+    }
+    Tab {
+        title: "МОЙ КАБИНЕТ"
+    }
+    style: TabViewStyle {
+        frameOverlap: 5
+        frame: Rectangle {
+            gradient: Gradient {
+                GradientStop {
+                    position: 0
+                    color: "#623113"
+                }
+
+                GradientStop {
+                    position: 1
+                    color: "#321405"
+                }
+            }
+            radius: 15
+        }
+        tab: Rectangle {
+            color: "transparent"//styleData.selected ? "steelblue" :"lightsteelblue"
+            //border.color:  "steelblue"
+            implicitWidth: 146
+            implicitHeight: 45
+            Rectangle{
+                //color: "#e6e7e8"
+                opacity: styleData.selected ? 1.0 :0.5
+                radius: 10
+                anchors.fill: parent
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0
+                        color: "#623113"
+                    }
+
+                    GradientStop {
+                        position: 1
+                        color: "#321405"
+                    }
+                }
+            }
+            Text {
+                text: styleData.title
+                font.bold: true
+                color: "#c69c6d"
+                fontSizeMode: Text.Fit
+                font.pixelSize: 25
+                anchors.fill: parent
+                renderType: Text.NativeRendering
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                anchors.leftMargin: 10
+                anchors.rightMargin: 10
+                font.family: "Myriad Pro"
+                //color: styleData.selected ? "white" : "black"
+            }
+        }
+    }
+}

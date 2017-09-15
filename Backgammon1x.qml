@@ -33,7 +33,10 @@ Item {
         {x: 885  ,y: 15 ,width: 71 ,p_height: 209 ,p_rotation: 180 ,p_ind: 20 ,img: "img/backgammon/11.png"},
         {x: 963  ,y: 15 ,width: 71 ,p_height: 209 ,p_rotation: 180 ,p_ind: 21 ,img: "img/backgammon/11.png"},
         {x: 1041 ,y: 16 ,width: 71 ,p_height: 307 ,p_rotation: 180 ,p_ind: 22 ,img: "img/backgammon/22.png"},
-        {x: 1119 ,y: 17 ,width: 71 ,p_height: 407 ,p_rotation: 180 ,p_ind: 23 ,img: "img/backgammon/33.png"}]
+        {x: 1119 ,y: 17 ,width: 71 ,p_height: 407 ,p_rotation: 180 ,p_ind: 23 ,img: "img/backgammon/33.png"},
+        {x: 10 ,y: 625 ,width: 51, height: 330 ,p_height: 330 ,p_rotation: 180 ,p_ind: 25 ,img: "img/backgammon/44.png"},
+        {x: 1220 ,y: 70 ,width: 51, height: 330 ,p_height: 330 ,p_rotation: 0 ,p_ind: 24 ,img: "img/backgammon/33.png"}]
+
     property variant drag_fishkas: []
     property variant fishka_c: null
     property variant drop_c: null
@@ -91,27 +94,46 @@ Item {
 
 
         }
-
-        Drop {
-            id: drop_black_home
-            x: 12
-            y: 628
-            width: 45
-            height: 324
-            p_height: 324
-            p_ind: 25
-            img:"./img/backgammon/44.png"
+        AnimatedImage{
+            id:white_home_anim
+            source: "./img/backgammon/01.gif"
+            playing:false
+            anchors.centerIn: getDropArea(24)
+            onCurrentFrameChanged: {
+                if(currentFrame==frameCount-1)paused=true;
+            }
         }
-        Drop {
-            id: drop_white_home
-            x: 1225
-            y: 64
-            width: 45
-            height: 324
-            p_height: 324
-            p_ind: 24
-            img:"./img/backgammon/44.png"
+        AnimatedImage{
+            id:black_home_anim
+            source: "./img/backgammon/01.gif"
+            playing:false
+            anchors.centerIn: getDropArea(25)
+            rotation: 180
+            onCurrentFrameChanged: {
+                if(currentFrame==frameCount-1)paused=true;
+            }
         }
+//        Drop {
+//            id: drop_black_home
+//            x: 10
+//            y: 625
+//            width: 51
+//            height: 330
+//            p_height: 330
+//            p_rotation: 180
+//            p_ind: 25
+//            img:"./img/backgammon/44.png"
+//        }
+//        Drop {
+//            id: drop_white_home
+//            x: 1220
+//            y: 70
+//            width: 51
+//            height: 330
+//            p_height: 330
+//            p_ind: 24
+//            img:"./img/backgammon/44.png"
+//        }
 
         ImageCube {
             id: gameLogic
@@ -130,26 +152,21 @@ Item {
                 console.log("onLogic_stateChanged");
                 //main_form.gamestate=gameLogic.logic_state
                 newgamestate(main_form.gamestate)
-            }
-            onLogicInited: {
-                //createFishkas();
-                if(drop_c===null)
-                    drop_c = Qt.createComponent("Drop.qml");
-                //Qt.quit();
-                console.log("onLogicInited",drop_c)
-                var tmp=[];//drop_areas;
-                for(var i=0;i<drop_areas.length;i++){
-                    var drop = drop_c.createObject(background, drop_areas[i]);
-                    if (drop == null)
-                        console.log("Error creating object");
-                    else
-                        tmp.push(drop);
+                if(gameLogic.chkIsAtHome()){
+                    console.log("Anim:",white_home_anim.paused,white_home_anim.playing,white_home_anim.currentFrame,white_home_anim.frameCount);
+                   if(!white_home_anim.paused&&gameLogic.now_player==0)
+                        white_home_anim.playing=true;
+                   if(!black_home_anim.paused&&gameLogic.now_player==1)
+                        black_home_anim.playing=true;
                 }
-                tmp.push(drop_black_home);
-                tmp.push(drop_white_home);
-                drop_areas=tmp;
-                createFishkas();
             }
+//            onLogicInited: {
+//                //createFishkas();
+//                if(drop_c===null)
+//                    drop_c = Qt.createComponent("Drop.qml");
+//                //Qt.quit();
+//                console.log("onLogicInited",drop_c)
+//            }
             gl_axis_y:4.38
             gl_axis_x:3.5
             phy_axis_x:3.1
@@ -245,6 +262,18 @@ Item {
         if (fishka_c.status != Component.Ready)fishka_c=null;
         drop_c = Qt.createComponent("Drop.qml");
         if (drop_c.status != Component.Ready)drop_c=null;
+        var tmp=[];//drop_areas;
+        for(var i=0;i<drop_areas.length;i++){
+            var drop = drop_c.createObject(background, drop_areas[i]);
+            if (drop == null)
+                console.log("Error creating object");
+            else
+                tmp.push(drop);
+        }
+//        tmp.push(drop_black_home);
+//        tmp.push(drop_white_home);
+        drop_areas=tmp;
+        createFishkas();
     }
     function getDropArea(index){
         for(var i=0;i<drop_areas.length;i++)
@@ -253,8 +282,10 @@ Item {
 
     function createFishkas(){
         if(fishka_c==null)return;
+        var fishka=null;
+        console.time('create fishka');
         for(var j=0;j<15;j++){
-            var fishka = fishka_c.createObject(background, {
+            fishka = fishka_c.createObject(background, {
                                                    "player":1,
                                                    "pos":14,
                                                    "fiska_size": fiska_size});
@@ -272,7 +303,20 @@ Item {
             else
                 gameLogic.add_fishka(fishka);
         }
+        console.timeEnd('create fishka');
+//        fishka = fishka_c.createObject(background, {
+//                                               "player":1,
+//                                               "pos":18,
+//                                               "fiska_size": fiska_size});
+//            gameLogic.add_fishka(fishka);
+//        fishka = fishka_c.createObject(background, {
+//                                               "player":0,
+//                                               "pos":6,
+//                                               "fiska_size": fiska_size});
+//            gameLogic.add_fishka(fishka);
+
     }
+
     WinForm{
         id:left_win_form
         rotation: 180

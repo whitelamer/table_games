@@ -7,15 +7,19 @@ Canvas3D {
     id: cube
     property bool showdrop: false
     property int now_player:0;
-//    property var game_fild_array: [{count:3,color:0},{count:3,color:0},{count:3,color:0},{count:3,color:0},{count:2,color:0},{count:0,color:0},
-//    {count:1,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},
-//    {count:3,color:1},{count:3,color:1},{count:3,color:1},{count:3,color:1},{count:2,color:1},{count:0,color:0},
-//    {count:1,color:1},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0}];
+    //    property var game_fild_array: [{count:3,color:0},{count:3,color:0},{count:3,color:0},{count:3,color:0},{count:2,color:0},{count:0,color:0},
+    //    {count:1,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},
+    //    {count:3,color:1},{count:3,color:1},{count:3,color:1},{count:3,color:1},{count:2,color:1},{count:0,color:0},
+    //    {count:1,color:1},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0},{count:0,color:0}];
 
     /*-----NEW-----*/
     property var game_coins     :[];
     property var game_first_step:[true,true];
     property var game_rol       :[0,0];
+    property var ways  : [
+        [23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,24],
+        [11,10,9,8,7,6,5,4,3,2,1,0,23,22,21,20,19,18,17,16,15,14,13,12,25]
+    ];
     /*-------------*/
 
     property var dice_rol:[];
@@ -24,7 +28,7 @@ Canvas3D {
     property int logic_state:0;
     property int white_home:0;
     property int black_home:0;
-//    property int drag_row_index: -1;
+    //    property int drag_row_index: -1;
     property var available_turns: [];
     property int game_turn: 0;
     property int take_head: 0
@@ -44,8 +48,6 @@ Canvas3D {
     property bool logic_ready: false
     property bool dice_ready: false
     property bool fiska_ready: false
-
-    signal logicInited;
 
     onInitializeGL: {
         GLCode.initializeGL(cube);
@@ -213,11 +215,11 @@ Canvas3D {
 
         /*-----NEW-----*/
 
-//        for(var i=0;i<15;i++)
-//        {
-//            game_coins.push({player:1,pos:11});
-//            game_coins.push({player:0,pos:23});
-//        }
+        //        for(var i=0;i<15;i++)
+        //        {
+        //            game_coins.push({player:1,pos:11});
+        //            game_coins.push({player:0,pos:23});
+        //        }
 
         /*-------------*/
 
@@ -238,12 +240,6 @@ Canvas3D {
         */
         logic_state=2;
         logic_ready=true;
-        chk_ready();
-    }
-
-    function chk_ready(){
-        if(gl_ready&&logic_ready&&dice_ready&&fiska_ready)
-            logicInited();
     }
 
     function get_count(index){
@@ -253,8 +249,8 @@ Canvas3D {
         if(index>25 || index<0)
             console.log("get_count for undefined index",index)
         else
-        for(var i=0;i<game_coins.length;i++)
-            if(game_coins[i].pos==index)count++;
+            for(var i=0;i<game_coins.length;i++)
+                if(game_coins[i].pos==index)count++;
         return count;
         /*-------------*/
         /*
@@ -277,8 +273,8 @@ Canvas3D {
         if(index>25 || index<0)
             console.log("get_color for undefined index",index)
         else
-        for(var i=0;i<game_coins.length;i++)
-            if(game_coins[i].pos==index)return game_coins[i].player;
+            for(var i=0;i<game_coins.length;i++)
+                if(game_coins[i].pos==index)return game_coins[i].player;
         return color;
         /*
         if(index==25||index==26)return now_player;
@@ -313,7 +309,8 @@ Canvas3D {
                 var dv=0;
                 while(roll.length>0){
                     dv=roll.pop();
-                    for(var di=dice_rol.length-1;di>0;di--){
+                    for(var di=dice_rol.length-1;di>=0;di--){
+
                         if(dice_rol[di]==dv){
                             var tmpd=dice_rol;
                             tmpd[di]=0;
@@ -407,16 +404,16 @@ Canvas3D {
             if(available_turns[i].pos1==index)return true;
         }
 
-//        if(get_count(index)==0)return false;
-//        for(var i=0;i<4;i++){
-//            if(available_turns[i])
-//                for(var j=0;j<available_turns[i].length;j++){
-//                    if(available_turns[i][j].src==index){
-//                        console.log("can_drag_fishka",index,"true")
-//                        return true;
-//                    }
-//                }
-//        }
+        //        if(get_count(index)==0)return false;
+        //        for(var i=0;i<4;i++){
+        //            if(available_turns[i])
+        //                for(var j=0;j<available_turns[i].length;j++){
+        //                    if(available_turns[i][j].src==index){
+        //                        console.log("can_drag_fishka",index,"true")
+        //                        return true;
+        //                    }
+        //                }
+        //        }
         console.log("can_drag_fishka",index,"false")
         return false;
     }
@@ -434,6 +431,15 @@ Canvas3D {
             }
         }
         return false;
+    }
+    function chkIsAtHome(){
+        if(game_coins.length<30)return false;
+        for(var i=0;i<game_coins.length;i++){
+            if(game_coins[i].player!=now_player)continue;
+            //console.log(game_coins[i].pos,ways[now_player].indexOf(game_coins[i].pos))
+            if(ways[now_player].indexOf(game_coins[i].pos)<18)return false;
+        }
+        return true;
     }
 
     function get_dice(ind){
@@ -485,18 +491,14 @@ Canvas3D {
                 turns=2;
             }
             dice_rol=tmp;
+            console.time('t');
             calculate_moves();
+            console.timeEnd('t');
             console.log("set_dice dice_rol result:",tmp,"turn",game_turn,"movies",turns,"take_head",take_head);
             logic_state=5;
         }
         dice_rol=tmp;
     }
-
-
-    property var ways  : [
-                            [23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,24],
-                            [11,10,9,8,7,6,5,4,3,2,1,0,23,22,21,20,19,18,17,16,15,14,13,12,25]
-                         ];
 
     function calculate_moves(){
 
@@ -559,101 +561,101 @@ Canvas3D {
             if(board[coin].player!==now_player)continue;
             if(board[coin].pos>23)continue;
 
-                if(dice_lines[line][dice]===0)return;
+            if(dice_lines[line][dice]===0)return;
 
-                var src     = board[coin].pos;
-                var way_idx = 999;
-                for(var w=0;w<ways[player].length-1;w++)
+            var src     = board[coin].pos;
+            var way_idx = 999;
+            for(var w=0;w<ways[player].length-1;w++)
+            {
+                if(ways[player][w]==board[coin].pos)
                 {
-                    if(ways[player][w]==board[coin].pos)
+                    way_idx = w;
+                    break;
+                }
+            }
+
+
+
+            if(way_idx+dice_lines[line][dice]===24)
+            {
+                var finded = false;
+                for(var coin2=0;coin2<board.length;coin2++)
+                {
+                    if(board[coin2].player!==now_player)continue;
+                    for(var w=0;w<ways[player].length-1;w++)
                     {
-                        way_idx = w;
+                        if(ways[player][w]===board[coin2].pos && w<18)
+                        {
+                            finded = true;
+                            break;
+                        }
+                    }
+                    if(finded===true)
                         break;
-                    }
                 }
+                if(finded===true)
+                    continue;
+            }
 
-
-
-                if(way_idx+dice_lines[line][dice]===24)
+            if(way_idx+dice_lines[line][dice]>24)
+            {
+                var finded = false;
+                for(var coin2=0;coin2<board.length;coin2++)
                 {
-                    var finded = false;
-                    for(var coin2=0;coin2<board.length;coin2++)
+                    if(board[coin2].player!==now_player)continue;
+                    for(var w=0;w<ways[player].length-1;w++)
                     {
-                        if(board[coin2].player!==now_player)continue;
-                        for(var w=0;w<ways[player].length-1;w++)
+                        if(ways[player][w]===board[coin2].pos && w<way_idx)
                         {
-                            if(ways[player][w]===board[coin2].pos && w<18)
-                            {
-                                finded = true;
-                                break;
-                            }
-                        }
-                        if(finded===true)
+                            finded = true;
                             break;
+                        }
                     }
                     if(finded===true)
-                        continue;
+                        break;
                 }
+                if(finded===true)
+                    continue;
+            }
 
-                if(way_idx+dice_lines[line][dice]>24)
-                {
-                    var finded = false;
-                    for(var coin2=0;coin2<board.length;coin2++)
-                    {
-                        if(board[coin2].player!==now_player)continue;
-                        for(var w=0;w<ways[player].length-1;w++)
-                        {
-                            if(ways[player][w]===board[coin2].pos && w<way_idx)
-                            {
-                                finded = true;
-                                break;
-                            }
-                        }
-                        if(finded===true)
-                            break;
-                    }
-                    if(finded===true)
-                        continue;
-                }
+            if(way_idx+dice_lines[line][dice]>24)way_idx=24-dice_lines[line][dice];
 
-                if(way_idx+dice_lines[line][dice]>24)way_idx=24-dice_lines[line][dice];
+            var dst_way = ways[player][way_idx+dice_lines[line][dice]];
+            var color = 2;//get_color(dst_way);
+            for(var ci=0;ci<board.length;ci++)
+                if(board[ci].pos==dst_way){color=board[ci].player;break}
+            // правила
 
-                var dst_way = ways[player][way_idx+dice_lines[line][dice]];
-                var color = 2;//get_color(dst_way);
-                for(var ci=0;ci<board.length;ci++)
-                    if(board[ci].pos==dst_way){color=board[ci].player;break}
-                // правила
+            //if(way_idx+dice_lines[line][dice]>23)way_idx=24;//continue;
+            if(color!==now_player && color!==2)continue;
+            if(take_head==0&&way_idx==0)continue;
 
-                //if(way_idx+dice_lines[line][dice]>23)way_idx=24;//continue;
-                if(color!==now_player && color!==2)continue;
-                if(take_head==0&&way_idx==0)continue;
+            if(way_idx==0)take_head--;
+            var tree2 = [];
+            //var save = [];  for(var coin2=0;coin2<game_coins.length;coin2++) save.push([coin2,game_coins[coin2].pos]);
+            var new_board = [];  for(var coin2=0;coin2<board.length;coin2++) new_board.push({player:board[coin2].player,pos:coin!=coin2?board[coin2].pos:dst_way,coin:board[coin2].coin});
 
-                if(way_idx==0)take_head--;
-                var tree2 = [];
-                //var save = [];  for(var coin2=0;coin2<game_coins.length;coin2++) save.push([coin2,game_coins[coin2].pos]);
-                var new_board = [];  for(var coin2=0;coin2<board.length;coin2++) new_board.push({player:board[coin2].player,pos:coin!=coin2?board[coin2].pos:dst_way,coin:board[coin2].coin});
-
-                //game_coins[coin].pos = dst_way;
+            //game_coins[coin].pos = dst_way;
 
 
-                // проверка на 6 подряд
+            // проверка на 6 подряд
 
 
-                calculate_moves2(new_board,player,dice_lines,line,tree2,dice+1);
-                //for(var saveidx=0;saveidx<save.length;saveidx++)game_coins[save[saveidx][0]].pos = save[saveidx][1];
-                if(way_idx==0)take_head++;
+            calculate_moves2(new_board,player,dice_lines,line,tree2,dice+1);
+            //for(var saveidx=0;saveidx<save.length;saveidx++)game_coins[save[saveidx][0]].pos = save[saveidx][1];
+            if(way_idx==0)take_head++;
 
-                tree.push({
-                              coin:board[coin].coin,
-//                              way1:way_idx,
-//                              way2:way_idx+dice_lines[line][dice],
-//                              pos1:src,
-                              pos2:dst_way,
-//                              line:line,
-//                              dice:dice,
-                              dice_val:dice_lines[line][dice],
-                              tree:tree2
-                          });
+            tree.push({
+                          coin:board[coin].coin,
+                          //                              way1:way_idx,
+                          //                              way2:way_idx+dice_lines[line][dice],
+                          //                              pos1:src,
+                          pos2:dst_way,
+                          //                              line:line,
+                          //                              dice:dice,
+                          dice_val:dice_lines[line][dice],
+                          tree:tree2
+                      });
 
         }
 
