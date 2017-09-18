@@ -26,9 +26,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    imagecube.js \
     three.js \
-    ImageCube.qml \
     main.qml \
     calibration.sh \
     DropAreaDelegate.qml \
@@ -53,7 +51,11 @@ DISTFILES += \
     WinForm.qml \
     GameSettingsMenu.qml \
     GameSelectMenu.qml \
-    Menu1x_test.qml
+    Menu1x_test.qml \
+    backgammon_logic.js \
+    gl_draw_code.js \
+    gl_logic.js \
+    index.html
 
 HEADERS += \
     process.h

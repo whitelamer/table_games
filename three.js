@@ -1,4 +1,5 @@
 // File:src/qml/ThreeQML.js
+.pragma library
 
 /*
 The MIT License

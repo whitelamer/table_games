@@ -1,11 +1,11 @@
 import QtQuick 2.0
 import QtQuick.Particles 2.0
-
+import "backgammon_logic.js" as Game
+import "gl_logic.js" as GLCode
 Item {
     id:main_form
     property int main_spacing: 17
     property int fiska_size: 61
-    property QtObject gameLogic: gameLogic
     property int fishka_count: 0
     property var drag_item: null
     property variant drop_areas: [
@@ -35,18 +35,47 @@ Item {
         {x: 1041 ,y: 16 ,width: 71 ,p_height: 307 ,p_rotation: 180 ,p_ind: 22 ,img: "img/backgammon/22.png"},
         {x: 1119 ,y: 17 ,width: 71 ,p_height: 407 ,p_rotation: 180 ,p_ind: 23 ,img: "img/backgammon/33.png"},
         {x: 10 ,y: 625 ,width: 51, height: 330 ,p_height: 330 ,p_rotation: 180 ,p_ind: 25 ,img: "img/backgammon/44.png"},
-        {x: 1220 ,y: 70 ,width: 51, height: 330 ,p_height: 330 ,p_rotation: 0 ,p_ind: 24 ,img: "img/backgammon/33.png"}]
+        {x: 1220 ,y: 70 ,width: 51, height: 330 ,p_height: 330 ,p_rotation: 0 ,p_ind: 24 ,img: "img/backgammon/44.png"}]
 
     property variant drag_fishkas: []
     property variant fishka_c: null
     property variant drop_c: null
-    property alias gamestate: gameLogic.logic_state
-    property alias nowplayer: gameLogic.now_player
+    //    property alias gamestate: Game.logic_state
+    //    property alias nowplayer: Game.now_player
     property bool drag_need_resume: false
+    property int now_player:0;
+    property variant game_coins:[];
+    //var game_first_step=[true,true];
+    property variant game_rol:[0,0];
+    property variant ways:[
+        [23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1,0,24],
+        [11,10,9,8,7,6,5,4,3,2,1,0,23,22,21,20,19,18,17,16,15,14,13,12,25]
+    ];
+    property variant dice_rol:[];
+    property int dice1_val:0;
+    property int dice2_val:0;
+    property int logic_state:0;
+    //var white_home:0;
+    //var black_home:0;
+    //    property int drag_row_index: -1;
+    property variant available_turns:[];
+    property int game_turn:0;
+    property int take_head:0;
+
+    property double op_dice1: 1
+    property double op_dice2: 1
+
+    property double gl_axis_y:4.38
+    property double gl_axis_x:3.5
+
+    property double phy_axis_x:3.1
+    property double phy_axis_y1:0.55
+    property double phy_axis_y2:3.8
+
     signal updateAfterDrop(int src, int dst)
     signal newgamestate(int state)
-    width: 1920
-    height: 1080
+    width: 1280
+    height: 1024
     Image {
         id: background
         width: 1280
@@ -72,25 +101,78 @@ Item {
         }
         MouseArea{
             id:global_area
+            property var drop_start: null
             anchors.rightMargin: 0
             anchors.bottomMargin: 0
             anchors.leftMargin: 0
             anchors.topMargin: 0
             anchors.fill: parent
-            enabled: gameLogic.get_state()!=3
-            onPositionChanged: {
-                if(main_form.drag_item!=null&&main_form.drag_need_resume==true){
-                    var point=main_form.mapToItem(main_form.drag_item.parent,mouse.x,mouse.y)
-                    main_form.drag_item.x=point.x-fiska_size*.5
-                    main_form.drag_item.y=point.y-fiska_size*.5
+            //enabled: Game.get_state()!=3
+            onPressed: {
+                console.log("Game state:",logic_state,mouse.x,mouse.y,width/2,now_player);
+                if(Game.get_state()!=3&&Game.get_state()!=1)return;
+                if(GLCode.showdrop)return;
+                drop_start=null;
+                if(now_player){
+                    if(mouse.x>width/2)return;
+                }else{
+                    if(mouse.x<=width/2)return;
                 }
+                if(now_player==0){
+                    GLCode.barriers["top"].position.set(0,phy_axis_y2, 0);
+                    GLCode.barriers["bottom"].position.set(0,phy_axis_y1, 0);
+                }else{
+                    GLCode.barriers["top"].position.set(0,-phy_axis_y1, 0);
+                    GLCode.barriers["bottom"].position.set(0,-phy_axis_y2, 0);
+                }
+
+                //drop_start = {x:mouseX,y:mouseY};
+                drop_start = translateToCanvas(mouse.x,mouse.y);
+                if(drop_start.y<0&&drop_start.y>-phy_axis_y1)
+                    drop_start.y=-phy_axis_y1;
+                if(drop_start.y>0&&drop_start.y<phy_axis_y1)
+                    drop_start.y=phy_axis_y1;
+                op_dice1_anim.stop();
+                op_dice2_anim.stop();
+                op_dice1=1;
+                op_dice2=1;
+            }
+            onReleased: {
+                if(Game.get_state()!=3&&Game.get_state()!=1)return;
+                if(GLCode.showdrop)return;
+                if(!drop_start)return;
+                var vector = { x: mouseX - drop_start.x, y: mouseY - drop_start.y };
+                vector = translateToCanvas(mouse.x,mouse.y);
+                var vector_start = drop_start;//{ x: drop_start.x/width, y: drop_start.y/height };
+                drop_start = null;
+                var dist = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+                //vector.x /= dist; vector.y /= dist;
+                console.log("Game state:",logic_state,mouse.x,mouse.y);
+                console.log("vector",vector.x,vector.y);
+                console.log("vector_start",vector_start.x,vector_start.y);
+                dice_rol=[0,0];
+                GLCode.dropDice(vector,vector_start,0,1);
+
+                drop_finish_chk_timer.start();
+            }
+            onPositionChanged: {
+                if(Game.get_state()!=3){
+                    if(main_form.drag_item!=null&&main_form.drag_need_resume==true){
+                        var point=main_form.mapToItem(main_form.drag_item.parent,mouse.x,mouse.y)
+                        main_form.drag_item.x=point.x-fiska_size*.5
+                        main_form.drag_item.y=point.y-fiska_size*.5
+                    }
+                }else{
+
+                }
+
                 //gameLogic.setFishkaPos(gameLogic.translateToCanvas(mouse.x,mouse.y),0);
             }
-            onClicked: {
-                if(gameLogic.get_state()==5){
-                    //console.log(main_form.childAt(main_form.drag_item.x+48,main_form.drag_item.y+48))
-                }
-            }
+            //            onClicked: {
+            //                if(Game.get_state()==5){
+            //                    //console.log(main_form.childAt(main_form.drag_item.x+48,main_form.drag_item.y+48))
+            //                }
+            //            }
 
 
         }
@@ -113,84 +195,102 @@ Item {
                 if(currentFrame==frameCount-1)paused=true;
             }
         }
-//        Drop {
-//            id: drop_black_home
-//            x: 10
-//            y: 625
-//            width: 51
-//            height: 330
-//            p_height: 330
-//            p_rotation: 180
-//            p_ind: 25
-//            img:"./img/backgammon/44.png"
-//        }
-//        Drop {
-//            id: drop_white_home
-//            x: 1220
-//            y: 70
-//            width: 51
-//            height: 330
-//            p_height: 330
-//            p_ind: 24
-//            img:"./img/backgammon/44.png"
-//        }
+        //        Drop {
+        //            id: drop_black_home
+        //            x: 10
+        //            y: 625
+        //            width: 51
+        //            height: 330
+        //            p_height: 330
+        //            p_rotation: 180
+        //            p_ind: 25
+        //            img:"./img/backgammon/44.png"
+        //        }
+        //        Drop {
+        //            id: drop_white_home
+        //            x: 1220
+        //            y: 70
+        //            width: 51
+        //            height: 330
+        //            p_height: 330
+        //            p_ind: 24
+        //            img:"./img/backgammon/44.png"
+        //        }
 
-        ImageCube {
-            id: gameLogic
-            //width: 1090
-            width: 1280
-            height: 1024
-            //height: 970
-            z:1
-            orientation: true
-            anchors.centerIn: parent
-            //anchors.horizontalCenterOffset: gameLogic.now_player==1?-320:320
-            //        anchors.horizontalCenterOffset: 320
+        //        ImageCube {
+        //            id: gameLogic
+        //            //width: 1090
+        //            width: 1280
+        //            height: 1024
+        //            //height: 970
+        //            z:1
+        //            orientation: true
+        //            anchors.centerIn: parent
+        //            //anchors.horizontalCenterOffset: gameLogic.now_player==1?-320:320
+        //            //        anchors.horizontalCenterOffset: 320
 
-            visible: true
-            onLogic_stateChanged: {
-                console.log("onLogic_stateChanged");
-                //main_form.gamestate=gameLogic.logic_state
-                newgamestate(main_form.gamestate)
-                if(gameLogic.chkIsAtHome()){
-                    console.log("Anim:",white_home_anim.paused,white_home_anim.playing,white_home_anim.currentFrame,white_home_anim.frameCount);
-                   if(!white_home_anim.paused&&gameLogic.now_player==0)
-                        white_home_anim.playing=true;
-                   if(!black_home_anim.paused&&gameLogic.now_player==1)
-                        black_home_anim.playing=true;
-                }
-            }
-//            onLogicInited: {
-//                //createFishkas();
-//                if(drop_c===null)
-//                    drop_c = Qt.createComponent("Drop.qml");
-//                //Qt.quit();
-//                console.log("onLogicInited",drop_c)
-//            }
-            gl_axis_y:4.38
-            gl_axis_x:3.5
-            phy_axis_x:3.1
-            phy_axis_y1:0.55
-            phy_axis_y2:3.8
-            function translateToCanvas(x,y){
-                var newY=(x/background.width)*gl_axis_y*2-gl_axis_y
-                var newX=(y/background.height)*gl_axis_x*2-gl_axis_x
-                //console.log("translateToCanvas",x,y,newX,newY)
-                var vector = { x: newX, y: newY };
-                return vector;
-            }
-        }
+        //            visible: true
+        //            /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        //            onLogic_stateChanged: {
+        //                console.log("onLogic_stateChanged");
+        //                //main_form.gamestate=gameLogic.logic_state
+        //                newgamestate(main_form.gamestate)
+        //                if(Game.chkIsAtHome()){
+        //                    console.log("Anim:",white_home_anim.paused,white_home_anim.playing,white_home_anim.currentFrame,white_home_anim.frameCount);
+        //                   if(!white_home_anim.paused&&gameLogic.now_player==0)
+        //                        white_home_anim.playing=true;
+        //                   if(!black_home_anim.paused&&gameLogic.now_player==1)
+        //                        black_home_anim.playing=true;
+        //                }
+        //            }
+        //            /*!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*/
+        //        }
 
 
     }
+
+
+    Text{
+        id:label_drop
+        text: "PRESS FOR DROP DICE"
+        font.bold:true
+        font.pointSize:24
+        visible: logic_state==3&&!GLCode.showdrop
+        opacity: 0
+        anchors.centerIn: parent
+        anchors.horizontalCenterOffset: (1-now_player*2)*parent.width/4
+        SequentialAnimation{
+
+            loops: Animation.Infinite
+            running: label_drop.visible
+            NumberAnimation {
+                target: label_drop
+                property: "opacity"
+                duration: 1500
+                to:1
+                easing.type: Easing.Linear
+                alwaysRunToEnd:true
+            }
+            NumberAnimation {
+                target: label_drop
+                property: "opacity"
+                duration: 1500
+                to:0
+                easing.type: Easing.Linear
+                alwaysRunToEnd:true
+            }
+        }
+    }
+
     Text {
         id: text1
         x: 1302
         y: 27
         width: 219
         height: 33
-        text: "turn:"+gameLogic.game_turn
+        text: "turn:"+game_turn
         font.pixelSize: 12
+        color: "white"
     }
 
     Text {
@@ -199,8 +299,9 @@ Item {
         y: 72
         width: 219
         height: 33
-        text: "now_player:"+gameLogic.now_player
+        text: "now_player:"+now_player
         font.pixelSize: 12
+        color: "white"
     }
 
     Text {
@@ -209,8 +310,9 @@ Item {
         y: 117
         width: 219
         height: 33
-        text: "white_home:"+gameLogic.get_count(24)
+        text: "white_home:"+Game.get_count(24)
         font.pixelSize: 12
+        color: "white"
     }
 
     Text {
@@ -219,8 +321,9 @@ Item {
         y: 162
         width: 219
         height: 33
-        text: "black_home:"+gameLogic.get_count(25)
+        text: "black_home:"+Game.get_count(25)
         font.pixelSize: 12
+        color: "white"
     }
 
     Text {
@@ -229,8 +332,9 @@ Item {
         y: 201
         width: 219
         height: 33
-        text: "dice_rol:"+gameLogic.dice_rol
+        text: "dice_rol:"+dice_rol
         font.pixelSize: 12
+        color: "white"
     }
 
     Text {
@@ -242,26 +346,47 @@ Item {
         text: "movies_fild_array:\n"+print_game_movies()
         font.pixelSize: 12
         wrapMode: Text.WrapAnywhere
+        color: "white"
     }
 
-//    AnimatedImage {
-//        id: animation;
-//        source: "123.gif"
-//        width: fiska_size
-//        height: fiska_size
-//    }
+    //    AnimatedImage {
+    //        id: animation;
+    //        source: "123.gif"
+    //        width: fiska_size
+    //        height: fiska_size
+    //    }
     function print_game_movies(){
         var str=""
-        for(var i=0;i<gameLogic.available_turns.length;i++){
-           str+="move:"+i+" "+gameLogic.available_turns[i].coin.pos+"->"+gameLogic.available_turns[i].pos2+" \n";
+        for(var i=0;i<available_turns.length;i++){
+            str+="move:"+i+" "+available_turns[i].coin.pos+"->"+available_turns[i].pos2+" \n";
         }
         return str;
+    }
+    Timer{
+        id:drop_finish_chk_timer
+        running: false
+        repeat: true
+        interval: 1500
+        onTriggered: {
+            GLCode.showdrop=running=!GLCode.is_throw_finished();
+            if(GLCode.showdrop)
+                interval/=2.0
+            else{
+                interval=1500;
+                Game.set_dice(GLCode.get_dice());
+            }
+            if(interval<100)interval=150;
+            console.log("drop_finish_chk_timer",running,interval);
+        }
     }
     Component.onCompleted: {
         fishka_c = Qt.createComponent("Fishka.qml");
         if (fishka_c.status != Component.Ready)fishka_c=null;
         drop_c = Qt.createComponent("Drop.qml");
         if (drop_c.status != Component.Ready)drop_c=null;
+
+
+        Game.init(main_form);
         var tmp=[];//drop_areas;
         for(var i=0;i<drop_areas.length;i++){
             var drop = drop_c.createObject(background, drop_areas[i]);
@@ -270,10 +395,25 @@ Item {
             else
                 tmp.push(drop);
         }
-//        tmp.push(drop_black_home);
-//        tmp.push(drop_white_home);
+        //        tmp.push(drop_black_home);
+        //        tmp.push(drop_white_home);
         drop_areas=tmp;
         createFishkas();
+        GLCode.setOrientation(true);
+        GLCode.initPhysics(); // need physics for dices
+        GLCode.barriers["right"].position.set(phy_axis_x,0, 0);
+        GLCode.barriers["left"].position.set(-phy_axis_x,0, 0);
+    }
+    onLogic_stateChanged: {
+        //console.log("onLogic_stateChanged");
+        //main_form.gamestate=gameLogic.logic_state
+        newgamestate(main_form.gamestate)
+        if(Game.chkIsAtHome()){
+            if(!white_home_anim.paused&&now_player==0)
+                white_home_anim.playing=true;
+            if(!black_home_anim.paused&&now_player==1)
+                black_home_anim.playing=true;
+        }
     }
     function getDropArea(index){
         for(var i=0;i<drop_areas.length;i++)
@@ -286,35 +426,49 @@ Item {
         console.time('create fishka');
         for(var j=0;j<15;j++){
             fishka = fishka_c.createObject(background, {
-                                                   "player":1,
-                                                   "pos":14,
-                                                   "fiska_size": fiska_size});
+                                               "player":1,
+                                               "pos":14,
+                                               "fiska_size": fiska_size,
+                                               "dddobj": GLCode.get3dObj(1)
+                                           });
             if (fishka == null)
                 console.log("Error creating object");
             else
-                gameLogic.add_fishka(fishka);
+                Game.add_fishka(fishka);
 
             fishka = fishka_c.createObject(background, {
-                                                   "player":0,
-                                                   "pos":3,
-                                                   "fiska_size": fiska_size});
+                                               "player":0,
+                                               "pos":3,
+                                               "fiska_size": fiska_size,
+                                               "dddobj": GLCode.get3dObj(0)
+                                           });
             if (fishka == null)
                 console.log("Error creating object");
             else
-                gameLogic.add_fishka(fishka);
+                Game.add_fishka(fishka);
         }
         console.timeEnd('create fishka');
-//        fishka = fishka_c.createObject(background, {
-//                                               "player":1,
-//                                               "pos":18,
-//                                               "fiska_size": fiska_size});
-//            gameLogic.add_fishka(fishka);
-//        fishka = fishka_c.createObject(background, {
-//                                               "player":0,
-//                                               "pos":6,
-//                                               "fiska_size": fiska_size});
-//            gameLogic.add_fishka(fishka);
+        //        fishka = fishka_c.createObject(background, {
+        //                                               "player":1,
+        //                                               "pos":18,
+        //                                               "fiska_size": fiska_size});
+        //            gameLogic.add_fishka(fishka);
+        //        fishka = fishka_c.createObject(background, {
+        //                                               "player":0,
+        //                                               "pos":6,
+        //                                               "fiska_size": fiska_size});
+        //            gameLogic.add_fishka(fishka);
 
+    }
+    function translateToCanvas(x,y){
+        var newY=(x/background.width)*gl_axis_y*2-gl_axis_y
+        var newX=(y/background.height)*gl_axis_x*2-gl_axis_x
+        //console.log("translateToCanvas",x,y,newX,newY)
+        var vector = { x: newX, y: newY };
+        return vector;
+    }
+    function get3dObj(player){
+        return GLCode.get3dObj(player);
     }
 
     WinForm{
@@ -344,7 +498,46 @@ Item {
             }
         }
     }
-
+    function disable_dice(n){
+        if(n==0)
+            op_dice1_anim.start();
+        else
+            op_dice2_anim.start();
+    }
+    function hide_dice(){
+        for(var i=0;i<arguments.length;i++){
+            if(arguments[i]==0)
+                GLCode.hide_dice1();
+            if(arguments[i]==1)
+                GLCode.hide_dice2();
+        }
+    }
+    onOp_dice1Changed: {GLCode.opacity_dice1(op_dice1)}
+    onOp_dice2Changed: {GLCode.opacity_dice2(op_dice2)}
+    NumberAnimation {
+        id:op_dice1_anim
+        target: main_form
+        property: "op_dice1"
+        duration: 500
+        from:1
+        to:0.5
+        easing.type: Easing.Linear
+        onStopped: {
+            //GLCode.hide_dice1();
+        }
+    }
+    NumberAnimation {
+        id:op_dice2_anim
+        target: main_form
+        property: "op_dice2"
+        duration: 500
+        from:1
+        to:0.5
+        easing.type: Easing.Linear
+        onStopped: {
+            //GLCode.hide_dice2();
+        }
+    }
     function showWhiteWin(){
         left_win_form.setWiner(0,null);
         right_win_form.setWiner(0,null);

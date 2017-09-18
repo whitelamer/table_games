@@ -624,3 +624,285 @@ TabView {
         }
     }
 }
+/*Process{
+    property int p_state: 0
+    property string output: ""
+    property int touch_1: -1
+    property int touch_2: -1
+    property string output_1: ""
+    property string output_2: ""
+    property int heigth: 1080;
+
+    id:calibration_process
+    onReadyRead: {
+        output+=readAll();
+    }
+
+    onFinished: {
+
+        if(output.length==0&&p_state<2){
+            console.log("Calibration falid at state:"+p_state)
+            heigth=1080;
+            //mainIndex.source="Index1x.qml"
+            mainMenu.source="menu1x_test.qml"
+            return;
+        }
+        if(p_state==0){
+            var touchs=output.split('\n')
+            console.log("Detect "+(touchs.length-1)+" touchscreens:"+touchs)
+            if(touchs.length>0)
+                touch_1=parseInt(touchs[0].split('=')[1])
+            if(touchs.length>1&&touchs[1].length>0)
+                touch_2=parseInt(touchs[1].split('=')[1])
+            p_state=1
+            output="";
+            calibration_process.start("bash",["-c","xrandr | grep ' connected' | cut -d ' ' -f 1"])
+            return;
+        }
+        if(p_state==1){
+            var outputs=output.split('\n')
+            console.log("Detect "+(outputs.length-1)+" outputs:"+outputs)
+            if(outputs.length>0)
+                output_1=outputs[0]
+            if(outputs.length>1&&outputs[1].length>0)
+                output_2=outputs[1]
+            p_state=2;
+            output="";
+            if(outputs.length-1==1){
+                heigth=1080;
+            }
+            if(outputs.length-1==2){
+                heigth=2160;
+            }
+            console.log("mapping touch:"+touch_1+" to monitor:"+output_1)
+            calibration_process.start("xinput",["--map-to-output",touch_1,output_1])
+            return;
+        }
+        if(p_state==2){
+            p_state=3
+            output=""
+            console.log("calibration touch:"+touch_1)
+            calibration_process.start("xinput",["set-int-prop",touch_1,"Evdev Axis Calibration","32","1581","398","642","1330"])
+            return;
+        }
+        if(p_state==3){
+            p_state=4
+            output=""
+            console.log("calibration swap touch:"+touch_1)
+            calibration_process.start("xinput",["set-int-prop",touch_1,"Evdev Axes Swap","8","0"])
+            return;
+        }
+
+        if(p_state==4&&touch_2>=0&&output_2.length>0){
+            p_state=5
+            output=""
+            console.log("xinput mapping touch:"+touch_2+" to monitor:"+output_2)
+            calibration_process.start("xinput",["--map-to-output",touch_2,output_2])
+            return;
+        }
+        if(p_state==5&&touch_2>=0){
+            p_state=6
+            output=""
+            console.log("xinput calibration touch:"+touch_2)
+            calibration_process.start("xinput",["set-int-prop",touch_2,"Evdev Axis Calibration","32","1581","398","642","1330"])
+            return;
+        }
+        if(p_state==6&&touch_2>=0){
+            p_state=7
+            output=""
+            console.log("xinput calibration swap touch:"+touch_2)
+            calibration_process.start("xinput",["set-int-prop",touch_2,"Evdev Axes Swap","8","0"])
+            return;
+        }
+
+        heigth=1080;
+        mainMenu.source="menu1x_test.qml"
+        //mainIndex
+
+
+        //mainIndex.source="menu2x.qml"
+        console.log(output);
+    }
+}*/
+import QtQuick 2.0
+import "gl_logic.js" as GLCode
+import "backgammon_logic.js" as Game
+
+Item {
+    id: cube
+    //property bool showdrop: false
+//    property int logic_state: 0
+
+//    property bool orientation: false
+
+//    property double gl_axis_y: 1.8
+//    property double gl_axis_x: 1.8
+
+//    property double phy_axis_y1: 1.8
+//    property double phy_axis_y2: 1.8
+//    property double phy_axis_x: 1.8
+
+
+//    property bool gl_ready: false
+//    property bool logic_ready: false
+//    property bool dice_ready: false
+//    property bool fiska_ready: false
+
+//    Text{
+//        id:label_drop
+//        text: "PRESS FOR DROP DICE"
+//        font.bold:true
+//        font.pointSize:24
+//        visible: Game.logic_state==3&&!GLCode.showdrop
+//        opacity: 0
+//        anchors.centerIn: parent
+//        anchors.horizontalCenterOffset: (1-Game.now_player*2)*parent.width/4
+//        SequentialAnimation{
+
+//            loops: Animation.Infinite
+//            running: label_drop.visible
+//            NumberAnimation {
+//                target: label_drop
+//                property: "opacity"
+//                duration: 1500
+//                to:1
+//                easing.type: Easing.Linear
+//                alwaysRunToEnd:true
+//            }
+//            NumberAnimation {
+//                target: label_drop
+//                property: "opacity"
+//                duration: 1500
+//                to:0
+//                easing.type: Easing.Linear
+//                alwaysRunToEnd:true
+//            }
+//        }
+//    }
+    MouseArea{
+        property var drop_start: null
+        anchors.fill: parent
+        enabled: Game.logic_state==3
+        onClicked: {
+            //if(!showdrop)GLCode.dropDice();
+            //            showdrop=!showdrop
+        }
+        onPressed: {
+            console.log("Game state:",Game.logic_state,mouse.x,mouse.y,width/2,Game.now_player);
+            if(GLCode.showdrop)return;
+            drop_start=null;
+            if(Game.now_player){
+                if(mouse.x>width/2)return;
+            }else{
+                if(mouse.x<=width/2)return;
+            }
+            if(Game.now_player==0){
+                GLCode.barriers["top"].position.set(0,phy_axis_y2, 0);
+                GLCode.barriers["bottom"].position.set(0,phy_axis_y1, 0);
+            }else{
+                GLCode.barriers["top"].position.set(0,-phy_axis_y1, 0);
+                GLCode.barriers["bottom"].position.set(0,-phy_axis_y2, 0);
+            }
+
+            //drop_start = {x:mouseX,y:mouseY};
+            drop_start = translateToCanvas(mouse.x,mouse.y);
+            if(drop_start.y<0&&drop_start.y>-phy_axis_y1)
+                drop_start.y=-phy_axis_y1;
+            if(drop_start.y>0&&drop_start.y<phy_axis_y1)
+                drop_start.y=phy_axis_y1;
+            op_dice1_anim.stop();
+            op_dice2_anim.stop();
+            op_dice1=1;
+            op_dice2=1;
+        }
+        onReleased: {
+            if(GLCode.showdrop)return;
+            if(!drop_start)return;
+            var vector = { x: mouseX - drop_start.x, y: mouseY - drop_start.y };
+            vector = translateToCanvas(mouse.x,mouse.y);
+            var vector_start = drop_start;//{ x: drop_start.x/width, y: drop_start.y/height };
+            drop_start = null;
+            var dist = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+            //vector.x /= dist; vector.y /= dist;
+            console.log("Game state:",Game.logic_state,mouse.x,mouse.y);
+            console.log("vector",vector.x,vector.y);
+            console.log("vector_start",vector_start.x,vector_start.y);
+            Game.dice_rol=[0,0];
+            GLCode.dropDice(vector,vector_start);
+
+            drop_finish_chk_timer.start();
+        }
+    }
+
+
+//    Timer{
+//        id:drop_finish_chk_timer
+//        running: false
+//        repeat: true
+//        interval: 1500
+//        onTriggered: {
+//            GLCode.showdrop=running=!GLCode.is_throw_finished();
+//            if(GLCode.showdrop)
+//                interval/=2.0
+//            else{
+//                interval=1500;
+//                Game.set_dice(GLCode.get_dice());
+//            }
+//            if(interval<100)interval=150;
+//            console.log("drop_finish_chk_timer",running,interval);
+//        }
+//    }
+
+//    function get3dObj(player){
+//        if(GLCode.fishkas_obj.length>0){
+//            for(var i=0;i<GLCode.fishkas_obj.length;i++){
+//                if(GLCode.fishkas_obj[i].color==player){
+//                    var ret=GLCode.fishkas_obj[i];
+//                    GLCode.fishkas_obj.splice(i, 1);
+//                    return ret;
+//                }
+//            }
+//        }
+//        return null;
+//    }
+
+//    Component.onCompleted: {
+
+//    }
+
+//    property double op_dice1: 1
+//    property double op_dice2: 1
+
+//    NumberAnimation {
+//        id:op_dice1_anim
+//        target: GLCode
+//        property: "op_dice1"
+//        duration: 500
+//        from:1
+//        to:0.5
+//        easing.type: Easing.Linear
+//        onStopped: {
+//            //GLCode.hide_dice1();
+//        }
+//    }
+//    NumberAnimation {
+//        id:op_dice2_anim
+//        target: GLCode
+//        property: "op_dice2"
+//        duration: 500
+//        from:1
+//        to:0.5
+//        easing.type: Easing.Linear
+//        onStopped: {
+//            //GLCode.hide_dice2();
+//        }
+//    }
+    //    Behavior on op_dice1{
+    //        NumberAnimation { from:1;to:0;duration: 500 }
+    //        NumberAnimation { from:0;to:1;duration: 0 }
+    //    }
+    //    Behavior on op_dice2{
+    //        NumberAnimation { from:1;to:0;duration: 500 }
+    //        NumberAnimation { from:0;to:1;duration: 0 }
+    //    }
+}

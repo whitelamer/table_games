@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import "backgammon_logic.js" as Game
 
 Rectangle{
     id: drop_rect
@@ -81,7 +82,7 @@ Rectangle{
     }
     function dropping(source){
         if(source==null)return;
-        gameLogic.make_turn(source,p_ind);
+        Game.make_turn(source,p_ind);
         //source.drop_link=drop_rect;
         //
         //main_form.drag_item=null;
@@ -94,7 +95,7 @@ Rectangle{
 //        }else{
 //            if(gameLogic.drag_row_index<=12&&p_ind>12)return false;
 //        }
-        return gameLogic.canDropFishka(main_form.drag_item,p_ind)
+        return Game.canDropFishka(main_form.drag_item,p_ind)
     }
 
     //    Component.onCompleted: {

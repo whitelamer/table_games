@@ -1,5 +1,5 @@
 import QtQuick 2.0
-
+import "backgammon_logic.js" as Game
 
 Item {
     //property int p_ind: drop_link.p_ind
@@ -119,7 +119,7 @@ Item {
         //console.log("Component.onCompleted",pos,index,dddindex,anchors.topMargin,anchors.bottomMargin,x,y);
         //this.objectName=p_ind+"x"+index
         if(dddobj==null)
-            dddobj=gameLogic.get3dObj(player);//dddindex);
+            dddobj=get3dObj(player);//dddindex);
         update3dObj();
         //drop_link=getDropArea(pos);
 
@@ -131,7 +131,7 @@ Item {
     }
     function update3dObj(){
         if(dddobj==null)return;
-        var vec=gameLogic.translateToCanvas(x+delegateRoot.width*dddk,y+delegateRoot.height*dddk)
+        var vec=translateToCanvas(x+delegateRoot.width*dddk,y+delegateRoot.height*dddk)
         //var vec=gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5)
         dddobj.position.set(vec.x,vec.y,0);
     }
@@ -141,7 +141,7 @@ Item {
         //console.log("updateDrag",dragArea.enabled);
     }
     function isEnable(){
-        return gameLogic.canDragFishka(delegateRoot);
+        return Game.canDragFishka(delegateRoot);
     }
 
 //    onIndexChanged: {
@@ -170,12 +170,12 @@ Item {
     }
 
     onXChanged: {
-        if(!dddobj)dddobj=gameLogic.get3dObj(player);//dddindex);
+        if(!dddobj)dddobj=get3dObj(player);//dddindex);
         update3dObj();
         //gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
     }
     onYChanged: {
-        if(!dddobj)dddobj=gameLogic.get3dObj(player);//dddindex);
+        if(!dddobj)dddobj=get3dObj(player);//dddindex);
         update3dObj();
         //gameLogic.setFishkaPos(gameLogic.translateToCanvas(x+fiska_size*0.5,y+fiska_size*0.5),dddindex);
     }
