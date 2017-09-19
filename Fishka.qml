@@ -4,6 +4,7 @@ import "backgammon_logic.js" as Game
 Item {
     //property int p_ind: drop_link.p_ind
     property int index: 0
+    property int ind: 0
     property int dddindex: 0
     property var dddobj: null
     property int fiska_size: 106

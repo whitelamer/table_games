@@ -1,6 +1,7 @@
 .pragma library
 
 var data_context = null;
+var indxs=0;
 /*
 var now_player = 0;
 
@@ -27,6 +28,8 @@ var take_head=                      0;
 */
 function add_fishka(fishka){
     data_context.game_coins.push(fishka);
+    indxs++;
+    fishka.ind=indxs;
     fishka.index=get_count(fishka.pos)-1;
 }
 
@@ -102,7 +105,7 @@ function get_color(index){
 }
 function get_reach_turn(turns,coin,dst,roll){
     for(var i=turns.length-1;i>=0;i--){
-        if(turns[i].coin===coin){
+        if(turns[i].coin===coin.ind){
             roll.push(turns[i].dice_val);
             if(turns[i].pos2===dst)return turns[i];
             var turn=get_reach_turn(turns[i].tree,coin,dst,roll);
@@ -187,7 +190,7 @@ function get_state(){
 
 function canDragFishka(coin){
     for(var i=0;i<data_context.available_turns.length;i++){
-        if(data_context.available_turns[i].coin===coin)return true;
+        if(data_context.available_turns[i].coin===coin.ind)return true;
     }
     return false;
 }
@@ -217,7 +220,7 @@ function canDropFishka(coin,dst){
 
 function can_drop_fishka_p(turns,coin, dst){
     for(var i=0;i<turns.length;i++){
-        if(turns[i].coin==coin){
+        if(turns[i].coin==coin.ind){
             if(turns[i].pos2==dst)return true;
             if(can_drop_fishka_p(turns[i].tree,coin, dst))return true;
         }
@@ -253,11 +256,11 @@ function get_dice(ind){
     //        tmp.splice(i,1);
     //        return d;
 }
-function set_dice(roll){
+/*function set_dice(roll){
     if(roll==null)return
-    var tmp=roll
-    data_context.dice1_val=tmp[0];
-    data_context.dice2_val=tmp[1];
+    var tmp=[];//roll
+    tmp[0]=data_context.dice1_val=roll[0];
+    tmp[1]=data_context.dice2_val=roll[1];
 //    if(a>0){
 //        dice1_val=tmp[0];
 //        tmp[0]=a;
@@ -457,4 +460,4 @@ function calculate_moves2(board,player,dice_lines,line,tree,dice)
 
     }
 
-}
+}*/

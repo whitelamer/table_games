@@ -55,7 +55,8 @@ DISTFILES += \
     backgammon_logic.js \
     gl_draw_code.js \
     gl_logic.js \
-    index.html
+    index.html \
+    calc_script.js
 
 HEADERS += \
     process.h

@@ -46,7 +46,7 @@ function initializeGL(canvas) {
         GLLogic.cubes[0].position.set(0.35, 0, 0);
         //cube1.matrixAutoUpdate=true;
         GLLogic.scene.add( GLLogic.cubes[0] );
-        GLLogic.cubes[1]=GLLogic.cube1.clone();
+        GLLogic.cubes[1]=GLLogic.cubes[0].clone();
         GLLogic.cubes[1].castShadow=true;
         GLLogic.cubes[1].position.set(-0.35, 0, 0);
         GLLogic.cubes[1].material=new THREE.MeshFaceMaterial(materials).clone()
@@ -165,22 +165,23 @@ function resizeGL(canvas) {
 
 function paintGL(canvas) {
     //var timeStep   = 1/180;
-    if(GLLogic.showdrop&&GLLogic.world!=null)GLLogic.world.step(1/60);
-    // Copy coordinates from Cannon.js to Three.js
-
-    if(GLLogic.cube1){
-        if(GLLogic.showdrop&&GLLogic.world!=null){
-            GLLogic.cube1.position.copy(GLLogic.body1.position);
-            GLLogic.cube1.quaternion.copy(GLLogic.body1.quaternion);
-        }
-        //cube1.material.materials[0].opacity=op_dice1;
-        //cube1.material.materials[1].opacity=op_dice1;
-    }
-    if(GLLogic.cube2){
-        if(GLLogic.showdrop&&GLLogic.world!=null){
-            GLLogic.cube2.position.copy(GLLogic.body2.position);
-            GLLogic.cube2.quaternion.copy(GLLogic.body2.quaternion);
+    if(GLLogic.canvas_obj.showdrop&&GLLogic.world!=null){
+        GLLogic.world.step(1/60);
+        // Copy coordinates from Cannon.js to Three.js
+        for(var i=0;i<2;i++){
+            if(GLLogic.cubes[i]){
+                GLLogic.cubes[i].position.copy(GLLogic.bodys[i].position);
+                GLLogic.cubes[i].quaternion.copy(GLLogic.bodys[i].quaternion);
+                //cube1.material.materials[0].opacity=op_dice1;
+                //cube1.material.materials[1].opacity=op_dice1;
+            }
         }
     }
+    //    if(GLLogic.cube2){
+    //        if(GLLogic.canvas_obj.showdrop&&GLLogic.world!=null){
+    //            GLLogic.cube2.position.copy(GLLogic.body2.position);
+    //            GLLogic.cube2.quaternion.copy(GLLogic.body2.quaternion);
+    //        }
+    //    }
     GLLogic.renderer.render(GLLogic.scene, GLLogic.camera);
 }

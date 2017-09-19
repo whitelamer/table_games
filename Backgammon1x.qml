@@ -111,7 +111,7 @@ Item {
             onPressed: {
                 console.log("Game state:",logic_state,mouse.x,mouse.y,width/2,now_player);
                 if(Game.get_state()!=3&&Game.get_state()!=1)return;
-                if(GLCode.showdrop)return;
+                if(gl_canvas.showdrop)return;
                 drop_start=null;
                 if(now_player){
                     if(mouse.x>width/2)return;
@@ -139,7 +139,7 @@ Item {
             }
             onReleased: {
                 if(Game.get_state()!=3&&Game.get_state()!=1)return;
-                if(GLCode.showdrop)return;
+                if(gl_canvas.showdrop)return;
                 if(!drop_start)return;
                 var vector = { x: mouseX - drop_start.x, y: mouseY - drop_start.y };
                 vector = translateToCanvas(mouse.x,mouse.y);
@@ -249,13 +249,12 @@ Item {
 
     }
 
-
     Text{
         id:label_drop
         text: "PRESS FOR DROP DICE"
         font.bold:true
         font.pointSize:24
-        visible: logic_state==3&&!GLCode.showdrop
+        visible: logic_state==3&&!gl_canvas.showdrop
         opacity: 0
         anchors.centerIn: parent
         anchors.horizontalCenterOffset: (1-now_player*2)*parent.width/4
@@ -358,9 +357,20 @@ Item {
     function print_game_movies(){
         var str=""
         for(var i=0;i<available_turns.length;i++){
-            str+="move:"+i+" "+available_turns[i].coin.pos+"->"+available_turns[i].pos2+" \n";
+            str+="move:"+i+" "+available_turns[i].pos1+"->"+available_turns[i].pos2+" \n";
         }
         return str;
+    }
+    WorkerScript{
+        id:calc_worck
+        source: "calc_script.js"
+        onMessage: {
+            available_turns=messageObject.tree
+            dice1_val=dice_rol[0];
+            dice2_val=dice_rol[1];
+            if(dice_rol[0]==dice_rol[1])dice_rol[2]=dice_rol[3]=dice_rol[0];
+            logic_state=5;
+        }
     }
     Timer{
         id:drop_finish_chk_timer
@@ -368,12 +378,15 @@ Item {
         repeat: true
         interval: 1500
         onTriggered: {
-            GLCode.showdrop=running=!GLCode.is_throw_finished();
-            if(GLCode.showdrop)
+            gl_canvas.showdrop=running=!GLCode.is_throw_finished();
+            if(gl_canvas.showdrop)
                 interval/=2.0
             else{
                 interval=1500;
-                Game.set_dice(GLCode.get_dice());
+                dice_rol=GLCode.get_dice();
+                var board = [];  for(var coin=0;coin<game_coins.length;coin++) board.push({player:game_coins[coin].player,pos:game_coins[coin].pos,coin:game_coins[coin].ind});
+                calc_worck.sendMessage({'roll':dice_rol,'game_turn':game_turn,'board':board,'player':now_player});
+                //Game.set_dice(GLCode.get_dice());
             }
             if(interval<100)interval=150;
             console.log("drop_finish_chk_timer",running,interval);
